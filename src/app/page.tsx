@@ -9,6 +9,7 @@ import Philosophy from "@/components/Philosophy";
 import ProductDetail from "@/components/ProductDetail";
 import ScienceAccordion from "@/components/ScienceAccordion";
 import ArchiveGallery from "@/components/ArchiveGallery";
+import Manufacturing from "@/components/Manufacturing";
 import InquiryForm from "@/components/InquiryForm";
 import Footer from "@/components/Footer";
 
@@ -26,6 +27,7 @@ export default function Home() {
           <ProductDetail />
           <ScienceAccordion />
           <ArchiveGallery />
+          <Manufacturing />
           <InquiryForm />
         </main>
         <Footer />
