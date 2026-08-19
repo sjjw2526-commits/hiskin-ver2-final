@@ -12,56 +12,76 @@ gsap.registerPlugin(ScrollTrigger);
 type Doc = {
   tag: string;
   title: string;
+  /** 명의자 — 공장 인증과 등록·연구소 서류의 법인이 다르므로 명시합니다 */
+  holder: string;
   org: string;
   no: string;
+  /** 발급일 / 유효기간 */
+  date: string;
+  /** 라이트박스에만 나오는 부가 항목 */
+  detail?: string;
   /** /public/images/{img}.jpg */
   img: string;
   /** /public/docs/{pdf} — 파일이 실제로 있을 때만 다운로드 버튼이 뜹니다 */
   pdf: string;
-  detail?: string;
 };
 
+/* 값은 전부 스캔본 원문에서 읽은 것입니다. 숫자를 고칠 일이 생기면
+   public/images/cert_*.jpg 를 열어 대조하세요. */
 const DOCS: Doc[] = [
   {
     tag: "Manufacturing Standard",
     title: "ISO 22716 우수화장품 제조 인증",
-    org: "ICR",
-    no: "GM003270 (주식회사 지디엠)",
+    holder: "주식회사 지디엠",
+    org: "ICR (International Certification Registrar)",
+    no: "GM003270",
+    date: "2026.03.27 ~ 2029.03.26",
+    detail: "앰플·토너·크림·로션·에센스·폼클렌저·마스크팩 등 연구개발·생산·판매",
     img: "cert_iso22716",
     pdf: "cert_iso22716.pdf",
   },
   {
     tag: "Regulatory Approval",
     title: "화장품 제조업 등록필증",
+    holder: "에스엘코스메틱(주)",
     org: "경인지방식품의약품안전청",
     no: "제4906호",
+    date: "2020.09.02",
+    detail: "직접 제조 + 위탁 제조 영업 등록",
     img: "cert_mfg_license",
     pdf: "cert_mfg_license.pdf",
   },
   {
     tag: "Patented Formulation",
     title: "항산화 / 항염 천연 추출물 조성물 특허",
+    holder: "이인철",
     org: "대한민국 특허청",
     no: "제10-2533040호",
+    date: "2023.05.11 등록 (출원 2021.08.03)",
+    detail: "출원번호 제10-2021-0101725호",
     img: "cert_patent",
     pdf: "cert_patent.pdf",
   },
   {
     tag: "R&D Infrastructure",
     title: "기업부설연구소 인정서",
+    holder: "에스엘코스메틱(주) 연구소",
     org: "과학기술정보통신부 · KOITA",
     no: "제2021111420호",
+    date: "2022.03.15 (최초 인정 2021.03.10)",
     img: "cert_rnd_lab",
     pdf: "cert_rnd_lab.pdf",
   },
   {
     tag: "Certificate of Analysis",
     title: "글로벌 성분 분석 성적서 (VILAS 997)",
-    org: "IRDOP",
-    no: "Glutathione 1.75mg/g · Collagen 142.15mg/100g 검증",
+    holder: "HISKIN SunCream",
+    org: "IRDOP · ilac-MRA 인정 시험소",
+    no: "PPT25s211403-659CHL",
+    date: "2025.09.06",
+    detail: "Glutathione 1.75mg/g · Collagen 142.15mg/100g · SPF 50+ / PA++++",
     img: "cert_irdop_analysis",
     pdf: "cert_irdop_analysis.pdf",
-    detail: "Glutathione 1.75mg/g, Collagen 142.15mg/100g 검증",
   },
 ];
 
@@ -216,7 +236,7 @@ export default function Certifications() {
               {doc.title}
             </h3>
             <p className="mt-2 text-[12px] leading-relaxed text-mute">
-              {doc.org}
+              {doc.holder}
               <br />
               {doc.no}
             </p>
@@ -266,16 +286,24 @@ export default function Certifications() {
 
               <dl className="mt-7 border-t border-white/15 pt-5 text-[13px]">
                 <div className="flex justify-between gap-5 py-2">
+                  <dt className="shrink-0 text-white/45">명의</dt>
+                  <dd className="text-right">{current.holder}</dd>
+                </div>
+                <div className="flex justify-between gap-5 py-2">
                   <dt className="shrink-0 text-white/45">발행기관</dt>
                   <dd className="text-right">{current.org}</dd>
                 </div>
                 <div className="flex justify-between gap-5 py-2">
-                  <dt className="shrink-0 text-white/45">등록번호</dt>
+                  <dt className="shrink-0 text-white/45">번호</dt>
                   <dd className="text-right">{current.no}</dd>
+                </div>
+                <div className="flex justify-between gap-5 py-2">
+                  <dt className="shrink-0 text-white/45">일자</dt>
+                  <dd className="text-right">{current.date}</dd>
                 </div>
                 {current.detail && (
                   <div className="flex justify-between gap-5 py-2">
-                    <dt className="shrink-0 text-white/45">검증 항목</dt>
+                    <dt className="shrink-0 text-white/45">내용</dt>
                     <dd className="text-right">{current.detail}</dd>
                   </div>
                 )}

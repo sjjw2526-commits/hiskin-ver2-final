@@ -8,36 +8,53 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger);
 
 /* ────────────────────────────────────────────────────────────────
-   Card 01 — in-vivo SPF, per-subject scatter
+   Card 01 — in-vivo SPF
    ────────────────────────────────────────────────────────────────
-   ⚠️ 실제 보고서 수치로 교체 필요.
-   보고서에서 확정된 값은 평균 SPF 69.0 ± 9.4 (n=10) 와 ITA 범위 28°~58°
-   뿐입니다. 아래 10개 좌표는 그 평균/표준편차를 정확히 재현하도록
-   (mean 69.0, SD 9.37) 구성한 분포 예시입니다.
-   SMC-260731-9077_EN 원문의 피험자별 SPF 값을 주시면 그대로 바꿔 넣습니다. */
+   Study SMC-260731-9077_EN, Appendix I, per-subject results.
+   Mean 69.03 → 69.0, SD 9.40, mean ITA 49.3°. Straight off the report. */
 const SUBJECTS = [
-  { ita: 28, spf: 71.2 },
-  { ita: 31, spf: 57.1 },
-  { ita: 34, spf: 77.7 },
-  { ita: 37, spf: 64.7 },
-  { ita: 41, spf: 81.9 },
-  { ita: 44, spf: 54.9 },
-  { ita: 47, spf: 74.4 },
-  { ita: 51, spf: 67.9 },
-  { ita: 54, spf: 78.8 },
-  { ita: 58, spf: 61.4 },
+  { panel: 1, ita: 42, spf: 62.9 },
+  { panel: 2, ita: 57, spf: 83.3 },
+  { panel: 3, ita: 58, spf: 72.4 },
+  { panel: 4, ita: 57, spf: 63.0 },
+  { panel: 5, ita: 48, spf: 54.7 },
+  { panel: 6, ita: 51, spf: 63.0 },
+  { panel: 7, ita: 52, spf: 83.3 },
+  { panel: 8, ita: 38, spf: 72.4 },
+  { panel: 9, ita: 46, spf: 72.4 },
+  { panel: 10, ita: 44, spf: 62.9 },
 ];
 
 const SPF_MEAN = 69.0;
 const SPF_SD = 9.4;
+const SPF_CI = 6.7; // 95% CI, t = 2.262
 const SPF_LABEL_MAX = 50; // 표기 상한선
 
+/* ISO 24444 wants subjects spread across three ITA° bands. Showing the split
+   is what tells a buyer's regulatory reader the panel was actually valid. */
+const ITA_BANDS = [
+  { band: "28° ~ 40°", n: 1 },
+  { band: "41° ~ 55°", n: 6 },
+  { band: "56° 초과", n: 3 },
+];
+
 /* ────────────────────────────────────────────────────────────────
-   Card 02 — in-vitro UVA absorbance curve, 290–400 nm
+   Card 02 — in-vitro UVA
    ────────────────────────────────────────────────────────────────
-   시그모이드 흡광 곡선을 임계파장 λc = 377.6 nm 에 맞춰 역산한 것입니다
-   (290→377.6 구간 면적 = 290→400 전체 면적의 90%).
-   분광광도계 원본 데이터가 있으면 이 path 만 교체하면 됩니다. */
+   Study SMC-260731-9090_EN, Appendix I. Four PMMA plates.
+   Mean UVA-PF 23.33 ± 0.70, mean λc 377.63 → 377.6. */
+const PLATES = [
+  { n: 1, uvapf: 22.41, lc: 377.3 },
+  { n: 2, uvapf: 23.19, lc: 377.85 },
+  { n: 3, uvapf: 23.78, lc: 377.54 },
+  { n: 4, uvapf: 23.95, lc: 377.82 },
+];
+
+/* The report gives λc per plate but not the absorbance spectrum itself, so
+   the curve below is a schematic back-solved from the measured λc — the area
+   from 290 to 377.6nm is exactly 90% of the area from 290 to 400nm. The page
+   labels it as such, and the plate table beneath it carries the real
+   figures. Swap this path out if the spectrophotometer output turns up. */
 const CURVE_W = 520;
 const CURVE_H = 176;
 const CURVE_PATH =
@@ -154,10 +171,14 @@ export default function ClinicalData() {
   // ── SPF scatter geometry ───────────────────────────────────────
   const PW = 520;
   const PH = 176;
-  const yMin = 40;
-  const yMax = 90;
-  const px = (ita: number) => 26 + ((ita - 24) / (62 - 24)) * (PW - 34);
-  const py = (spf: number) => 10 + (1 - (spf - yMin) / (yMax - yMin)) * (PH - 30);
+  const ITA_MIN = 36;
+  const ITA_MAX = 60;
+  const Y_MIN = 45;
+  const Y_MAX = 90;
+  const px = (ita: number) =>
+    26 + ((ita - ITA_MIN) / (ITA_MAX - ITA_MIN)) * (PW - 34);
+  const py = (spf: number) =>
+    10 + (1 - (spf - Y_MIN) / (Y_MAX - Y_MIN)) * (PH - 30);
 
   return (
     <section
@@ -226,7 +247,7 @@ export default function ClinicalData() {
               viewBox={`0 0 ${PW} ${PH}`}
               className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
               role="img"
-              aria-label={`인체적용시험 피험자 ${SUBJECTS.length}명의 개인별 SPF 분포. 평균 ${SPF_MEAN}, 표준편차 ${SPF_SD}.`}
+              aria-label={`인체적용시험 피험자 ${SUBJECTS.length}명의 개인별 SPF 실측값. 평균 ${SPF_MEAN}, 표준편차 ${SPF_SD}.`}
             >
               {/* ±1 SD band */}
               <rect
@@ -275,8 +296,8 @@ export default function ClinicalData() {
                 className="stroke-black/[0.12]"
                 strokeWidth={1}
               />
-              {SUBJECTS.map((s, i) => (
-                <g key={s.ita} data-dot>
+              {SUBJECTS.map((s) => (
+                <g key={s.panel} data-dot>
                   <line
                     x1={px(s.ita)}
                     x2={px(s.ita)}
@@ -291,11 +312,11 @@ export default function ClinicalData() {
                     r={4.5}
                     className="fill-ink"
                   />
-                  <title>{`피험자 ${i + 1} · ITA ${s.ita}° · SPF ${s.spf}`}</title>
+                  <title>{`피험자 ${s.panel} · ITA ${s.ita}° · SPF ${s.spf}`}</title>
                 </g>
               ))}
               {/* x ticks */}
-              {[28, 58].map((v) => (
+              {[38, 58].map((v) => (
                 <text
                   key={v}
                   x={px(v)}
@@ -310,7 +331,7 @@ export default function ClinicalData() {
             <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-mute">
               <span className="flex items-center gap-2">
                 <span className="h-[7px] w-[7px] rounded-full bg-ink" />
-                피험자 {SUBJECTS.length}명 개인별 SPF
+                피험자 {SUBJECTS.length}명 개인별 SPF 실측값
               </span>
               <span className="flex items-center gap-2">
                 <span className="h-[2px] w-4 bg-rose" />
@@ -321,6 +342,24 @@ export default function ClinicalData() {
                 표기 상한 SPF 50
               </span>
             </figcaption>
+
+            {/* Panel composition by ITA° band */}
+            <table className="mt-6 w-full border-t border-black/[0.08] text-[12px] tabular-nums">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-[0.08em] text-mute">
+                  <th className="py-2 text-left font-semibold">ITA° 구간</th>
+                  <th className="py-2 text-right font-semibold">피험자</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ITA_BANDS.map((b) => (
+                  <tr key={b.band} className="border-t border-black/[0.05]">
+                    <td className="py-[6px] text-left text-mute">{b.band}</td>
+                    <td className="py-[6px] text-right text-ink">{b.n}명</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </figure>
 
           <div className="mt-auto">
@@ -329,9 +368,19 @@ export default function ClinicalData() {
                 { label: "Study No.", value: "SMC-260731-9077_EN" },
                 {
                   label: "Test Institution",
-                  value: "세명대학교 화장품임상연구센터 (ISO 9001:2015 인증 기관)",
+                  value:
+                    "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
                 },
-                { label: "Test Date", value: "2026.07.31 완료" },
+                {
+                  label: "Panel",
+                  value: `${SUBJECTS.length}명 · 19~53세 · ITA° 38~58 (평균 49.3°)`,
+                },
+                { label: "95% CI", value: `69.0 ± ${SPF_CI} — 허용 17% 이내` },
+                {
+                  label: "Control Std.",
+                  value: "P8 63.3 (43.9~82.3) · P2 16.1 (13.7~18.5)",
+                },
+                { label: "Test Date", value: "2026.06.22 ~ 07.24 · 07.31 완료" },
               ]}
             />
           </div>
@@ -371,7 +420,7 @@ export default function ClinicalData() {
               viewBox={`0 0 ${CURVE_W} ${CURVE_H}`}
               className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
               role="img"
-              aria-label="290nm에서 400nm까지의 흡광 곡선. 임계파장 377.6nm."
+              aria-label="290nm에서 400nm까지의 흡광 곡선 모식도. 측정된 임계파장 377.6nm."
             >
               {/* UVA band */}
               <rect
@@ -445,9 +494,34 @@ export default function ClinicalData() {
               ))}
             </svg>
             <figcaption className="mt-4 text-[11px] leading-relaxed text-mute">
-              임계파장(Critical Wavelength) 377.6nm — 광범위 자외선 차단
-              기준(370nm 이상)을 충족합니다.
+              임계파장 377.6nm — 광범위 자외선 차단 기준(370nm 이상)을
+              충족합니다. 곡선은 측정된 임계파장을 기준으로 재구성한
+              모식도이며, 아래 표가 PMMA 플레이트 4장의 실측값입니다.
             </figcaption>
+
+            {/* Per-plate measurements */}
+            <table className="mt-6 w-full border-t border-black/[0.08] text-[12px] tabular-nums">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-[0.08em] text-mute">
+                  <th className="py-2 text-left font-semibold">Plate</th>
+                  <th className="py-2 text-right font-semibold">UVA-PF</th>
+                  <th className="py-2 text-right font-semibold">λc (nm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PLATES.map((p) => (
+                  <tr key={p.n} className="border-t border-black/[0.05]">
+                    <td className="py-[6px] text-left text-mute">#{p.n}</td>
+                    <td className="py-[6px] text-right text-ink">
+                      {p.uvapf.toFixed(2)}
+                    </td>
+                    <td className="py-[6px] text-right text-ink">
+                      {p.lc.toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </figure>
 
           <div className="mt-auto">
@@ -456,9 +530,15 @@ export default function ClinicalData() {
                 { label: "Study No.", value: "SMC-260731-9090_EN" },
                 {
                   label: "Test Institution",
-                  value: "세명대학교 화장품임상연구센터",
+                  value:
+                    "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
                 },
-                { label: "Test Date", value: "2026.07.31 완료" },
+                {
+                  label: "Method",
+                  value: "PMMA 플레이트 4장 · 25cm² · 1.3mg/cm²",
+                },
+                { label: "95% CI", value: "4.7 — 허용 17% 이내" },
+                { label: "Test Date", value: "2026.07.27 ~ 07.31 완료" },
               ]}
             />
           </div>
