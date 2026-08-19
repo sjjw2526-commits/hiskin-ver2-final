@@ -13,6 +13,11 @@ gsap.registerPlugin(ScrollTrigger);
  * prev/next all read from this list. Drop the matching file into
  * /public/videos with the same name and it plays; until then the card
  * shows a placeholder.
+ *
+ * 영상 넣는 법: `npm run video -- "<원본파일>" <슬롯번호>`
+ *
+ * ⚠️ review-02 를 뺀 나머지 handle·caption 은 아직 지어낸 자리표시입니다.
+ *    영상을 채울 때 실제 계정명·문구로 같이 바꿔야 합니다.
  */
 const REVIEWS = [
   {
@@ -21,9 +26,10 @@ const REVIEWS = [
     caption: "출근 준비 10초 컷 — 톤업 실화?",
   },
   {
+    // 실제 영상이 들어간 유일한 슬롯. handle 은 아직 자리표시입니다.
     src: "/videos/review-02.mp4",
     handle: "@sunny.beautylog",
-    caption: "백탁 없는 로즈베이지 발색 리뷰",
+    caption: "하이스킨 데일리 선크림 제품 소개",
   },
   {
     src: "/videos/review-03.mp4",
