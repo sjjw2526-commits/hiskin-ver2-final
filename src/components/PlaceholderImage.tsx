@@ -11,6 +11,8 @@ type Props = {
   aspect?: string;
   className?: string;
   imgClassName?: string;
+  /** object-fit for the loaded image (default: cover) */
+  fit?: "cover" | "contain";
   label?: string;
   /** placeholder tone */
   tone?: "light" | "dark";
@@ -27,6 +29,7 @@ export default function PlaceholderImage({
   aspect = "aspect-[3/4]",
   className = "",
   imgClassName = "",
+  fit = "cover",
   label,
   tone = "light",
 }: Props) {
@@ -54,7 +57,9 @@ export default function PlaceholderImage({
           alt={alt}
           loading="lazy"
           onError={() => setFailed(true)}
-          className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
+          className={`absolute inset-0 h-full w-full ${
+            fit === "contain" ? "object-contain" : "object-cover"
+          } ${imgClassName}`}
         />
       ) : (
         <div

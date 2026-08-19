@@ -38,3 +38,25 @@
 
 영상은 편당 **5MB 이하**를 권장합니다 (H.264, 1080×1920, 음성 포함).
 개수를 늘리거나 줄이려면 `src/components/VideoGrid.tsx`의 `REVIEWS` 배열만 수정하면 됩니다.
+
+## 인증서 스캔 (Section 06.6)
+
+| 파일명 | 비율 | 문서 |
+| ------ | ---- | ---- |
+| cert_iso22716.jpg | A4 (1:1.414) | ISO 22716 우수화장품 제조 인증 (ICR / GM003270) |
+| cert_mfg_license.jpg | A4 | 화장품 제조업 등록필증 (경인지방식약청 / 제4906호) |
+| cert_patent.jpg | A4 | 항산화·항염 조성물 특허 (특허청 / 제10-2533040호) |
+| cert_rnd_lab.jpg | A4 | 기업부설연구소 인정서 (과기정통부·KOITA / 제2021111420호) |
+| cert_irdop_analysis.jpg | A4 | IRDOP 성분 분석 성적서 (VILAS 997) |
+
+- 클릭하면 라이트박스로 크게 열리므로 **가로 1400~1600px** 로 스캔해주세요 (그래야 도장·번호가 읽힙니다)
+- 여백을 잘라내고 문서만 남기면 A4 틀에 정확히 맞습니다
+- 문서는 잘리지 않고 흰 배경 위에 통째로 보입니다 (object-fit: contain)
+
+## 인증서 PDF (public/docs/)
+
+`cert_iso22716.pdf`, `cert_mfg_license.pdf`, `cert_patent.pdf`,
+`cert_rnd_lab.pdf`, `cert_irdop_analysis.pdf`
+
+라이트박스의 **Download PDF 버튼은 해당 PDF가 실제로 있을 때만 표시됩니다.**
+없으면 버튼 자체가 안 뜨므로 깨진 링크가 생기지 않습니다. 준비되는 대로 하나씩 넣으면 됩니다.

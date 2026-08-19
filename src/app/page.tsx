@@ -10,6 +10,8 @@ import ProductDetail from "@/components/ProductDetail";
 import ScienceAccordion from "@/components/ScienceAccordion";
 import ArchiveGallery from "@/components/ArchiveGallery";
 import Manufacturing from "@/components/Manufacturing";
+import ClinicalData from "@/components/ClinicalData";
+import Certifications from "@/components/Certifications";
 import InquiryForm from "@/components/InquiryForm";
 import Footer from "@/components/Footer";
 
@@ -28,6 +30,8 @@ export default function Home() {
           <ScienceAccordion />
           <ArchiveGallery />
           <Manufacturing />
+          <ClinicalData />
+          <Certifications />
           <InquiryForm />
         </main>
         <Footer />

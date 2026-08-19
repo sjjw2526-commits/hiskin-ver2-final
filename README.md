@@ -64,7 +64,10 @@ npm run deploy
 | 7 | 제품 상세 | `ProductDetail.tsx` | 스펙 표 |
 | 8 | 성분 과학 | `ScienceAccordion.tsx` | 4개 아코디언 |
 | 9 | 아카이브 | `ArchiveGallery.tsx` | 이미지 모자이크 |
-| 10 | B2B 문의 | `InquiryForm.tsx` | 문의 폼 |
+| 10 | 제조·연구 | `Manufacturing.tsx` | 공장 사진 4장 + 생산 규격 4가지 |
+| 11 | 임상 데이터 | `ClinicalData.tsx` | SPF 69.0 / UVA-PF 23.33 그래프 2장 |
+| 12 | 공인 인증서 | `Certifications.tsx` | 서류 5종, 클릭하면 크게 열림 |
+| 13 | B2B 문의 | `InquiryForm.tsx` | 문의 폼 |
 | — | 푸터 | `Footer.tsx` | |
 
 > 히어로와 컨셉(1~3페이지)은 스크롤 모션이 하나로 이어져 있어서 `Hero.tsx` 한 파일에 함께 들어 있습니다.
@@ -82,6 +85,9 @@ npm run deploy
 | 리뷰 영상 8개 | `VideoGrid.tsx` 의 `REVIEWS` 배열 |
 | 성분 4가지 | `ScienceAccordion.tsx` 의 `ITEMS` 배열 |
 | 네비게이션 메뉴 | `Navbar.tsx` 의 `LINKS` 배열 |
+| 공장 생산 규격 4가지 | `Manufacturing.tsx` 의 `SPECS` 배열 |
+| 인증서 5종 | `Certifications.tsx` 의 `DOCS` 배열 |
+| 임상시험 피험자 수치 | `ClinicalData.tsx` 의 `SUBJECTS` 배열 |
 
 배열에 항목을 넣고 빼면 개수가 자동으로 따라갑니다 — 영상 캐러셀의 화살표 활성화, 진행 바, `n / 8` 카운터가 모두 배열 길이를 읽습니다.
 
@@ -93,7 +99,9 @@ npm run deploy
 
 핵심만 옮기면:
 
-- 이미지는 `public/images/` 에 `img-01.jpg` ~ `img-10.jpg`
+- 이미지는 `public/images/` 에 `img-01.jpg` ~ `img-14.jpg`
+- 인증서 스캔은 `public/images/` 에 `cert_*.jpg` (A4 비율, 가로 1400~1600px)
+- 인증서 PDF는 `public/docs/` 에 `cert_*.pdf`
 - 영상은 `public/videos/` 에 `review-01.mp4` ~ `review-08.mp4`
 - **가로 2560px 이하, JPEG 품질 82, 장당 200~400KB**
 - **사진을 PNG로 저장하지 마세요.** 10~100배 무거워집니다
@@ -137,11 +145,16 @@ npm run deploy
 **`scrub` 에 지연값을 넣지 마세요.**
 Lenis가 이미 스크롤을 부드럽게 처리하므로, 그 위에 지연을 얹으면 두 이징이 서로 밀고 당기며 흔들림으로 보입니다.
 
+**가로 스크롤 영역은 `padding` 대신 `margin` 으로 여백을 줍니다.**
+padding을 쓰면 스크롤 범위가 화면 끝까지 남아 있어서, 로드 직후 스냅이 자기 여백만큼 레일을 밀어버립니다 (첫 카드가 24px 잘려 보임).
+
 ---
 
 ## 8. 아직 안 된 것
 
+- [ ] **문의 폼 전송** — 지금은 화면상 성공 표시만 뜨고 **실제로 메일이 가지 않습니다.** `InquiryForm.tsx` 의 `handleSubmit` 에 전송 연결 필요. **거래처에 주소를 알리기 전에 반드시 처리해야 합니다.**
+- [ ] 인증서 스캔 5장 (`cert_*.jpg`) 및 PDF 5개 — 현재 자리표시
+- [ ] 임상시험 피험자별 실측치 — `ClinicalData.tsx` 의 `SUBJECTS` 는 보고서 평균(69.0)·표준편차(9.4)를 재현한 **분포 예시**입니다. 원본 성적서 수치로 교체 필요
+- [ ] UVA 흡광 곡선 — 임계파장 377.6nm 에 맞춰 **역산한 곡선**입니다. 분광광도계 원본 데이터가 있으면 교체 권장
 - [ ] `img-02` ~ `img-10`, 리뷰 영상 8개 — 실제 파일 교체 (현재 자리표시)
-- [ ] 문의 폼 전송 — 지금은 화면상 성공 표시만 뜨고 **실제로 메일이 가지 않습니다.** `InquiryForm.tsx` 의 `handleSubmit` 에 전송 연결 필요
-- [ ] 공장(제조사) 섹션 — 문의 폼 직전 배치 예정
 - [ ] 페이지에서 문구를 직접 고치는 편집 모드
