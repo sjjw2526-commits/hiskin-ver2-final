@@ -168,27 +168,36 @@ StrictMode에서 두 번 실행됩니다.
 
 ## 다음 세션 시작할 때
 
-### ⚠️ 먼저 — 이 코드는 지금 이 PC에만 있습니다
+### 저장소
 
-`git remote` 가 비어 있습니다. GitHub 같은 원격 저장소에 올라간 적이 없어서,
-**다른 컴퓨터에서는 코드를 받을 수 없습니다.** (배포된 사이트는 결과물만 올라간 거라
-거기서 코드를 되돌릴 수 없습니다.)
+**https://github.com/sjjw2526-commits/hiskin-ver2-final** (Private 🔒)
 
-회사에서 이어서 하려면 셋 중 하나가 필요합니다.
-
-1. **GitHub 비공개 저장소 만들어 올리기** — 권장. 이후엔 어디서든 `git clone` 후 이어서 작업
-2. 폴더째 USB·클라우드로 옮기기 (`node_modules` 는 빼고 옮긴 뒤 `npm install`)
-3. 이 PC에서만 계속 작업
-
-원격 저장소는 계정과 공개 범위를 정해야 해서 임의로 만들지 않았습니다.
+⚠️ **구버전과 헷갈리지 마세요.** `sjjw2526-commits/hiskin` 은 v1 사이트입니다.
+이어서 작업할 건 이름에 `-ver2-final` 이 붙은 쪽입니다.
 
 ### 회사 PC에서 처음 세팅한다면
 
 ```bash
+gh auth login        # GitHub 로그인 (브라우저 인증, 1회)
+git clone https://github.com/sjjw2526-commits/hiskin-ver2-final.git
+cd hiskin-ver2-final
 npm install          # 의존성 설치
 npm run dev          # http://localhost:3000
-npx netlify login    # 배포하려면 1회 (브라우저 인증)
+```
+
+배포까지 하려면 한 번 더:
+
+```bash
+npx netlify login    # 브라우저 인증, 1회
 npx netlify link     # hiskin 사이트에 연결
+npm run deploy       # 이후엔 이 한 줄
+```
+
+### 작업 끝낼 때
+
+```bash
+git add -A && git commit -m "내용"
+git push             # ← 이걸 빠뜨리면 다른 PC에서 못 받습니다
 ```
 
 ### 바로 이어서 할 일 (우선순위 순)
