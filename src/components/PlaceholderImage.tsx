@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { ImageIcon } from "lucide-react";
 
 type Props = {
@@ -33,16 +33,58 @@ export default function PlaceholderImage({
   label,
   tone = "light",
 }: Props) {
-  const [failed, setFailed] = useState(false);
+  // One failed request must not latch the placeholder on for good: a cold
+  // CDN edge or a dropped mobile packet would then hide a file that exists,
+  // for the rest of the visit. Retry twice with a short backoff and fall
+  // back only once the file looks genuinely missing.
+  //
+  // The counter lives in a ref because the retry schedules a timer — doing
+  // that inside a setState updater would fire twice under StrictMode.
+  const RETRIES = 2;
+  const tries = useRef(0);
+  const [, rerender] = useReducer((n: number) => n + 1, 0);
   const imgRef = useRef<HTMLImageElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // The 404 can fire before React hydrates (onError never runs),
-  // so re-check the load state on mount.
+  const failed = tries.current > RETRIES;
+  const src =
+    tries.current === 0
+      ? `/images/${name}.jpg`
+      : // Cache-bust, or the browser replays the cached error.
+        `/images/${name}.jpg?r=${tries.current}`;
+
+  const miss = () => {
+    if (timer.current || tries.current > RETRIES) return;
+    const next = tries.current + 1;
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      tries.current = next;
+      rerender();
+    }, 400 * next);
+  };
+
+  // A new file name means a fresh start — the lightbox reuses this component
+  // as it pages between documents.
+  useEffect(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+    if (tries.current !== 0) {
+      tries.current = 0;
+      rerender();
+    }
+  }, [name]);
+
+  // The error can fire before React hydrates, in which case onError never
+  // runs — so re-check the settled load state on mount.
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth === 0) {
-      setFailed(true);
-    }
+    if (img && img.complete && img.naturalWidth === 0) miss();
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -53,10 +95,11 @@ export default function PlaceholderImage({
       {!failed ? (
         <img
           ref={imgRef}
-          src={`/images/${name}.jpg`}
+          key={src}
+          src={src}
           alt={alt}
           loading="lazy"
-          onError={() => setFailed(true)}
+          onError={miss}
           className={`absolute inset-0 h-full w-full ${
             fit === "contain" ? "object-contain" : "object-cover"
           } ${imgClassName}`}
