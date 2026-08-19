@@ -1,26 +1,106 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* HISKIN Design System — pef-style rework */
+  --color-paper: #ffffff;
+  --color-paper-alt: #f5f5f3;
+  --color-ink: #111111;
+  --color-navy: #111111; /* dark sections are near-black now */
+  --color-mute: #767676;
+  --color-rose: #be8e76; /* rose beige accent */
+  --color-hairline: rgba(17, 17, 17, 0.14);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: initial;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+/* Lenis recommended styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Hide scrollbar while preloader is active */
+html.is-loading {
+  overflow: hidden;
+}
+
+/* Fluid display type */
+.text-display-xl {
+  font-size: clamp(2.75rem, 8.5vw, 7.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.text-display-lg {
+  font-size: clamp(2rem, 5vw, 4.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+.text-display-md {
+  font-size: clamp(1.6rem, 3.2vw, 2.75rem);
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+}
+
+/* Horizontal rails carry their own affordances, so hide the native bar */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* pef-style eyebrow: small square accent + label */
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.eyebrow-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-rose);
+}
+.eyebrow-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--color-rose);
+  flex-shrink: 0;
 }
