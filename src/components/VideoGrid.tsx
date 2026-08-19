@@ -19,7 +19,15 @@ gsap.registerPlugin(ScrollTrigger);
  * ⚠️ review-02 를 뺀 나머지 handle·caption 은 아직 지어낸 자리표시입니다.
  *    영상을 채울 때 실제 계정명·문구로 같이 바꿔야 합니다.
  */
-const REVIEWS = [
+type Review = {
+  src: string;
+  /** 재생 전 정지 컷 (/videos/review-NN.jpg). 없으면 카드가 검게 비어 보입니다 */
+  poster?: string;
+  handle: string;
+  caption: string;
+};
+
+const REVIEWS: Review[] = [
   {
     src: "/videos/review-01.mp4",
     handle: "@glowdaily.kr",
@@ -28,6 +36,8 @@ const REVIEWS = [
   {
     // 실제 영상이 들어간 유일한 슬롯. handle 은 아직 자리표시입니다.
     src: "/videos/review-02.mp4",
+    // 재생 전에 보이는 정지 컷. 없으면 카드가 검게 비어 보입니다.
+    poster: "/videos/review-02.jpg",
     handle: "@sunny.beautylog",
     caption: "하이스킨 데일리 선크림 제품 소개",
   },
@@ -114,6 +124,7 @@ function VideoCard({
         <video
           ref={videoRef}
           src={review.src}
+          poster={review.poster}
           muted
           loop
           playsInline
@@ -367,6 +378,7 @@ export default function VideoGrid() {
               <video
                 key={current.src}
                 src={current.src}
+                poster={current.poster}
                 autoPlay
                 loop
                 controls

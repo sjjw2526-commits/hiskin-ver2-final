@@ -39,9 +39,13 @@
 ### 영상은 그냥 넣지 마시고 변환해주세요
 
 ```bash
-npm run video -- "C:/Users/kryst/Downloads/동영상 1.mp4" 2
+npm run video -- "C:/Users/kryst/Downloads/동영상 1.mp4" 2 3.7
 ```
-(마지막 숫자가 슬롯 번호 → `public/videos/review-02.mp4` 로 저장됩니다)
+- 두번째 숫자 = 슬롯 번호 → `public/videos/review-02.mp4`
+- 세번째 숫자 = **썸네일로 쓸 시각(초)** → `public/videos/review-02.jpg` (생략하면 1초)
+
+썸네일 시각은 눈으로 골라야 합니다. 눈 감은 프레임이 은근히 자주 걸립니다.
+뽑고 나면 `VideoGrid.tsx` 의 해당 항목에 `poster: "/videos/review-02.jpg"` 를 넣어주세요.
 
 폰 영상을 그대로 넣으면 안 되는 이유가 둘 있습니다.
 

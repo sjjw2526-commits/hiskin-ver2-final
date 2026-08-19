@@ -1,10 +1,13 @@
 /**
  * 리뷰 영상 변환기
  *
- *   node scripts/build-video.mjs "C:/Users/.../동영상 1.mp4" 2
- *                                 ^ 원본                      ^ 슬롯 번호(1~8)
+ *   node scripts/build-video.mjs "C:/Users/.../동영상 1.mp4" 2 3.7
+ *                                 ^ 원본                      ^ 슬롯  ^ 썸네일 시각(초, 생략가능)
  *
- * → public/videos/review-02.mp4
+ * → public/videos/review-02.mp4  +  review-02.jpg (썸네일)
+ *
+ * 썸네일 시각을 정할 땐 몇 초쯤을 몇 개 뽑아서 눈으로 고르세요.
+ * 눈 감은 프레임이 걸리는 일이 은근히 잦습니다.
  *
  * 폰으로 찍은 영상은 그냥 넣으면 안 되는 이유가 둘 있습니다.
  *
@@ -20,10 +23,12 @@ import { execFileSync } from "child_process";
 import { existsSync, mkdirSync, statSync } from "fs";
 import ffmpeg from "ffmpeg-static";
 
-const [input, slot] = process.argv.slice(2);
+const [input, slot, posterAt = "1"] = process.argv.slice(2);
 
 if (!input || !slot) {
-  console.error('사용법: node scripts/build-video.mjs "<원본파일>" <슬롯번호 1-8>');
+  console.error(
+    '사용법: node scripts/build-video.mjs "<원본파일>" <슬롯번호 1-8> [썸네일시각(초)]'
+  );
   process.exit(1);
 }
 if (!existsSync(input)) {
@@ -65,3 +70,16 @@ execFileSync(
 );
 
 console.log(`${out}  ${(statSync(out).size / 1048576).toFixed(2)} MB`);
+
+// 썸네일. 변환된 파일에서 뽑아야 톤매핑된 색이 그대로 나옵니다.
+const poster = out.replace(/\.mp4$/, ".jpg");
+execFileSync(
+  ffmpeg,
+  ["-hide_banner", "-loglevel", "error", "-y",
+   "-ss", String(posterAt), "-i", out, "-vframes", "1", "-q:v", "3", poster],
+  { stdio: "inherit" }
+);
+console.log(`${poster}  ${(statSync(poster).size / 1024).toFixed(0)} KB  (${posterAt}초)`);
+console.log(
+  `\nVideoGrid.tsx 의 REVIEWS[${n - 1}] 에 poster: "/videos/review-${String(n).padStart(2, "0")}.jpg" 를 추가하세요.`
+);

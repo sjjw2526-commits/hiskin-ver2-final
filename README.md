@@ -105,8 +105,9 @@ npm run deploy
 - 이미지는 `public/images/` 에 `img-01.jpg` ~ `img-14.jpg`
 - 인증서 스캔은 `public/images/` 에 `cert_*.jpg` (A4 비율, 가로 1400~1600px)
 - 인증서 PDF는 `public/docs/` 에 `cert_*.pdf`
-- 영상은 `npm run video -- "<원본파일>" <슬롯번호>` 로 변환해서 넣으세요
+- 영상은 `npm run video -- "<원본파일>" <슬롯번호> [썸네일시각]` 로 변환해서 넣으세요
   (폰 영상은 H.265/HDR이라 그대로 넣으면 크롬에서 재생이 안 됩니다)
+  - 영상과 썸네일이 같이 만들어집니다. 썸네일은 `VideoGrid.tsx` 의 `poster` 에 연결
 - **가로 2560px 이하, JPEG 품질 82, 장당 200~400KB**
 - **사진을 PNG로 저장하지 마세요.** 10~100배 무거워집니다
 
