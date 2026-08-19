@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HISKIN — Daily Suncream Protect
 
-## Getting Started
+해외 유통사·도매·클리닉을 향한 B2B 원페이지 사이트.
 
-First, run the development server:
+- **기술** — Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4
+- **인터랙션** — GSAP + ScrollTrigger (스크롤 연동), Lenis (부드러운 스크롤)
+- **빌드 결과** — 서버 없이 도는 정적 파일 (`out/`)
+
+---
+
+## 1. 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install      # 최초 1회
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 2. 배포
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 최초 1회만 — Netlify 로그인
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**직접 실행해주셔야 합니다.** 브라우저 인증이라 대신 해드릴 수 없습니다.
 
-## Learn More
+```bash
+npx netlify login
+```
 
-To learn more about Next.js, take a look at the following resources:
+브라우저가 열리면 승인하면 끝입니다. 인증 정보는 PC에 저장되므로 다시 할 필요가 없습니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+이어서 사이트를 한 번 만들어 연결합니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx netlify sites:create --name hiskin
+npx netlify link
+```
 
-## Deploy on Vercel
+### 이후 배포 — 매번 이 한 줄
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run deploy
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+빌드부터 배포까지 한 번에 끝납니다.
+
+### 로그인 없이 배포하려면
+
+`npm run build` 후 생기는 **`out` 폴더를 통째로** [app.netlify.com/drop](https://app.netlify.com/drop) 에 끌어다 놓으면 됩니다. 폴더 안 파일들을 전체선택해 끄는 게 아니라 **폴더 자체**를 끌어야 합니다.
+
+---
+
+## 3. 페이지 구성
+
+스크롤 순서대로입니다. 각 섹션은 `src/components/` 안의 같은 이름 파일 하나가 전부 담당합니다.
+
+| # | 섹션 | 파일 | 내용 |
+|---|------|------|------|
+| — | 프리로더 | `Preloader.tsx` | 로고가 상단 네비게이션으로 접혀 들어감 |
+| — | 네비게이션 | `Navbar.tsx` | 메뉴 항목, 호버 롤오버 |
+| 1 | 히어로 | `Hero.tsx` | 전면 사진 → 헤드라인 글자 사이로 축소 |
+| 2–3 | 컨셉 | `Hero.tsx` | `One Step. Zero Effort.` + 3열 이미지 |
+| 4 | 3-in-1 | `Statement.tsx` | 핵심 강점 3열 |
+| 5 | 리뷰 영상 | `VideoGrid.tsx` | 가로 캐러셀 8개, 클릭 시 모달 |
+| 6 | 철학 | `Philosophy.tsx` | 다크 배경, SPF 통계 |
+| 7 | 제품 상세 | `ProductDetail.tsx` | 스펙 표 |
+| 8 | 성분 과학 | `ScienceAccordion.tsx` | 4개 아코디언 |
+| 9 | 아카이브 | `ArchiveGallery.tsx` | 이미지 모자이크 |
+| 10 | B2B 문의 | `InquiryForm.tsx` | 문의 폼 |
+| — | 푸터 | `Footer.tsx` | |
+
+> 히어로와 컨셉(1~3페이지)은 스크롤 모션이 하나로 이어져 있어서 `Hero.tsx` 한 파일에 함께 들어 있습니다.
+
+---
+
+## 4. 문구 수정
+
+수정하려는 문장이 보이는 섹션의 파일을 열어 해당 문장을 찾으면 됩니다. 문구는 컴포넌트 안에 그대로 적혀 있습니다.
+
+목록형 콘텐츠는 파일 맨 위 배열만 고치면 됩니다.
+
+| 대상 | 위치 |
+|---|---|
+| 리뷰 영상 8개 | `VideoGrid.tsx` 의 `REVIEWS` 배열 |
+| 성분 4가지 | `ScienceAccordion.tsx` 의 `ITEMS` 배열 |
+| 네비게이션 메뉴 | `Navbar.tsx` 의 `LINKS` 배열 |
+
+배열에 항목을 넣고 빼면 개수가 자동으로 따라갑니다 — 영상 캐러셀의 화살표 활성화, 진행 바, `n / 8` 카운터가 모두 배열 길이를 읽습니다.
+
+---
+
+## 5. 이미지·영상 교체
+
+**`public/images/README.md` 에 파일명·비율·규격이 정리되어 있습니다.**
+
+핵심만 옮기면:
+
+- 이미지는 `public/images/` 에 `img-01.jpg` ~ `img-10.jpg`
+- 영상은 `public/videos/` 에 `review-01.mp4` ~ `review-08.mp4`
+- **가로 2560px 이하, JPEG 품질 82, 장당 200~400KB**
+- **사진을 PNG로 저장하지 마세요.** 10~100배 무거워집니다
+
+파일이 없으면 회색 자리표시가 대신 보이므로, 준비된 것부터 하나씩 넣어도 됩니다.
+
+---
+
+## 6. 디자인 규칙
+
+색상은 `src/app/globals.css` 의 `@theme` 한 곳에서 관리합니다.
+
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `paper` | `#ffffff` | 기본 배경 |
+| `paper-alt` | `#f5f5f3` | 구분용 옅은 회색 |
+| `ink` | `#111111` | 본문·다크 섹션 |
+| `rose` | `#be8e76` | 로즈베이지 강조 |
+| `hairline` | `rgba(17,17,17,.14)` | 구분선 |
+
+**여백** — 모든 섹션은 화면 폭을 꽉 채우고 좌우 **80px** 고정 여백을 씁니다 (`md:px-[80px]`). 가운데 정렬 컨테이너를 쓰지 않으므로 모니터가 넓어져도 콘텐츠가 항상 같은 자리에서 시작합니다.
+
+---
+
+## 7. 스크롤 모션 — 건드리기 전에 읽어주세요
+
+`Hero.tsx` 의 모션은 몇 가지가 서로 맞물려 있어서, 이유를 모르고 고치면 예전에 잡은 문제가 되살아납니다.
+
+**이미지는 크기(width/height)를 바꾸지 않고 transform으로만 축소합니다.**
+크기를 매 프레임 바꾸면 브라우저가 원본을 계속 다시 그려서 머리카락·피부에 아른거림이 생깁니다. 반대로 작게 배치해두고 확대하면 흐려집니다 — 브라우저는 요소를 *배치된 크기*로 한 번 그린 뒤 확대하기 때문입니다. 그래서 **가장 큰 크기로 배치하고 줄이기만** 합니다.
+
+**히어로는 네비게이션 아래 영역을 기준으로 계산합니다.**
+네비가 불투명해서 그 아래만 실제로 보입니다. 화면 전체를 기준으로 잡으면 넓고 낮은 창에서 제품이 잘려나갑니다.
+
+**헤드라인 속 이미지 자리는 창 비율을 따라갑니다.**
+그래야 전면 상태와 글자 사이 상태가 하나의 균일 배율로 연결되어 왜곡이 생기지 않습니다.
+
+**캐러셀은 `snap-proximity` 입니다.**
+`snap-mandatory` 는 스크롤 끝 지점에 정렬 기준이 없어서 마지막 항목에 영원히 도달하지 못합니다.
+
+**`scrub` 에 지연값을 넣지 마세요.**
+Lenis가 이미 스크롤을 부드럽게 처리하므로, 그 위에 지연을 얹으면 두 이징이 서로 밀고 당기며 흔들림으로 보입니다.
+
+---
+
+## 8. 아직 안 된 것
+
+- [ ] `img-02` ~ `img-10`, 리뷰 영상 8개 — 실제 파일 교체 (현재 자리표시)
+- [ ] 문의 폼 전송 — 지금은 화면상 성공 표시만 뜨고 **실제로 메일이 가지 않습니다.** `InquiryForm.tsx` 의 `handleSubmit` 에 전송 연결 필요
+- [ ] 공장(제조사) 섹션 — 문의 폼 직전 배치 예정
+- [ ] 페이지에서 문구를 직접 고치는 편집 모드

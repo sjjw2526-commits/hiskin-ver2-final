@@ -1,0 +1,15 @@
+# Netlify reads this whether the site is deployed from the CLI or wired up to
+# a git repo later, so both routes publish the same thing.
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
