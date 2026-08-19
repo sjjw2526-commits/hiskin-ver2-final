@@ -8,10 +8,10 @@
 | img-01.jpg | 16:9 (가로)   | ✅ 적용됨 — 히어로 메인 (2560×1429, 237KB)            |
 | img-02.jpg | 3:4           | 제형(텍스처) — 헤드라인 인라인 + 에디토리얼 좌측 + 아카이브 와이드 |
 | img-03.jpg | 16:9 (가로)   | 철학 섹션 풀블리드 배경 (다크 무드, SPF 50+ 스탯 오버레이) |
-| img-04.jpg | 4:3           | 성분 01 — UV Filter & Titanium Dioxide (아코디언)     |
-| img-05.jpg | 4:3           | 성분 02 — Glutathione & Niacinamide (아코디언)        |
-| img-06.jpg | 4:3           | 성분 03 — Collagen & Peptide Complex (아코디언)       |
-| img-07.jpg | 4:3           | 성분 04 — White Truffle & Botanicals (아코디언)       |
+| img-04.jpg | 4:3           | ✅ 성분 01 — UV Filter (연핑크 제형 스와치, AI 생성)   |
+| img-05.jpg | 4:3           | ✅ 성분 02 — Glutathione & Niacinamide (AI 생성)      |
+| img-06.jpg | 4:3           | ✅ 성분 03 — Collagen & Peptide (AI 생성)             |
+| img-07.jpg | 4:3           | ✅ 성분 04 — White Truffle & Botanicals (AI 생성)     |
 | img-08.jpg | 4:3 / 가로    | 제품 상세 좌측 대형 + 아카이브 대형                   |
 | img-09.jpg | 3:4           | 에디토리얼 우측 + 아카이브 소형                       |
 | img-10.jpg | 3:4           | 아카이브 소형 — 라이프스타일 파우치 연출              |
