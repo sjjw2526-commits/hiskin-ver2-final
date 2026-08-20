@@ -3,7 +3,11 @@
 날짜순으로 무엇을 왜 그렇게 했는지 남깁니다.
 "왜"가 없으면 나중에 같은 실수를 되풀이하게 되므로, 판단 근거를 같이 적습니다.
 
-배포처: **https://hiskin.netlify.app** · 배포 명령: `npm run deploy`
+배포처: **https://hiskin.netlify.app**
+저장소: **https://github.com/sjjw2526-commits/hiskin-ver2-final** (Private)
+
+**`git push` 하면 Netlify가 알아서 배포합니다.** (master 브랜치 연결됨)
+급할 때 로컬에서 바로 올리려면 `npm run deploy` 도 그대로 씁니다.
 
 ---
 
