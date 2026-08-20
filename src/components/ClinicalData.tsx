@@ -201,7 +201,7 @@ export default function ClinicalData() {
         </h2>
         <p
           data-clin-head
-          className="mt-7 text-[16px] leading-[1.6] text-mute md:text-[17.5px]"
+          className="mt-7 text-[17.5px] leading-[1.6] text-mute md:text-[19.5px]"
         >
           세명대학교 화장품임상연구센터의 ISO 국제 표준 인체적용시험 및 광학
           분석을 통해 입증된 정량적 방어력.

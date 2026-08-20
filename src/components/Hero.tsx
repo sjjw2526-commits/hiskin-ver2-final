@@ -368,7 +368,7 @@ export default function Hero() {
           </h2>
 
           <span className="eyebrow-tag mt-10">3-in-1 Daily Suncream</span>
-          <p className="mt-5 max-w-xl text-[17px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[19.5px]">
+          <p className="mt-5 max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]">
             바쁜 아침, 자외선 차단부터 톤업까지 단 10초 만에.
           </p>
         </div>

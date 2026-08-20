@@ -120,7 +120,7 @@ export default function InquiryForm() {
           </h2>
           <p
             data-form-head
-            className="mt-8 max-w-sm text-[15px] leading-relaxed text-mute"
+            className="mt-8 max-w-md text-[16.5px] leading-relaxed text-mute"
           >
             해외 유통사, 도매상, 에스테틱 및 클리닉 파트너를 찾습니다. 아래
             양식을 남겨주시면 영업일 기준 2일 내 회신드립니다.

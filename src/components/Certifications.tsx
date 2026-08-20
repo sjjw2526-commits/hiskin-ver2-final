@@ -186,7 +186,7 @@ export default function Certifications() {
           </h2>
           <p
             data-cert-head
-            className="mt-7 text-[16px] leading-[1.6] text-mute md:text-[17.5px]"
+            className="mt-7 text-[17.5px] leading-[1.6] text-mute md:text-[19.5px]"
           >
             글로벌 수출 규격과 cGMP 품질 관리 기준을 충족하는 공인 등록 서류 및
             독자 특허 기술.

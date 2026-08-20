@@ -100,7 +100,7 @@ export default function ScienceAccordion() {
         </p>
         <p
           data-sci-head
-          className="max-w-xl text-[17px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[19.5px]"
+          className="max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]"
         >
           임상적으로 검증된 핵심 성분 조합.
           <br />

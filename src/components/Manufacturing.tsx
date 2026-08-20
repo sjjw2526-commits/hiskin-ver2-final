@@ -100,7 +100,7 @@ export default function Manufacturing() {
           </h2>
           <p
             data-mfg-head
-            className="mt-8 max-w-xl text-[17px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[19.5px]"
+            className="mt-8 max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]"
           >
             원료 배합부터 최종 완제품 충진까지, 엄격한 글로벌 품질 규격(cGMP /
             ISO)을 준수하는 첨단 자동화 스마트 팩토리에서 정밀 생산됩니다.
