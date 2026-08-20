@@ -8,6 +8,23 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
+  // Triggers are measured when they are created, before the images below them
+  // have loaded. Every photo that arrives late changes the page height, and
+  // every trigger under it is then aiming at a position that has moved. One
+  // re-measure once the page has genuinely finished loading fixes the lot.
+  // Kept out of the Lenis effect below because that one returns early when
+  // the reader prefers reduced motion — the stale measurements happen either
+  // way.
+  useEffect(() => {
+    if (document.readyState === "complete") {
+      ScrollTrigger.refresh();
+      return;
+    }
+    const onLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
+
   useEffect(() => {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"

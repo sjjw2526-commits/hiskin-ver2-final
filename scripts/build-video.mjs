@@ -23,11 +23,14 @@ import { execFileSync } from "child_process";
 import { existsSync, mkdirSync, statSync } from "fs";
 import ffmpeg from "ffmpeg-static";
 
-const [input, slot, posterAt = "1"] = process.argv.slice(2);
+const [input, slot, posterAt = "1", flip] = process.argv.slice(2);
 
 if (!input || !slot) {
   console.error(
-    '사용법: node scripts/build-video.mjs "<원본파일>" <슬롯번호 1-8> [썸네일시각(초)]'
+    '사용법: node scripts/build-video.mjs "<원본파일>" <슬롯번호 1-8> [썸네일시각(초)] [flip]'
+  );
+  console.error(
+    "  flip — 좌우 반전. 제품 라벨이 거울글씨로 나오는 영상에 씁니다."
   );
   process.exit(1);
 }
@@ -44,21 +47,52 @@ if (!Number.isInteger(n) || n < 1) {
 mkdirSync("public/videos", { recursive: true });
 const out = `public/videos/review-${String(n).padStart(2, "0")}.mp4`;
 
+// 원본이 HDR 인지 먼저 봅니다. 톤매핑은 HDR 에만 걸어야 합니다 —
+// 이미 SDR 인 영상에 걸면 한 번 더 눌려서 색이 빠지고 대비가 뭉개집니다.
+// (AI 로 만든 영상이나 카톡으로 받은 영상은 대부분 이미 SDR 입니다.)
+let probe = "";
+try {
+  execFileSync(ffmpeg, ["-hide_banner", "-i", input], {
+    stdio: ["ignore", "ignore", "pipe"],
+  });
+} catch (e) {
+  probe = e.stderr.toString();
+}
+const isHDR = /arib-std-b67|smpte2084/.test(probe);
+
+// 세로 카드(810×1440)를 꽉 채우되 비율은 지킵니다. 넘치는 쪽을 잘라냅니다 —
+// force_original_aspect_ratio 없이 scale=810:1440 만 쓰면 원본이 9:16 이
+// 아닐 때 그대로 늘어납니다. 가로 영상은 특히 심하게 찌그러집니다.
+const FIT = "scale=810:1440:force_original_aspect_ratio=increase:flags=lanczos,crop=810:1440";
+
 // HLG(BT.2020) → 선형 → 톤매핑 → BT.709 SDR
 const TONEMAP = [
   "zscale=t=linear:npl=100",
   "tonemap=tonemap=hable:desat=0",
   "zscale=p=bt709:t=bt709:m=bt709:r=tv",
   "format=yuv420p",
-  "scale=810:1440:flags=lanczos",
+  FIT,
 ].join(",");
+
+// 좌우 반전. AI 로 만든 영상은 제품 라벨이 거울글씨로 나오는 경우가 있는데,
+// 프레임 전체를 뒤집으면 브랜드명이 바로 읽힙니다. 화면 안에 다른 글자가
+// 있으면 그쪽이 대신 뒤집히니 결과를 눈으로 확인하세요.
+const doFlip = flip === "flip";
+
+const VF = [
+  ...(doFlip ? ["hflip"] : []),
+  ...(isHDR ? [TONEMAP] : ["format=yuv420p", FIT]),
+].join(",");
+console.log(
+  `원본: ${isHDR ? "HDR — 톤매핑 적용" : "SDR — 톤매핑 생략"}${doFlip ? " · 좌우 반전" : ""}`
+);
 
 execFileSync(
   ffmpeg,
   [
     "-hide_banner", "-loglevel", "error", "-y",
     "-i", input,
-    "-vf", TONEMAP,
+    "-vf", VF,
     "-c:v", "libx264", "-preset", "slow", "-crf", "26",
     "-profile:v", "high", "-level", "4.0",
     "-c:a", "aac", "-b:a", "128k", "-ac", "2",

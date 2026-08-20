@@ -30,6 +30,7 @@ type Review = {
 const REVIEWS: Review[] = [
   {
     src: "/videos/review-01.mp4",
+    poster: "/videos/review-01.jpg",
     handle: "@glowdaily.kr",
     caption: "출근 준비 10초 컷 — 톤업 실화?",
   },
@@ -43,21 +44,25 @@ const REVIEWS: Review[] = [
   },
   {
     src: "/videos/review-03.mp4",
+    poster: "/videos/review-03.jpg",
     handle: "@k.skin_lab",
     caption: "민감성 피부 2주 사용 솔직 후기",
   },
   {
     src: "/videos/review-04.mp4",
+    poster: "/videos/review-04.jpg",
     handle: "@daily.uv.diary",
     caption: "한여름 8시간 지속력 테스트",
   },
   {
     src: "/videos/review-05.mp4",
+    poster: "/videos/review-05.jpg",
     handle: "@minz_cosmetic",
     caption: "파운데이션 없이 출근한 날",
   },
   {
     src: "/videos/review-06.mp4",
+    poster: "/videos/review-06.jpg",
     handle: "@seoul.skinnote",
     caption: "속건조 없는 촉촉 마무리감",
   },

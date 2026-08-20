@@ -153,6 +153,19 @@ export default function Hero() {
               gsap.set([fixedRef.current, img01Ref.current], {
                 opacity: (i: number) => 1 - i,
               }),
+            // onLeave/onEnterBack only fire while *crossing* the boundary, so
+            // anything that lands past the end without scrolling through it —
+            // a refresh after late images resize the page, an anchor jump —
+            // leaves the hero visible with nothing to hide it. Re-assert the
+            // handed-over state on every refresh. Only the past-the-end case
+            // is forced: showing it again here would override the intro fade.
+            onRefresh: (self) => {
+              if (self.progress >= 1) {
+                gsap.set([fixedRef.current, img01Ref.current], {
+                  opacity: (i: number) => i,
+                });
+              }
+            },
           },
         }
       );
@@ -257,6 +270,21 @@ export default function Hero() {
   useGSAP(
     () => {
       if (!introDone) return;
+
+      // The page is not always at the top when the intro finishes. A reload
+      // restores the previous scroll position, and in dev a fast refresh
+      // replays the preloader wherever the reader happens to be. Fading the
+      // hero in at that point strands it over the middle of the page — the
+      // scrub has already carried it to its shrunken end state, so it reads
+      // as a ghost of the headline image. Past the runway, hand straight
+      // over to the copy that lives in the headline slot instead.
+      const runway = runwayRef.current;
+      if (!runway || runway.getBoundingClientRect().bottom <= 0) {
+        gsap.set(fixedRef.current, { opacity: 0 });
+        gsap.set(img01Ref.current, { opacity: 1 });
+        return;
+      }
+
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
         .matches;
       gsap.to(fixedRef.current, {
@@ -359,7 +387,7 @@ export default function Hero() {
           <div ref={cell02Ref} className="relative overflow-hidden opacity-0">
             <PlaceholderImage
               name="img-02"
-              alt="HISKIN rose beige texture close-up"
+              alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
               aspect=""
               className="h-full w-full"
               label="IMG 02 · 3:4"
@@ -370,7 +398,7 @@ export default function Hero() {
           <div ref={cell10Ref} className="relative overflow-hidden opacity-0">
             <PlaceholderImage
               name="img-10"
-              alt="HISKIN lifestyle pouch setup"
+              alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
               aspect=""
               className="h-full w-full"
               label="IMG 10 · 3:4"

@@ -82,7 +82,7 @@ export default function ArchiveGallery() {
             <div data-arc-item className="group overflow-hidden">
               <PlaceholderImage
                 name="img-10"
-                alt="Lifestyle pouch setup"
+                alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
                 aspect="aspect-[3/4]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
@@ -92,7 +92,7 @@ export default function ArchiveGallery() {
             <div data-arc-item className="group col-span-2 overflow-hidden">
               <PlaceholderImage
                 name="img-02"
-                alt="Rose beige texture wide"
+                alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
                 aspect="aspect-[16/9]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
