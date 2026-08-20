@@ -33,6 +33,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="is-loading">
+      <head>
+        {/*
+          A reload should replay the page from the top, not drop the reader
+          back where they were. This has to run before the first paint —
+          browsers restore the old offset that early, so anything waiting on
+          React has already lost the race.
+
+          A hash is an explicit request for a section, so that one is left
+          alone: /#science still lands on Science.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if('scrollRestoration' in history)history.scrollRestoration='manual';if(!location.hash)window.scrollTo(0,0);}catch(e){}})();",
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${jakarta.variable} antialiased`}>
         {children}
       </body>

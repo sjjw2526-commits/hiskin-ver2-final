@@ -25,6 +25,20 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("load", onLoad);
   }, []);
 
+  // Second half of the reset started by the inline script in the document
+  // head. Browsers can put the offset back a second time — after bfcache
+  // restore, and on the reload that follows a Fast Refresh — so this pins it
+  // again once React is running, before Lenis reads the position below.
+  useEffect(() => {
+    if (window.location.hash) return;
+    window.scrollTo(0, 0);
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) window.scrollTo(0, 0);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   useEffect(() => {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
