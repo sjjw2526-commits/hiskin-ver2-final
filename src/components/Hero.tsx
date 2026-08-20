@@ -336,7 +336,7 @@ export default function Hero() {
         <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
           <h2 className="text-display-xl font-display font-semibold text-ink">
             <span className="block">
-              One
+              Bare
               <span
                 ref={slot01Ref}
                 className="relative mx-[0.14em] inline-block h-[1.02em] w-[1.81em] align-baseline"
@@ -354,7 +354,7 @@ export default function Hero() {
                   />
                 </span>
               </span>
-              Step.
+              Skin
             </span>
             <span className="block">
               Zero
@@ -363,13 +363,13 @@ export default function Hero() {
                 className="mx-[0.14em] inline-block h-[0.82em] w-[0.62em] align-baseline"
                 aria-hidden
               />
-              Effort.
+              Foundation
             </span>
           </h2>
 
-          <span className="eyebrow-tag mt-10">3-in-1 Daily Suncream</span>
-          <p className="mt-5 max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]">
-            바쁜 아침, 자외선 차단부터 톤업까지 단 10초 만에.
+          <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
+          <p className="mt-5 max-w-2xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]">
+            파데 없이 완벽한 아침, 단 10초로 완성하는 데일리 파데 프리 솔루션
           </p>
         </div>
 
@@ -380,45 +380,59 @@ export default function Hero() {
         {/* Full-bleed trio — plain document flow, so it simply scrolls up.
             White from here down, so page three reads as its own screen
             against the grey the sentence sits on. */}
+        {/* Short of the full viewport on purpose: at h-screen the photographs
+            filled the window and pushed their captions below the fold, so the
+            two halves of the same idea were never on screen together. */}
         <div
           ref={rowRef}
-          className="grid h-screen w-full grid-cols-3 gap-[12px] bg-paper py-[12px]"
+          className="grid h-[60vh] min-h-[380px] w-full grid-cols-3 gap-[12px] bg-paper py-[12px]"
         >
-          <div ref={cell02Ref} className="relative overflow-hidden opacity-0">
+          <div
+            ref={cell02Ref}
+            className="group relative overflow-hidden opacity-0"
+          >
             <PlaceholderImage
               name="img-02"
               alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
               aspect=""
               className="h-full w-full"
+              imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
               label="IMG 02 · 3:4"
             />
           </div>
           {/* The flying img-09 comes to rest exactly over this cell */}
           <div ref={cell09Ref} className="relative" />
-          <div ref={cell10Ref} className="relative overflow-hidden opacity-0">
+          <div
+            ref={cell10Ref}
+            className="group relative overflow-hidden opacity-0"
+          >
             <PlaceholderImage
               name="img-10"
               alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
               aspect=""
               className="h-full w-full"
+              imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
               label="IMG 10 · 3:4"
             />
           </div>
         </div>
 
-        <div className="h-[22vh] bg-paper" />
+        {/* No breath here on purpose: the three claims in Statement sit on
+            this same grid and read as the captions to these photographs. A
+            gap would split them back into two separate sections. */}
       </section>
 
       {/* img-09 — sits inline in the sentence, then flies into its column */}
       <div
         ref={fly09Ref}
-        className="fixed left-0 top-0 z-30 origin-top-left overflow-hidden will-change-transform"
+        className="group fixed left-0 top-0 z-30 origin-top-left overflow-hidden will-change-transform"
       >
         <PlaceholderImage
           name="img-09"
           alt="HISKIN skin texture close-up"
           aspect=""
           className="h-full w-full"
+          imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
           label="IMG 09 · 3:4"
         />
       </div>

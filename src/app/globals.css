@@ -27,6 +27,10 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  /* Korean wraps between syllables by default, so a line can end mid-word —
+     "솔루션" breaking into "솔 / 루션". keep-all makes it break at spaces
+     like English does. Words stay whole; the line just moves down. */
+  word-break: keep-all;
 }
 
 ::selection {
@@ -55,8 +59,14 @@ html.is-loading {
 }
 
 /* Fluid display type */
+/* Concept headline only. "Zero [image] Foundation" is a much longer line
+   than the "Zero [image] Effort." it replaced, and the old 2.75rem floor
+   pushed it onto two lines below ~480px — which breaks the line away from
+   the image slot sitting inside it. The floor drops so it always fits, and
+   the vw term rises so the headline still fills the width once there is
+   room. Anything from 1200px up is unchanged, being capped at 7.5rem. */
 .text-display-xl {
-  font-size: clamp(2.75rem, 8.5vw, 7.5rem);
+  font-size: clamp(1.9rem, 9.6vw, 7.5rem);
   line-height: 1.02;
   letter-spacing: -0.03em;
 }

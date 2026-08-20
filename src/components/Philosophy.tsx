@@ -10,17 +10,36 @@ import PlaceholderImage from "./PlaceholderImage";
 gsap.registerPlugin(ScrollTrigger);
 
 const LINES = [
-  "Essential Care for Modern Life.",
-  "복잡함은 줄이고,",
-  "피부 본연의 건강함에 필요한",
-  "5대 핵심 성분만 남겼습니다.",
+  "Independent & Glowing.",
+  "The Neo-Modern Skin.",
+  "Minimal steps, effortless freedom.",
 ];
 
 /**
- * pef-style dark philosophy:
- * near-black background, left-aligned multi-line headline that sharpens
- * from dim to pure white on scroll, Korean paragraph + CTA on the right
- * below, then a full-bleed image with a large stat overlay.
+ * The initials spell HISKIN down the left edge, which is the whole point of
+ * the list — so the letter column is a fixed width and the letters stay in a
+ * straight vertical line no matter how long the label beside them runs.
+ * Reordering these breaks the acrostic.
+ */
+const ROUTINE = [
+  { letter: "H", label: "Hello Day", desc: "맑고 생기 넘치는 아침의 시작" },
+  { letter: "I", label: "Independent", desc: "시간을 주도하는 미니멀 라이프" },
+  { letter: "S", label: "Smart Choice", desc: "스킨케어와 베이스를 단 하나로 압축" },
+  { letter: "K", label: "Keep Glowing", desc: "자외선 아래서도 지속되는 속광" },
+  { letter: "I", label: "Instant Radiance", desc: "10초 만에 완성하는 파데 프리 톤업" },
+  { letter: "N", label: "Neo-Modern", desc: "피부 해방감을 선사하는 정밀 포뮬러" },
+];
+
+/**
+ * pef-style dark philosophy, split two-up: the headline holds the left column
+ * and the HISKIN routine the right, so the block reads across a 16:9 screen
+ * instead of leaving the right half empty. The copy block owns one whole
+ * viewport (min-h-screen) — before, it fell short and the photograph below
+ * bled into the bottom edge.
+ *
+ * The two-up only starts at xl. Below that the headline needs the full measure:
+ * "Minimal steps, effortless freedom." is 33 characters and wraps as soon as
+ * the column drops under roughly 600px.
  */
 export default function Philosophy() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -45,12 +64,29 @@ export default function Philosophy() {
         );
       });
 
+      gsap.from("[data-phil-cta]", {
+        opacity: 0,
+        y: 24,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "[data-phil-cta]", start: "top 90%" },
+      });
+
       gsap.from("[data-phil-aside]", {
         opacity: 0,
         y: 30,
         duration: 1,
         ease: "power3.out",
         scrollTrigger: { trigger: "[data-phil-aside]", start: "top 85%" },
+      });
+
+      gsap.from("[data-phil-row]", {
+        opacity: 0,
+        y: 18,
+        duration: 0.7,
+        ease: "power3.out",
+        stagger: 0.08,
+        scrollTrigger: { trigger: "[data-phil-list]", start: "top 88%" },
       });
 
       // Full-bleed image: slow zoom-out + stat reveal
@@ -81,40 +117,70 @@ export default function Philosophy() {
 
   return (
     <section id="philosophy" ref={sectionRef} className="bg-ink text-white">
-      <div className="px-6 py-24 md:px-[80px] md:py-36">
-        <p className="eyebrow-tag mb-10">HISKIN Philosophy</p>
+      <div className="flex min-h-screen flex-col px-6 py-20 md:px-[80px] md:py-24">
+        <p className="eyebrow-tag mb-12 md:mb-16">HISKIN Philosophy</p>
 
-        <div className="max-w-5xl">
-          {LINES.map((line, i) => (
-            <p
-              key={i}
-              data-phil-line
-              className="text-display-md font-display font-semibold text-white"
+        <div className="grid flex-1 grid-cols-1 content-center items-center gap-16 xl:grid-cols-12 xl:gap-16">
+          {/* Left — headline + CTA */}
+          <div className="xl:col-span-7">
+            {LINES.map((line, i) => (
+              <p
+                key={i}
+                data-phil-line
+                className="font-display text-[clamp(1.9rem,2.9vw,3.6rem)] font-semibold leading-[1.16] tracking-[-0.02em] text-white"
+              >
+                {line}
+              </p>
+            ))}
+
+            <a
+              data-phil-cta
+              href="#inquiry"
+              className="group mt-12 inline-flex w-fit items-center gap-3 border border-white/25 px-7 py-4 text-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
             >
-              {line}
-            </p>
-          ))}
-        </div>
+              Become a Partner
+              <ArrowRight
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                strokeWidth={1.8}
+              />
+            </a>
+          </div>
 
-        <div
-          data-phil-aside
-          className="mt-20 flex flex-col gap-8 md:ml-auto md:max-w-md md:items-start"
-        >
-          <p className="text-sm leading-relaxed text-white/60">
-            HISKIN은 더하는 방식이 아닌 덜어내는 방식을 선택합니다. 자외선
-            차단, 톤업, 보습 — 매일 필요한 것만 한 번에. 피부가 가진 본래의
-            흐름 안에서 하루가 가볍게 시작됩니다.
-          </p>
-          <a
-            href="#inquiry"
-            className="group flex items-center gap-3 border border-white/25 px-7 py-4 text-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
+          {/* Right — intro + HISKIN routine */}
+          <div
+            data-phil-aside
+            className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            Become a Partner
-            <ArrowRight
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-              strokeWidth={1.8}
-            />
-          </a>
+            <p className="text-[15px] leading-relaxed text-white/60 md:text-base">
+              두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
+            </p>
+            <p className="mt-3 text-[15px] font-medium leading-relaxed text-white md:text-base">
+              HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
+            </p>
+
+            <ul data-phil-list className="mt-8">
+              {ROUTINE.map((item, i) => (
+                <li
+                  key={i}
+                  data-phil-row
+                  className="flex gap-5 border-t border-white/12 py-4 last:border-b md:gap-6"
+                >
+                  <span className="w-[1.05em] shrink-0 font-display text-xl font-bold leading-[1.35] text-rose md:text-2xl">
+                    {item.letter}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[15px] font-semibold leading-[1.5] text-white md:text-base">
+                      {item.label}
+                    </span>
+                    <span className="mt-0.5 block text-[14px] leading-relaxed text-white/55 md:text-[15px]">
+                      {item.desc}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+          </div>
         </div>
       </div>
 

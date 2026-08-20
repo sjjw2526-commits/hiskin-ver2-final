@@ -10,11 +10,16 @@ import PlaceholderImage from "./PlaceholderImage";
 gsap.registerPlugin(ScrollTrigger);
 
 const SPECS = [
-  { label: "Volume", value: "60ml / 2.03 fl.oz." },
-  { label: "Protection", value: "SPF 50+ / PA++++" },
-  { label: "Finish", value: "Rose Beige · 2–3 Tone-Up" },
+  { label: "MSRP", value: "$32.00 USD" },
+  // Matches the printing on the tube, which is what the buyer receives. The
+  // exact conversion is 2.0288, but a spec sheet that disagrees with the
+  // package reads as an error in the room.
+  { label: "Volume", value: "60ml / 2.02 fl.oz." },
+  { label: "Protection", value: "SPF 50+ / PA++++ (Clinically Proven)" },
+  { label: "Finish", value: "Rosy Skin-Glow · Foundation-Free Fit" },
+  { label: "Texture", value: "Hydra-Light & Zero-Stickiness" },
   { label: "Free of", value: "Mineral Oil · Talc · Stone Powder" },
-  { label: "Skin Type", value: "Safe for Sensitive Skin" },
+  { label: "Skin Type", value: "Dermatologist Tested · Safe for Sensitive Skin" },
 ];
 
 /**
@@ -69,10 +74,10 @@ export default function ProductDetail() {
               <div
                 key={spec.label}
                 data-pd-row
-                className="border-b border-hairline py-5 first:border-t"
+                className="border-b border-hairline py-5 first:border-t md:py-6"
               >
-                <p className="text-[13px] text-mute">{spec.label}</p>
-                <p className="mt-1.5 text-[15px] font-medium text-ink">
+                <p className="text-[14px] text-mute md:text-[15px]">{spec.label}</p>
+                <p className="mt-1.5 text-[17px] font-medium leading-snug text-ink md:text-[19px]">
                   {spec.value}
                 </p>
               </div>
