@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { Eye, Droplets } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,6 +31,21 @@ const SPF_SD = 9.4;
 const SPF_CI = 6.7; // 95% CI, t = 2.262
 const SPF_LABEL_MAX = 50; // 표기 상한선
 
+/* The two lines a buyer actually reads. Every figure here is derived from the
+   report above it, not asserted: 69x is the definition of SPF (dose to
+   erythema, protected vs bare), 98.6% is 1 - 1/69, and 54.7 is the lowest of
+   the ten per-subject values. Recompute these if SUBJECTS ever changes. */
+const SPF_TAKEAWAY = [
+  {
+    strong: "맨 피부 대비 69배",
+    rest: "자외선 노출 허용량 — UVB를 98.6% 차단합니다.",
+  },
+  {
+    strong: "피험자 10명 전원 초과",
+    rest: "최저값 54.7도 표기 상한 SPF 50을 넘어섰습니다.",
+  },
+];
+
 /* ISO 24444 wants subjects spread across three ITA° bands. Showing the split
    is what tells a buyer's regulatory reader the panel was actually valid. */
 const ITA_BANDS = [
@@ -50,6 +66,19 @@ const PLATES = [
   { n: 4, uvapf: 23.95, lc: 377.82 },
 ];
 
+/* 1.46 = 23.33 / 16.0 (the PA++++ floor); 22.41 is the weakest plate; +7.6nm
+   is 377.6 - 370, the broad-spectrum floor. All four plates clear both. */
+const UVA_TAKEAWAY = [
+  {
+    strong: "PA++++ 기준의 1.46배",
+    rest: "최고 등급 기준치 16.0 대비 실측 23.33입니다.",
+  },
+  {
+    strong: "플레이트 4장 전원 초과",
+    rest: "최저값 22.41 · 임계파장도 기준보다 +7.6nm.",
+  },
+];
+
 /* The report gives λc per plate but not the absorbance spectrum itself, so
    the curve below is a schematic back-solved from the measured λc — the area
    from 290 to 377.6nm is exactly 90% of the area from 290 to 400nm. The page
@@ -63,6 +92,24 @@ const UVA_START_X = 141.8; // 320 nm
 const LC_X = 414.1; // 377.6 nm
 const LC_Y = 66.7;
 
+/* Sensory characteristics, deliberately worded as design properties rather
+   than test outcomes — neither is backed by a report. Upgrade paths, in
+   order of what a buyer will ask for: an ocular-irritation study would let
+   "부담을 덜어냈습니다" become a stated result, and a cleansing-efficacy
+   study would license the much stronger "이중세안 불필요". Do not tighten
+   this copy before the corresponding document exists. */
+const IN_USE = [
+  {
+    Icon: Eye,
+    title: "눈시림 걱정 없이",
+    desc: "눈가 주변까지 편안하게 밀착되도록 설계해, 바르는 순간의 자극 부담을 덜어냈습니다.",
+  },
+  {
+    Icon: Droplets,
+    title: "물세안으로 간편하게",
+    desc: "별도의 리무버 없이, 평소 사용하던 클렌저만으로 깔끔하게 정리됩니다.",
+  },
+];
 type Meta = { label: string; value: string };
 
 function MetaRow({ items }: { items: Meta[] }) {
@@ -82,6 +129,29 @@ function MetaRow({ items }: { items: Meta[] }) {
         </div>
       ))}
     </dl>
+  );
+}
+
+/**
+ * Sits between the headline number and the plot: the number alone does not say
+ * what it means, and the plot is for the reader who wants to check the number.
+ */
+function Takeaway({ items }: { items: { strong: string; rest: string }[] }) {
+  return (
+    <ul className="mt-6 space-y-[9px]">
+      {items.map((t) => (
+        <li
+          key={t.strong}
+          className="flex gap-2.5 text-[14.5px] leading-[1.5] text-mute md:text-[15.5px]"
+        >
+          <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-rose md:mt-[10px]" />
+          <span>
+            <strong className="font-semibold text-ink">{t.strong}</strong>{" "}
+            {t.rest}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -240,6 +310,8 @@ export default function ClinicalData() {
           <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] text-[11.5px] font-semibold tracking-[0.02em] text-rose">
             SPF 50+ 표기 기준 초과 달성
           </p>
+
+          <Takeaway items={SPF_TAKEAWAY} />
 
           {/* Per-subject scatter */}
           <figure data-plot-spf className="mt-9">
@@ -414,6 +486,8 @@ export default function ClinicalData() {
             PA++++ (최고 등급 기준치 16.0 초과)
           </p>
 
+          <Takeaway items={UVA_TAKEAWAY} />
+
           {/* Spectral absorbance */}
           <figure data-plot-uva className="mt-9">
             <svg
@@ -543,6 +617,35 @@ export default function ClinicalData() {
             />
           </div>
         </article>
+      </div>
+
+      {/* ── In-use characteristics ─────────────────────────── */}
+      {/* Mirrors the two-card grid above on purpose: the numbers prove the
+          protection, this pair answers what it is like to actually wear. */}
+      <div
+        data-clin-grid
+        className="mt-[12px] grid grid-cols-1 gap-[12px] md:grid-cols-2"
+      >
+        {IN_USE.map(({ Icon, title, desc }) => (
+          <article
+            key={title}
+            data-clin-card
+            className="flex items-start gap-5 border border-black/[0.08] p-7 md:gap-6 md:p-9"
+          >
+            <Icon
+              className="mt-[3px] h-6 w-6 shrink-0 text-rose md:h-7 md:w-7"
+              strokeWidth={1.4}
+            />
+            <div className="min-w-0">
+              <p className="font-display text-[19px] font-semibold leading-snug text-ink md:text-[22px]">
+                {title}
+              </p>
+              <p className="mt-2 text-[14.5px] leading-[1.6] text-mute md:text-[15.5px]">
+                {desc}
+              </p>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
