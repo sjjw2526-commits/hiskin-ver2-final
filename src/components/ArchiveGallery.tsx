@@ -58,12 +58,12 @@ export default function ArchiveGallery() {
           {/* Large left */}
           <div data-arc-item className="group overflow-hidden">
             <PlaceholderImage
-              name="img-08"
-              alt="핑크 제형 위에 놓인 HISKIN 데일리 선크림 튜브"
+              name="img-18"
+              alt="테니스 코트에서 HISKIN 선크림을 들어 보이는 모델"
               aspect="aspect-[16/10] md:aspect-auto md:h-full"
               className="h-full w-full"
               imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-              label="IMG 08 · WIDE"
+              label="IMG 18 · WIDE"
             />
           </div>
 
@@ -71,22 +71,22 @@ export default function ArchiveGallery() {
           <div className="grid grid-cols-2 gap-[12px]">
             <div data-arc-item className="group overflow-hidden">
               <PlaceholderImage
-                name="img-09"
-                alt="Skin texture close-up"
+                name="img-19"
+                alt="보그 매거진과 니트 백 위에 놓인 HISKIN 선크림 플랫레이"
                 aspect="aspect-[3/4]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 09 · 3:4"
+                label="IMG 19 · 3:4"
               />
             </div>
             <div data-arc-item className="group overflow-hidden">
               <PlaceholderImage
-                name="img-10"
-                alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
+                name="img-20"
+                alt="화이트 테이블 위 HISKIN 선크림 튜브와 패키지 박스 플랫레이"
                 aspect="aspect-[3/4]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 10 · 3:4"
+                label="IMG 20 · 3:4"
               />
             </div>
             <div data-arc-item className="group col-span-2 overflow-hidden">

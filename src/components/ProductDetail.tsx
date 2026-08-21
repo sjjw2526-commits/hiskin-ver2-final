@@ -79,8 +79,8 @@ export default function ProductDetail() {
                 data-pd-row
                 className="flex flex-1 flex-col justify-center border-b border-hairline py-5 first:border-t"
               >
-                <p className="text-[15px] text-mute md:text-base">{spec.label}</p>
-                <p className="mt-1.5 text-lg font-medium leading-snug text-ink md:text-[21px]">
+                <p className="text-base text-mute md:text-lg">{spec.label}</p>
+                <p className="mt-1.5 text-xl font-medium leading-snug text-ink md:text-[25px]">
                   {spec.value}
                 </p>
               </div>
