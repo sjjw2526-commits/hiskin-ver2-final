@@ -145,10 +145,17 @@ export default function Hero() {
             onRefreshInit: place,
             // Hand over to the copy that lives inside the slot, so it scrolls
             // away with the sentence like any other piece of the page.
-            onLeave: () =>
+            // The intro fades the hero in over a second. Scroll past the
+            // runway inside that second and this set() lands, only for the
+            // still-running fade to put the opacity straight back to 1 on
+            // the next frame — a ghost of the headline image that never
+            // clears. The hand-over has to win, so kill the fade first.
+            onLeave: () => {
+              gsap.killTweensOf(fixedRef.current, "opacity");
               gsap.set([fixedRef.current, img01Ref.current], {
                 opacity: (i: number) => i,
-              }),
+              });
+            },
             onEnterBack: () =>
               gsap.set([fixedRef.current, img01Ref.current], {
                 opacity: (i: number) => 1 - i,
@@ -161,6 +168,7 @@ export default function Hero() {
             // is forced: showing it again here would override the intro fade.
             onRefresh: (self) => {
               if (self.progress >= 1) {
+                gsap.killTweensOf(fixedRef.current, "opacity");
                 gsap.set([fixedRef.current, img01Ref.current], {
                   opacity: (i: number) => i,
                 });
@@ -287,16 +295,40 @@ export default function Hero() {
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
         .matches;
-      gsap.to(fixedRef.current, {
+      const fade = gsap.to(fixedRef.current, {
         opacity: 1,
         duration: reduced ? 0 : 1,
         ease: "power2.out",
+        // Belt and braces for the same race: if the reader has already left
+        // the runway by the time the fade lands, hand over instead of
+        // leaving the hero lit over the middle of the page.
+        onComplete: () => {
+          if (runway.getBoundingClientRect().bottom <= 0) {
+            gsap.set(fixedRef.current, { opacity: 0 });
+            gsap.set(img01Ref.current, { opacity: 1 });
+          }
+        },
       });
-      gsap.to(cueRef.current, {
+      // Same race for the cue: its scroll fade-out is a scrub that only
+      // writes on scroll, so a late intro fade-in would leave "SCROLL"
+      // lit over the trio. Stand down as soon as the runway is left.
+      const cueIn = gsap.to(cueRef.current, {
         opacity: 1,
         duration: reduced ? 0 : 0.8,
         delay: 0.4,
+        onUpdate: () => {
+          const r = runway.getBoundingClientRect();
+          if (r.top <= -0.12 * r.height) {
+            cueIn.kill();
+            gsap.set(cueRef.current, { opacity: 0 });
+          }
+        },
       });
+
+      return () => {
+        fade.kill();
+        cueIn.kill();
+      };
     },
     { dependencies: [introDone] }
   );
