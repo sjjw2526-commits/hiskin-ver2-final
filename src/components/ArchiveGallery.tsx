@@ -59,7 +59,7 @@ export default function ArchiveGallery() {
           <div data-arc-item className="group overflow-hidden">
             <PlaceholderImage
               name="img-18"
-              alt="테니스 코트에서 HISKIN 선크림을 들어 보이는 모델"
+              alt="맑은 하늘 아래 빨랫줄에 집게로 매달린 HISKIN 선크림 튜브 세 개"
               aspect="aspect-[16/10] md:aspect-auto md:h-full"
               className="h-full w-full"
               imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
