@@ -199,7 +199,7 @@ export default function Philosophy() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
         <div
           data-phil-stat
-          className="absolute bottom-14 left-6 md:bottom-20 md:left-[60px]"
+          className="absolute bottom-14 right-6 text-right md:bottom-20 md:right-[60px]"
         >
           <p className="font-display text-[clamp(3.5rem,9vw,7.5rem)] font-semibold leading-none tracking-tight text-white">
             SPF 50+
