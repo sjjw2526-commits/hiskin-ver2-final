@@ -189,7 +189,7 @@ export default function Philosophy() {
         <div data-bleed-img className="absolute inset-0">
           <PlaceholderImage
             name="img-03"
-            alt="강한 햇빛 아래 눈을 감고 은은하게 미소 짓는 여성의 얼굴"
+            alt="황금빛 역광 아래 초록 보케를 배경으로 옆을 바라보는 여성의 옆얼굴"
             aspect=""
             className="h-full w-full"
             label="IMG 03 · 16:9"
