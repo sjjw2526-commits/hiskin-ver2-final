@@ -197,7 +197,23 @@ export default function Hero() {
       let baseW = 0;
       let baseH = 0;
 
+      // Last line of defence, every frame: past the runway the fixed hero
+      // must be dark and the inline copy lit, whatever any tween thinks.
+      // Ticker callbacks run after the global timeline renders, so this
+      // always has the final say within a frame. Only the hidden side is
+      // enforced — the visible side belongs to the intro fade and the
+      // scroll hand-over above.
+      const fixedEl = fixedRef.current;
+      const inlineEl = img01Ref.current;
+      const enforceHandover = () => {
+        if (!fixedEl || !inlineEl) return;
+        if (runwayRef.current!.getBoundingClientRect().bottom > 0) return;
+        if (fixedEl.style.opacity !== "0") fixedEl.style.opacity = "0";
+        if (inlineEl.style.opacity !== "1") inlineEl.style.opacity = "1";
+      };
+
       const flight = () => {
+        enforceHandover();
         const vh = window.innerHeight;
         const secTop = stmt.getBoundingClientRect().top;
         // Distance from the top of page 2 down to the row — a constant.
