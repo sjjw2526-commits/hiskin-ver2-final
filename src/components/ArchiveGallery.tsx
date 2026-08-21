@@ -59,7 +59,7 @@ export default function ArchiveGallery() {
           <div data-arc-item className="group overflow-hidden">
             <PlaceholderImage
               name="img-08"
-              alt="Travertine stone product display"
+              alt="핑크 제형 위에 놓인 HISKIN 데일리 선크림 튜브"
               aspect="aspect-[16/10] md:aspect-auto md:h-full"
               className="h-full w-full"
               imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"

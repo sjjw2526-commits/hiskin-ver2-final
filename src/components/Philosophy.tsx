@@ -151,28 +151,28 @@ export default function Philosophy() {
             data-phil-aside
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            <p className="text-[15px] leading-relaxed text-white/60 md:text-base">
+            <p className="text-base leading-relaxed text-white/60 md:text-lg">
               두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
             </p>
-            <p className="mt-3 text-[15px] font-medium leading-relaxed text-white md:text-base">
+            <p className="mt-3 text-base font-medium leading-relaxed text-white md:text-lg">
               HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
             </p>
 
-            <ul data-phil-list className="mt-8">
+            <ul data-phil-list className="mt-10">
               {ROUTINE.map((item, i) => (
                 <li
                   key={i}
                   data-phil-row
-                  className="flex gap-5 border-t border-white/12 py-4 last:border-b md:gap-6"
+                  className="flex gap-5 border-t border-white/12 py-5 last:border-b md:gap-7 md:py-6"
                 >
-                  <span className="w-[1.05em] shrink-0 font-display text-xl font-bold leading-[1.35] text-rose md:text-2xl">
+                  <span className="w-[1.05em] shrink-0 font-display text-2xl font-bold leading-[1.3] text-rose md:text-3xl">
                     {item.letter}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[15px] font-semibold leading-[1.5] text-white md:text-base">
+                    <span className="block text-lg font-semibold leading-[1.4] text-white md:text-[22px]">
                       {item.label}
                     </span>
-                    <span className="mt-0.5 block text-[14px] leading-relaxed text-white/55 md:text-[15px]">
+                    <span className="mt-1 block text-[15px] leading-relaxed text-white/55 md:text-[17px]">
                       {item.desc}
                     </span>
                   </span>
