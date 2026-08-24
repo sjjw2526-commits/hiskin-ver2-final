@@ -52,6 +52,48 @@ export default function Hero() {
       if (!runwayRef.current || !stmt || !slot01 || !slot09) return;
       if (!row || !cell09 || !fly) return;
 
+      // The cue is pinned to the window at both sizes, so it has to stand
+      // down at both — leave this inside the desktop branch and it stays lit
+      // over the whole phone page.
+      gsap.to(cueRef.current, {
+        opacity: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: runwayRef.current,
+          start: "top top",
+          end: "12% top",
+          scrub: true,
+        },
+      });
+
+      const mm = gsap.matchMedia();
+
+      // ══ Phone ═══════════════════════════════════════════════
+      // The shrink-into-the-headline flight is a desktop conceit. At 390px
+      // the headline slot is barely 60px wide, so a full-screen photograph
+      // spends most of the runway as a chip adrift in an empty grey field —
+      // and the per-frame rect reads and full-bleed scale are exactly what
+      // makes touch scrolling stutter. Here the hero is an ordinary image
+      // that scrolls away, the headline photo is simply part of the
+      // sentence, and the trio is a plain vertical stack that fades in.
+      mm.add("(max-width: 767.98px)", () => {
+        gsap.set(img01Ref.current, { opacity: 1 });
+        gsap.fromTo(
+          [cell02Ref.current, cell09Ref.current, cell10Ref.current],
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "power3.out",
+            stagger: 0.12,
+            scrollTrigger: { trigger: row, start: "top 82%" },
+          }
+        );
+      });
+
+      // ══ Desktop ═════════════════════════════════════════════
+      mm.add("(min-width: 768px)", () => {
       // ---- Page 1 · img-01 shrinks into the headline gap ----
       // Measured against page 2, whose top sits at the viewport top exactly
       // when the shrink finishes — so these are viewport coords at that moment.
@@ -178,17 +220,6 @@ export default function Hero() {
         }
       );
 
-      gsap.to(cueRef.current, {
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: runwayRef.current,
-          start: "top top",
-          end: "12% top",
-          scrub: true,
-        },
-      });
-
       // ---- Page 2 · img-09 travels from the sentence into its column ----
       // Both ends move with the page, so this is resolved every frame rather
       // than tweened between fixed endpoints.
@@ -286,6 +317,9 @@ export default function Hero() {
       );
 
       return () => gsap.ticker.remove(flight);
+      });
+
+      return () => mm.revert();
     },
     { scope: runwayRef }
   );
@@ -302,8 +336,12 @@ export default function Hero() {
       // scrub has already carried it to its shrunken end state, so it reads
       // as a ghost of the headline image. Past the runway, hand straight
       // over to the copy that lives in the headline slot instead.
+      // None of that applies on a phone: the hero is an ordinary image inside
+      // the runway there, so it leaves the screen by scrolling like the rest
+      // of the page and can never strand itself over the middle of it.
       const runway = runwayRef.current;
-      if (!runway || runway.getBoundingClientRect().bottom <= 0) {
+      const phone = !window.matchMedia("(min-width: 768px)").matches;
+      if (!runway || (!phone && runway.getBoundingClientRect().bottom <= 0)) {
         gsap.set(fixedRef.current, { opacity: 0 });
         gsap.set(img01Ref.current, { opacity: 1 });
         return;
@@ -319,7 +357,7 @@ export default function Hero() {
         // the runway by the time the fade lands, hand over instead of
         // leaving the hero lit over the middle of the page.
         onComplete: () => {
-          if (runway.getBoundingClientRect().bottom <= 0) {
+          if (!phone && runway.getBoundingClientRect().bottom <= 0) {
             gsap.set(fixedRef.current, { opacity: 0 });
             gsap.set(img01Ref.current, { opacity: 1 });
           }
@@ -352,13 +390,23 @@ export default function Hero() {
   return (
     <>
       {/* ── Page 1 · white runway ─────────────────────────────── */}
-      <section id="top" ref={runwayRef} className="relative h-[130vh] bg-paper">
+      {/* Phone: one screen of photograph that scrolls away. Desktop: a 130vh
+          runway the shrink is scrubbed across. svh, not vh — a phone's vh
+          counts the retracted address bar, so a plain 100vh hero sits taller
+          than the window and every trigger under it shifts as the bar folds. */}
+      <section
+        id="top"
+        ref={runwayRef}
+        className="relative h-[100svh] bg-paper md:h-[130vh]"
+      >
         {/* Full-viewport clip: the scaled-up image bleeds past the edges and is
-            trimmed here, which is what gives the cover crop at rest. */}
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 top-[78px] z-40 overflow-hidden">
+            trimmed here, which is what gives the cover crop at rest. Fixed
+            only from md up — on a phone it is an ordinary block inside the
+            runway, so it leaves with the section instead of being handed over. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[78px] z-40 overflow-hidden md:fixed">
           <div
             ref={fixedRef}
-            className="absolute overflow-hidden opacity-0 will-change-transform"
+            className="absolute inset-0 overflow-hidden opacity-0 md:will-change-transform"
           >
             <PlaceholderImage
               name="img-01"
@@ -381,7 +429,7 @@ export default function Hero() {
 
       {/* ── Page 2 · grey, ordinary scroll ────────────────────── */}
       <section id="concept" ref={stmtRef} className="bg-paper-alt">
-        <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <div className="flex min-h-svh flex-col items-center justify-center px-6 text-center">
           <h2 className="text-display-xl font-display font-semibold text-ink">
             <span className="block">
               Bare
@@ -406,9 +454,11 @@ export default function Hero() {
             </span>
             <span className="block">
               Zero
+              {/* Holds the place img-09 flies out of. Nothing flies on a
+                  phone, so the slot closes up to a plain word space there. */}
               <span
                 ref={slot09Ref}
-                className="mx-[0.14em] inline-block h-[0.82em] w-[0.62em] align-baseline"
+                className="mx-[0.14em] inline-block h-[0.82em] w-0 align-baseline md:w-[0.62em]"
                 aria-hidden
               />
               Foundation
@@ -423,7 +473,7 @@ export default function Hero() {
 
         {/* Just a breath between the sentence and the trio — the climb is
             paced by scroll progress below, not by empty space here. */}
-        <div className="h-[5vh]" />
+        <div className="h-[5svh]" />
 
         {/* Full-bleed trio — plain document flow, so it simply scrolls up.
             White from here down, so page three reads as its own screen
@@ -431,9 +481,12 @@ export default function Hero() {
         {/* Short of the full viewport on purpose: at h-screen the photographs
             filled the window and pushed their captions below the fold, so the
             two halves of the same idea were never on screen together. */}
+        {/* One column on a phone. Three 122px-wide slivers of a 4:3 photograph
+            show a neck and half a word; stacked at 4:5 each picture is
+            actually legible. */}
         <div
           ref={rowRef}
-          className="grid h-[60vh] min-h-[380px] w-full grid-cols-3 gap-[12px] bg-paper py-[12px]"
+          className="grid w-full grid-cols-1 gap-[12px] bg-paper py-[12px] md:h-[60vh] md:min-h-[380px] md:grid-cols-3"
         >
           <div
             ref={cell02Ref}
@@ -442,14 +495,23 @@ export default function Hero() {
             <PlaceholderImage
               name="img-02"
               alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
-              aspect=""
+              aspect="aspect-[4/5] md:aspect-auto"
               className="h-full w-full"
               imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
               label="IMG 02 · 3:4"
             />
           </div>
-          {/* The flying img-09 comes to rest exactly over this cell */}
-          <div ref={cell09Ref} className="relative" />
+          {/* The flying img-09 comes to rest exactly over this cell. Nothing
+              flies on a phone, so the picture simply lives here instead. */}
+          <div ref={cell09Ref} className="group relative overflow-hidden">
+            <PlaceholderImage
+              name="img-09"
+              alt="HISKIN skin texture close-up"
+              aspect="aspect-[4/5]"
+              className="w-full md:hidden"
+              label="IMG 09 · 3:4"
+            />
+          </div>
           <div
             ref={cell10Ref}
             className="group relative overflow-hidden opacity-0"
@@ -457,7 +519,7 @@ export default function Hero() {
             <PlaceholderImage
               name="img-10"
               alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
-              aspect=""
+              aspect="aspect-[4/5] md:aspect-auto"
               className="h-full w-full"
               imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
               label="IMG 10 · 3:4"
@@ -473,7 +535,7 @@ export default function Hero() {
       {/* img-09 — sits inline in the sentence, then flies into its column */}
       <div
         ref={fly09Ref}
-        className="group fixed left-0 top-0 z-30 origin-top-left overflow-hidden will-change-transform"
+        className="group fixed left-0 top-0 z-30 hidden origin-top-left overflow-hidden will-change-transform md:block"
       >
         <PlaceholderImage
           name="img-09"

@@ -45,6 +45,13 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     ).matches;
     if (prefersReduced) return;
 
+    // Phones already scroll with momentum, and a touch drag moves the page
+    // itself rather than the wheel delta Lenis smooths — so the two run as
+    // competing eases over the same gesture and the result reads as stutter.
+    // Native scrolling is the smoother of the two here; ScrollTrigger drives
+    // off it either way.
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

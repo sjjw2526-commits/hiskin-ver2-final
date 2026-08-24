@@ -254,7 +254,7 @@ export default function ClinicalData() {
     <section
       id="clinical"
       ref={sectionRef}
-      className="bg-paper px-6 py-24 md:px-[80px] md:py-36"
+      className="bg-paper px-6 py-16 md:px-[80px] md:py-36"
     >
       {/* ── Heading ──────────────────────────────────────────── */}
       <div className="max-w-3xl">
@@ -504,9 +504,13 @@ export default function ClinicalData() {
                 height={CURVE_H - 18}
                 className="fill-black/[0.028]"
               />
+              {/* Both labels sit low and left, in the wedge the curve leaves
+                  empty. The absorbance line runs flat across the top and only
+                  falls away on the right, so anything set near the top of the
+                  band — where these used to be — is printed straight over it. */}
               <text
                 x={UVA_START_X + 8}
-                y={16}
+                y={CURVE_H - 26}
                 className="fill-mute font-semibold uppercase"
                 style={{ letterSpacing: "0.1em" }}
               >
@@ -525,8 +529,8 @@ export default function ClinicalData() {
                 />
                 <circle cx={LC_X} cy={LC_Y} r={4.5} className="fill-rose" />
                 <text
-                  x={LC_X - 10}
-                  y={LC_Y - 14}
+                  x={LC_X - 12}
+                  y={LC_Y + 30}
                   textAnchor="end"
                   className="fill-rose font-semibold tabular-nums"
                 >

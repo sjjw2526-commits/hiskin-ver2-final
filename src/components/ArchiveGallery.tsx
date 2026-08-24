@@ -40,13 +40,13 @@ export default function ArchiveGallery() {
 
   return (
     <section id="archive" ref={sectionRef} className="bg-paper-alt">
-      <div className="px-6 py-24 md:px-[80px] md:py-36">
+      <div className="px-6 py-16 md:px-[80px] md:py-36">
         <p data-arc-head className="eyebrow-tag mb-5">
           HISKIN Archive
         </p>
         <h2
           data-arc-head
-          className="mb-14 font-display text-2xl font-semibold tracking-tight md:mb-20 md:text-4xl"
+          className="mb-10 font-display text-2xl font-semibold tracking-tight md:mb-20 md:text-4xl"
         >
           Clean by Standard, Every Detail.
         </h2>
@@ -89,14 +89,17 @@ export default function ArchiveGallery() {
                 label="IMG 20 · 3:4"
               />
             </div>
+            {/* Not img-02: that photograph already closes the hero trio, and
+                stacked into one column on a phone the repeat reads as a
+                mistake rather than a motif. */}
             <div data-arc-item className="group col-span-2 overflow-hidden">
               <PlaceholderImage
-                name="img-02"
-                alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
+                name="img-21"
+                alt="한여름 햇살이 밀짚모자 챙 너머로 번지는 하늘 아래 세워진 HISKIN 선크림"
                 aspect="aspect-[16/9]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 02 · WIDE"
+                label="IMG 21 · WIDE"
               />
             </div>
           </div>

@@ -117,8 +117,8 @@ export default function Philosophy() {
 
   return (
     <section id="philosophy" ref={sectionRef} className="bg-ink text-white">
-      <div className="flex min-h-screen flex-col px-6 py-20 md:px-[80px] md:py-24">
-        <p className="eyebrow-tag mb-12 md:mb-16">HISKIN Philosophy</p>
+      <div className="flex min-h-svh flex-col px-6 py-16 md:px-[80px] md:py-24">
+        <p className="eyebrow-tag mb-8 md:mb-16">HISKIN Philosophy</p>
 
         <div className="grid flex-1 grid-cols-1 content-center items-center gap-16 xl:grid-cols-12 xl:gap-16">
           {/* Left — headline + CTA */}
@@ -185,7 +185,7 @@ export default function Philosophy() {
       </div>
 
       {/* Full-bleed image with stat overlay */}
-      <div data-phil-bleed className="relative h-[80vh] overflow-hidden md:h-screen">
+      <div data-phil-bleed className="relative h-[80svh] overflow-hidden md:h-screen">
         <div data-bleed-img className="absolute inset-0">
           <PlaceholderImage
             name="img-03"

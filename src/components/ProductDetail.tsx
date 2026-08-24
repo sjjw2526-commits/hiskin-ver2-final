@@ -59,7 +59,7 @@ export default function ProductDetail() {
       {/* items-stretch + the row list soaking up the leftover height is what
           pins the spec sheet to the photo: eyebrow at the photo's top edge,
           CTA at its bottom edge, rows sharing the space between. */}
-      <div className="grid items-center gap-14 px-6 py-24 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] md:items-stretch md:gap-24 md:px-[80px] md:py-36">
+      <div className="grid items-center gap-14 px-6 py-16 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] md:items-stretch md:gap-24 md:px-[80px] md:py-36">
         <div data-pd-img>
           <PlaceholderImage
             name="img-15"
