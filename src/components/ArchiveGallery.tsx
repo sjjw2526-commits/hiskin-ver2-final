@@ -40,13 +40,13 @@ export default function ArchiveGallery() {
 
   return (
     <section id="archive" ref={sectionRef} className="bg-paper-alt">
-      <div className="px-6 py-24 md:px-[80px] md:py-36">
+      <div className="px-6 py-16 md:px-[80px] md:py-36">
         <p data-arc-head className="eyebrow-tag mb-5">
           HISKIN Archive
         </p>
         <h2
           data-arc-head
-          className="mb-14 font-display type-h2 font-semibold md:mb-20"
+          className="mb-10 font-display type-h2 font-semibold md:mb-20"
         >
           Clean by Standard, Every Detail.
         </h2>
@@ -58,12 +58,12 @@ export default function ArchiveGallery() {
           {/* Large left */}
           <div data-arc-item className="group overflow-hidden">
             <PlaceholderImage
-              name="img-08"
-              alt="Travertine stone product display"
+              name="img-18"
+              alt="맑은 하늘 아래 빨랫줄에 집게로 매달린 HISKIN 선크림 튜브 세 개"
               aspect="aspect-[16/10] md:aspect-auto md:h-full"
               className="h-full w-full"
               imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-              label="IMG 08 · WIDE"
+              label="IMG 18 · WIDE"
             />
           </div>
 
@@ -71,32 +71,35 @@ export default function ArchiveGallery() {
           <div className="grid grid-cols-2 gap-[12px]">
             <div data-arc-item className="group overflow-hidden">
               <PlaceholderImage
-                name="img-09"
-                alt="Skin texture close-up"
+                name="img-19"
+                alt="보그 매거진과 니트 백 위에 놓인 HISKIN 선크림 플랫레이"
                 aspect="aspect-[3/4]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 09 · 3:4"
+                label="IMG 19 · 3:4"
               />
             </div>
             <div data-arc-item className="group overflow-hidden">
               <PlaceholderImage
-                name="img-10"
-                alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
+                name="img-20"
+                alt="화이트 테이블 위 HISKIN 선크림 튜브와 패키지 박스 플랫레이"
                 aspect="aspect-[3/4]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 10 · 3:4"
+                label="IMG 20 · 3:4"
               />
             </div>
+            {/* Not img-02: that photograph already closes the hero trio, and
+                stacked into one column on a phone the repeat reads as a
+                mistake rather than a motif. */}
             <div data-arc-item className="group col-span-2 overflow-hidden">
               <PlaceholderImage
-                name="img-02"
-                alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
+                name="img-21"
+                alt="한여름 햇살이 밀짚모자 챙 너머로 번지는 하늘 아래 세워진 HISKIN 선크림"
                 aspect="aspect-[16/9]"
                 className="w-full"
                 imgClassName="transition-transform duration-700 group-hover:scale-[1.03]"
-                label="IMG 02 · WIDE"
+                label="IMG 21 · WIDE"
               />
             </div>
           </div>

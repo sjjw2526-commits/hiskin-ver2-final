@@ -117,8 +117,8 @@ export default function Philosophy() {
 
   return (
     <section id="philosophy" ref={sectionRef} className="bg-ink text-white">
-      <div className="flex min-h-screen flex-col px-6 py-20 md:px-[80px] md:py-24">
-        <p className="eyebrow-tag mb-12 md:mb-16">HISKIN Philosophy</p>
+      <div className="flex min-h-svh flex-col px-6 py-16 md:px-[80px] md:py-24">
+        <p className="eyebrow-tag mb-8 md:mb-16">HISKIN Philosophy</p>
 
         <div className="grid flex-1 grid-cols-1 content-center items-center gap-16 xl:grid-cols-12 xl:gap-16">
           {/* Left — headline + CTA */}
@@ -151,28 +151,28 @@ export default function Philosophy() {
             data-phil-aside
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            <p className="type-body text-white/60">
+            <p className="type-sub text-white/60">
               두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
             </p>
-            <p className="mt-3 type-body font-medium text-white">
+            <p className="mt-3 type-sub font-medium text-white">
               HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
             </p>
 
-            <ul data-phil-list className="mt-8">
+            <ul data-phil-list className="mt-10">
               {ROUTINE.map((item, i) => (
                 <li
                   key={i}
                   data-phil-row
-                  className="flex gap-5 border-t border-white/12 py-4 last:border-b md:gap-6"
+                  className="flex gap-5 border-t border-white/12 py-5 last:border-b md:gap-7 md:py-6"
                 >
-                  <span className="w-[1.05em] shrink-0 font-display type-h3 font-bold text-rose">
+                  <span className="w-[1.05em] shrink-0 font-display type-h2 font-bold text-rose">
                     {item.letter}
                   </span>
                   <span className="min-w-0">
-                    <span className="block type-body font-semibold text-white">
+                    <span className="block type-h3 font-semibold text-white">
                       {item.label}
                     </span>
-                    <span className="mt-0.5 block type-body-sm text-white/55">
+                    <span className="mt-1.5 block type-sub text-white/55">
                       {item.desc}
                     </span>
                   </span>
@@ -185,11 +185,11 @@ export default function Philosophy() {
       </div>
 
       {/* Full-bleed image with stat overlay */}
-      <div data-phil-bleed className="relative h-[80vh] overflow-hidden md:h-screen">
+      <div data-phil-bleed className="relative h-[80svh] overflow-hidden md:h-screen">
         <div data-bleed-img className="absolute inset-0">
           <PlaceholderImage
             name="img-03"
-            alt="강한 햇빛 아래 눈을 감고 은은하게 미소 짓는 여성의 얼굴"
+            alt="황금빛 역광 아래 초록 보케를 배경으로 옆을 바라보는 여성의 옆얼굴"
             aspect=""
             className="h-full w-full"
             label="IMG 03 · 16:9"
@@ -199,7 +199,7 @@ export default function Philosophy() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
         <div
           data-phil-stat
-          className="absolute bottom-14 left-6 md:bottom-20 md:left-[60px]"
+          className="absolute bottom-14 right-6 text-right md:bottom-20 md:right-[60px]"
         >
           <p className="font-display type-stat font-semibold text-white">
             SPF 50+

@@ -82,7 +82,7 @@ export default function Manufacturing() {
     <section
       id="manufacturing"
       ref={sectionRef}
-      className="px-6 py-24 md:px-[80px] md:py-36"
+      className="px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="grid items-center gap-14 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-[60px]">
         {/* ── Copy ─────────────────────────────────────────── */}

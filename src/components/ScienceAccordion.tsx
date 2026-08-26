@@ -92,7 +92,7 @@ export default function ScienceAccordion() {
     <section
       id="science"
       ref={sectionRef}
-      className="px-6 py-24 md:px-[80px] md:py-36"
+      className="px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="mb-16 md:mb-24">
         <p data-sci-head className="eyebrow-tag mb-6">

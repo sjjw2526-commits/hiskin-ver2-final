@@ -153,7 +153,7 @@ export default function InquiryForm() {
     <section
       id="inquiry"
       ref={sectionRef}
-      className="px-6 py-24 md:px-[80px] md:py-36"
+      className="px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="grid gap-14 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-24">
         {/* Left: headline */}

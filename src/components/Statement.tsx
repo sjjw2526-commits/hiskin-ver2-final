@@ -61,7 +61,7 @@ export default function Statement() {
     <section ref={sectionRef} className="bg-paper">
       <div
         data-usp-row
-        className="grid w-full grid-cols-1 gap-12 pb-24 pt-8 md:grid-cols-3 md:gap-[12px] md:pb-32 md:pt-7"
+        className="grid w-full grid-cols-1 gap-12 pb-16 pt-8 md:grid-cols-3 md:gap-[12px] md:pb-32 md:pt-7"
       >
         {USP.map((item) => (
           <div key={item.num} data-usp-item className="px-6 md:px-8">

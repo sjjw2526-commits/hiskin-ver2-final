@@ -54,30 +54,33 @@ export default function ProductDetail() {
     <section
       id="product"
       ref={sectionRef}
-      className="bg-paper-alt"
+      className="bg-paper"
     >
-      <div className="grid items-center gap-14 px-6 py-24 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] md:gap-24 md:px-[80px] md:py-36">
+      {/* items-stretch + the row list soaking up the leftover height is what
+          pins the spec sheet to the photo: eyebrow at the photo's top edge,
+          CTA at its bottom edge, rows sharing the space between. */}
+      <div className="grid items-center gap-14 px-6 py-16 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] md:items-stretch md:gap-24 md:px-[80px] md:py-36">
         <div data-pd-img>
           <PlaceholderImage
-            name="img-08"
-            alt="HISKIN Daily Suncream Protect — product"
+            name="img-15"
+            alt="핑크 제형 위에 놓인 HISKIN 데일리 선크림 튜브"
             aspect="aspect-[4/3]"
             className="w-full"
-            label="IMG 08 · 4:3"
+            label="IMG 15 · 4:3"
           />
         </div>
 
-        <div data-pd-list>
+        <div data-pd-list className="flex flex-col">
           <p className="eyebrow-tag mb-8">Daily Suncream Protect</p>
-          <div>
+          <div className="flex flex-1 flex-col">
             {SPECS.map((spec) => (
               <div
                 key={spec.label}
                 data-pd-row
-                className="border-b border-hairline py-5 first:border-t md:py-6"
+                className="flex flex-1 flex-col justify-center border-b border-hairline py-5 first:border-t"
               >
-                <p className="type-body-sm text-mute">{spec.label}</p>
-                <p className="mt-1.5 type-sub font-medium text-ink">
+                <p className="type-sub text-mute">{spec.label}</p>
+                <p className="mt-1.5 type-h3 font-medium text-ink">
                   {spec.value}
                 </p>
               </div>
@@ -86,7 +89,7 @@ export default function ProductDetail() {
           <a
             data-pd-row
             href="#inquiry"
-            className="group mt-10 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4 type-body-sm font-medium text-white transition-opacity hover:opacity-85"
+            className="group mt-8 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4 type-body font-medium text-white transition-opacity hover:opacity-85 md:py-5"
           >
             Submit B2B Inquiry
             <ArrowRight

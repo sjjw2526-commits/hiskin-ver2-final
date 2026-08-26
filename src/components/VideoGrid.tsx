@@ -284,10 +284,10 @@ export default function VideoGrid() {
     <section
       id="reviews"
       ref={sectionRef}
-      className="overflow-hidden py-24 md:py-36"
+      className="overflow-hidden py-16 md:py-36"
     >
       <div className="px-6 md:px-[80px]">
-        <div className="mb-12 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div>
             <p data-video-head className="eyebrow-tag mb-5">
               K-Beauty Social Proof

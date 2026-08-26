@@ -170,7 +170,7 @@ export default function Certifications() {
     <section
       id="certifications"
       ref={sectionRef}
-      className="bg-[#f8f7f4] py-24 md:py-36"
+      className="bg-[#f8f7f4] py-16 md:py-36"
     >
       <div className="px-6 md:px-[80px]">
         <div className="max-w-4xl">
@@ -203,7 +203,7 @@ export default function Certifications() {
         /* Margin, not padding: padding leaves the scrollport full-width and
            snap then shunts the rail past its own inset on load. Same fix the
            review carousel uses. */
-        className="no-scrollbar mx-6 mt-14 flex snap-x snap-proximity gap-[12px] overflow-x-auto pb-3 md:mx-[80px] md:mt-20 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5"
+        className="no-scrollbar mx-6 mt-10 flex snap-x snap-proximity gap-[12px] overflow-x-auto pb-3 md:mx-[80px] md:mt-20 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5"
       >
         {DOCS.map((doc, i) => (
           <button
@@ -263,7 +263,7 @@ export default function Certifications() {
             {/* Document. Sized off viewport height so the white frame stays a
                 true A4 sheet rather than a letterboxed box. */}
             <div className="flex min-h-0 flex-1 items-center justify-center">
-              <div className="h-[50vh] max-w-full bg-white p-3 shadow-2xl md:h-[74vh] md:p-4">
+              <div className="h-[50svh] max-w-full bg-white p-3 shadow-2xl md:h-[74vh] md:p-4">
                 <PlaceholderImage
                   name={current.img}
                   alt={current.title}
