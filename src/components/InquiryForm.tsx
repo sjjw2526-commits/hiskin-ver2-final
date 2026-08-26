@@ -32,6 +32,19 @@ const COUNTRIES = [
   "Other",
 ];
 
+/**
+ * Only Netlify answers a form post, and only on the deployed site. The dev
+ * server replies 200 to POST / with the page itself, which is indistinguishable
+ * from a real acceptance — so without this check, submitting locally shows the
+ * success modal for an inquiry that went nowhere. Refusing outright is the
+ * honest behaviour: better a clear "not here" than a false receipt.
+ */
+const isLocalHost = () =>
+  typeof window !== "undefined" &&
+  /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(
+    window.location.hostname
+  );
+
 const fieldCls =
   "w-full border-b border-hairline bg-transparent py-3 type-field text-ink outline-none transition-colors placeholder:text-mute/50 focus:border-ink";
 
@@ -59,7 +72,10 @@ export default function InquiryForm() {
   const sectionRef = useRef<HTMLElement>(null);
   const [tab, setTab] = useState<TabId>("distributor");
   const [agreed, setAgreed] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [failedLocally, setFailedLocally] = useState(false);
 
   useGSAP(
     () => {
@@ -82,18 +98,53 @@ export default function InquiryForm() {
     { scope: sectionRef }
   );
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  /**
+   * Netlify collects form posts at the site root. The build bot finds the
+   * form by scanning the deployed HTML for data-netlify, which works here
+   * because the page is prerendered by output: "export" — the markup is in
+   * out/index.html before a browser ever runs.
+   *
+   * Posting by fetch rather than letting the browser submit keeps the user
+   * on the page, but it also means a failure is ours to surface. It is not
+   * caught silently: an inquiry that never arrived must never be reported
+   * as received.
+   *
+   * This only works on the deployed site. Locally there is no Netlify to
+   * receive the post, so submitting shows the error state — that is
+   * expected, not a bug.
+   */
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (status !== "idle") return;
+    if (status === "loading") return;
+    const form = e.currentTarget;
+
+    if (isLocalHost()) {
+      setFailedLocally(true);
+      setStatus("error");
+      return;
+    }
+
+    setFailedLocally(false);
     setStatus("loading");
 
-    // NOTE: 백엔드 연동 지점 — 실제 API/이메일 서비스 연결 시 이 부분을 교체하세요.
-    // 예: await fetch("/api/inquiry", { method: "POST", body: new FormData(e.currentTarget) })
-    setTimeout(() => {
+    const params = new URLSearchParams();
+    new FormData(form).forEach((value, key) => {
+      params.append(key, typeof value === "string" ? value : value.name);
+    });
+
+    try {
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+      if (!res.ok) throw new Error(String(res.status));
       setStatus("success");
-      (e.target as HTMLFormElement).reset();
+      form.reset();
       setAgreed(false);
-    }, 1400);
+    } catch {
+      setStatus("error");
+    }
   };
 
   const activeTabLabel = TABS.find((t) => t.id === tab)?.label;
@@ -148,9 +199,26 @@ export default function InquiryForm() {
           </div>
 
           <form
+            name="b2b-inquiry"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
             onSubmit={handleSubmit}
             className="grid gap-x-10 gap-y-7 sm:grid-cols-2"
           >
+            {/* Netlify matches the post to the form by this value. */}
+            <input type="hidden" name="form-name" value="b2b-inquiry" />
+            {/* Which tab was open. It is React state, not an input, so
+                without this the message arrives with no idea whether it is a
+                distributor, a sample request or a clinic. */}
+            <input type="hidden" name="inquiryType" value={activeTabLabel ?? tab} />
+            {/* Honeypot: invisible to a person, irresistible to a bot.
+                Anything that fills it in is discarded by Netlify. */}
+            <p className="hidden">
+              <label>
+                Do not fill this in <input name="bot-field" />
+              </label>
+            </p>
             <Field label="Name / 이름 *">
               <input
                 name="name"
@@ -217,6 +285,8 @@ export default function InquiryForm() {
             <label className="flex cursor-pointer items-start gap-3 sm:col-span-2">
               <input
                 type="checkbox"
+                name="consent"
+                value="개인정보 수집·이용 동의함"
                 required
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
@@ -229,9 +299,34 @@ export default function InquiryForm() {
               </span>
             </label>
 
+            {status === "error" && (
+              <p
+                role="alert"
+                className="type-body-sm text-rose sm:col-span-2"
+              >
+                {failedLocally ? (
+                  <>
+                    로컬 환경에서는 문의가 전송되지 않습니다. 배포된 사이트에서
+                    테스트해주세요.
+                  </>
+                ) : (
+                  <>
+                    전송에 실패했습니다. 잠시 후 다시 시도해주시거나,{" "}
+                    <a
+                      href="mailto:sm44800@naver.com"
+                      className="underline underline-offset-2"
+                    >
+                      sm44800@naver.com
+                    </a>
+                    으로 보내주세요.
+                  </>
+                )}
+              </p>
+            )}
+
             <button
               type="submit"
-              disabled={status !== "idle"}
+              disabled={status === "loading"}
               className="group mt-2 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4.5 type-body font-medium text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:col-span-2"
             >
               {status === "loading" ? (
