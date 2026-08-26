@@ -33,7 +33,7 @@ const COUNTRIES = [
 ];
 
 const fieldCls =
-  "w-full border-b border-hairline bg-transparent py-3 text-[15px] text-ink outline-none transition-colors placeholder:text-mute/50 focus:border-ink";
+  "w-full border-b border-hairline bg-transparent py-3 type-body text-ink outline-none transition-colors placeholder:text-mute/50 focus:border-ink";
 
 function Field({
   label,
@@ -44,7 +44,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[13px] text-mute">{label}</span>
+      <span className="mb-1 block type-caption text-mute">{label}</span>
       {children}
     </label>
   );
@@ -112,7 +112,7 @@ export default function InquiryForm() {
           </p>
           <h2
             data-form-head
-            className="text-display-lg font-display font-semibold"
+            className="type-h1 font-display font-semibold"
           >
             Bring HISKIN
             <br />
@@ -120,7 +120,7 @@ export default function InquiryForm() {
           </h2>
           <p
             data-form-head
-            className="mt-8 max-w-md text-[16.5px] leading-relaxed text-mute"
+            className="mt-8 max-w-md type-sub text-mute"
           >
             해외 유통사, 도매상, 에스테틱 및 클리닉 파트너를 찾습니다. 아래
             양식을 남겨주시면 영업일 기준 2일 내 회신드립니다.
@@ -136,7 +136,7 @@ export default function InquiryForm() {
                 key={t.id}
                 type="button"
                 onClick={() => setTab(t.id)}
-                className={`border px-4 py-3.5 text-[13px] font-medium transition-all duration-300 ${
+                className={`border px-4 py-3.5 type-body-sm font-medium transition-all duration-300 ${
                   tab === t.id
                     ? "border-ink bg-paper-alt text-ink"
                     : "border-hairline bg-transparent text-mute hover:text-ink"
@@ -222,7 +222,7 @@ export default function InquiryForm() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
               />
-              <span className="text-[13px] leading-relaxed text-mute">
+              <span className="type-caption text-mute">
                 I agree to the collection and use of personal information.
                 <br />
                 개인정보 수집 및 이용에 동의합니다.
@@ -232,7 +232,7 @@ export default function InquiryForm() {
             <button
               type="submit"
               disabled={status !== "idle"}
-              className="group mt-2 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4.5 text-[15px] font-medium text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:col-span-2"
+              className="group mt-2 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4.5 type-body font-medium text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:col-span-2"
             >
               {status === "loading" ? (
                 <>
@@ -275,10 +275,10 @@ export default function InquiryForm() {
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-ink">
               <Check className="h-7 w-7 text-white" strokeWidth={2} />
             </div>
-            <h3 className="font-display text-2xl font-semibold tracking-tight">
+            <h3 className="font-display type-h3 font-semibold">
               Inquiry Received
             </h3>
-            <p className="mt-4 text-sm leading-relaxed text-mute">
+            <p className="mt-4 type-body-sm text-mute">
               <span className="font-medium text-ink">{activeTabLabel}</span>{" "}
               문의가 정상적으로 접수되었습니다.
               <br />
@@ -286,7 +286,7 @@ export default function InquiryForm() {
             </p>
             <button
               onClick={() => setStatus("idle")}
-              className="mt-8 w-full bg-ink py-3.5 text-sm font-medium text-white transition-opacity hover:opacity-85"
+              className="mt-8 w-full bg-ink py-3.5 type-body-sm font-medium text-white transition-opacity hover:opacity-85"
             >
               Done
             </button>

@@ -46,7 +46,7 @@ export default function ArchiveGallery() {
         </p>
         <h2
           data-arc-head
-          className="mb-14 font-display text-2xl font-semibold tracking-tight md:mb-20 md:text-4xl"
+          className="mb-14 font-display type-h2 font-semibold md:mb-20"
         >
           Clean by Standard, Every Detail.
         </h2>

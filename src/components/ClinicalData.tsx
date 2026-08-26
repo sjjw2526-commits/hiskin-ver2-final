@@ -120,10 +120,10 @@ function MetaRow({ items }: { items: Meta[] }) {
           key={m.label}
           className="flex items-baseline justify-between gap-6 py-[7px]"
         >
-          <dt className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-mute">
+          <dt className="shrink-0 type-caption font-semibold uppercase tracking-[0.08em] text-mute">
             {m.label}
           </dt>
-          <dd className="text-right text-[13px] leading-snug text-ink">
+          <dd className="text-right type-body-sm text-ink">
             {m.value}
           </dd>
         </div>
@@ -142,7 +142,7 @@ function Takeaway({ items }: { items: { strong: string; rest: string }[] }) {
       {items.map((t) => (
         <li
           key={t.strong}
-          className="flex gap-2.5 text-[14.5px] leading-[1.5] text-mute md:text-[15.5px]"
+          className="flex gap-2.5 type-body text-mute"
         >
           <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-rose md:mt-[10px]" />
           <span>
@@ -263,7 +263,7 @@ export default function ClinicalData() {
         </p>
         <h2
           data-clin-head
-          className="text-display-md font-display font-semibold text-ink"
+          className="type-h2 font-display font-semibold text-ink"
         >
           Verified Protection by
           <br />
@@ -271,7 +271,7 @@ export default function ClinicalData() {
         </h2>
         <p
           data-clin-head
-          className="mt-7 text-[17.5px] leading-[1.6] text-mute md:text-[19.5px]"
+          className="mt-7 type-sub text-mute"
         >
           세명대학교 화장품임상연구센터의 ISO 국제 표준 인체적용시험 및 광학
           분석을 통해 입증된 정량적 방어력.
@@ -288,26 +288,26 @@ export default function ClinicalData() {
           data-clin-card
           className="flex flex-col border border-black/[0.08] p-7 md:p-9"
         >
-          <p className="text-[10.5px] font-semibold uppercase leading-relaxed tracking-[0.1em] text-mute">
+          <p className="type-caption font-semibold uppercase tracking-[0.08em] text-mute">
             In-Vivo Clinical Trial
             <span className="ml-2 text-ink/45">(ISO 24444:2019/AMD 1:2022)</span>
           </p>
 
           <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-2">
-            <p className="font-display text-[13px] font-semibold uppercase tracking-[0.14em] text-ink">
+            <p className="font-display type-caption font-semibold uppercase tracking-[0.08em] text-ink">
               SPF
             </p>
-            <p className="font-display text-[58px] font-semibold leading-[0.85] tracking-[-0.03em] text-ink tabular-nums md:text-[72px]">
+            <p className="font-display type-metric font-semibold text-ink tabular-nums">
               <span data-count-to="69.0" data-count-dp="1">
                 0.0
               </span>
             </p>
-            <p className="pb-1 text-[15px] font-medium tabular-nums text-mute">
+            <p className="pb-1 type-body font-medium tabular-nums text-mute">
               ± {SPF_SD.toFixed(1)}
             </p>
           </div>
 
-          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] text-[11.5px] font-semibold tracking-[0.02em] text-rose">
+          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] type-caption font-semibold text-rose">
             SPF 50+ 표기 기준 초과 달성
           </p>
 
@@ -315,6 +315,10 @@ export default function ClinicalData() {
 
           {/* Per-subject scatter */}
           <figure data-plot-spf className="mt-9">
+            {/* Sizes below are viewBox units, not screen pixels, so they are
+                outside the type scale by necessity: the SVG scales with its
+                container. The mobile value is the larger of the two because a
+                narrow viewBox scales down further. */}
             <svg
               viewBox={`0 0 ${PW} ${PH}`}
               className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
@@ -400,7 +404,7 @@ export default function ClinicalData() {
                 </text>
               ))}
             </svg>
-            <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-mute">
+            <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 type-caption text-mute">
               <span className="flex items-center gap-2">
                 <span className="h-[7px] w-[7px] rounded-full bg-ink" />
                 피험자 {SUBJECTS.length}명 개인별 SPF 실측값
@@ -416,9 +420,9 @@ export default function ClinicalData() {
             </figcaption>
 
             {/* Panel composition by ITA° band */}
-            <table className="mt-6 w-full border-t border-black/[0.08] text-[12px] tabular-nums">
+            <table className="mt-6 w-full border-t border-black/[0.08] type-caption tabular-nums">
               <thead>
-                <tr className="text-[10px] uppercase tracking-[0.08em] text-mute">
+                <tr className="type-caption uppercase tracking-[0.08em] text-mute">
                   <th className="py-2 text-left font-semibold">ITA° 구간</th>
                   <th className="py-2 text-right font-semibold">피험자</th>
                 </tr>
@@ -463,26 +467,26 @@ export default function ClinicalData() {
           data-clin-card
           className="flex flex-col border border-black/[0.08] p-7 md:p-9"
         >
-          <p className="text-[10.5px] font-semibold uppercase leading-relaxed tracking-[0.1em] text-mute">
+          <p className="type-caption font-semibold uppercase tracking-[0.08em] text-mute">
             In-Vitro Broad Spectrum
             <span className="ml-2 text-ink/45">(ISO 24443:2021)</span>
           </p>
 
           <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-2">
-            <p className="font-display text-[13px] font-semibold uppercase tracking-[0.14em] text-ink">
+            <p className="font-display type-caption font-semibold uppercase tracking-[0.08em] text-ink">
               UVA-PF
             </p>
-            <p className="font-display text-[58px] font-semibold leading-[0.85] tracking-[-0.03em] text-ink tabular-nums md:text-[72px]">
+            <p className="font-display type-metric font-semibold text-ink tabular-nums">
               <span data-count-to="23.33" data-count-dp="2">
                 0.00
               </span>
             </p>
-            <p className="pb-1 text-[15px] font-medium tabular-nums text-mute">
+            <p className="pb-1 type-body font-medium tabular-nums text-mute">
               ± 0.70
             </p>
           </div>
 
-          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] text-[11.5px] font-semibold tracking-[0.02em] text-rose">
+          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] type-caption font-semibold text-rose">
             PA++++ (최고 등급 기준치 16.0 초과)
           </p>
 
@@ -490,6 +494,10 @@ export default function ClinicalData() {
 
           {/* Spectral absorbance */}
           <figure data-plot-uva className="mt-9">
+            {/* Sizes below are viewBox units, not screen pixels, so they are
+                outside the type scale by necessity: the SVG scales with its
+                container. The mobile value is the larger of the two because a
+                narrow viewBox scales down further. */}
             <svg
               viewBox={`0 0 ${CURVE_W} ${CURVE_H}`}
               className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
@@ -567,16 +575,16 @@ export default function ClinicalData() {
                 </text>
               ))}
             </svg>
-            <figcaption className="mt-4 text-[11px] leading-relaxed text-mute">
+            <figcaption className="mt-4 type-caption text-mute">
               임계파장 377.6nm — 광범위 자외선 차단 기준(370nm 이상)을
               충족합니다. 곡선은 측정된 임계파장을 기준으로 재구성한
               모식도이며, 아래 표가 PMMA 플레이트 4장의 실측값입니다.
             </figcaption>
 
             {/* Per-plate measurements */}
-            <table className="mt-6 w-full border-t border-black/[0.08] text-[12px] tabular-nums">
+            <table className="mt-6 w-full border-t border-black/[0.08] type-caption tabular-nums">
               <thead>
-                <tr className="text-[10px] uppercase tracking-[0.08em] text-mute">
+                <tr className="type-caption uppercase tracking-[0.08em] text-mute">
                   <th className="py-2 text-left font-semibold">Plate</th>
                   <th className="py-2 text-right font-semibold">UVA-PF</th>
                   <th className="py-2 text-right font-semibold">λc (nm)</th>
@@ -637,10 +645,10 @@ export default function ClinicalData() {
               strokeWidth={1.4}
             />
             <div className="min-w-0">
-              <p className="font-display text-[19px] font-semibold leading-snug text-ink md:text-[22px]">
+              <p className="font-display type-h3 font-semibold text-ink">
                 {title}
               </p>
-              <p className="mt-2 text-[14.5px] leading-[1.6] text-mute md:text-[15.5px]">
+              <p className="mt-2 type-body text-mute">
                 {desc}
               </p>
             </div>

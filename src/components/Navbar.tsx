@@ -37,7 +37,7 @@ export default function Navbar() {
           <a
             href="#top"
             id="nav-logo"
-            className={`font-display text-[26px] font-bold tracking-[0.02em] transition-opacity duration-300 ${
+            className={`font-display type-logo font-bold transition-opacity duration-300 ${
               introDone ? "opacity-100" : "opacity-0"
             }`}
             aria-label="HISKIN — back to top"
@@ -54,14 +54,14 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="group/roll text-[17px] font-medium text-ink"
+                className="group/roll type-body font-medium text-ink"
               >
                 <RollText>{link.label}</RollText>
               </a>
             ))}
             <a
               href="#inquiry"
-              className="group/roll ml-2 flex items-center gap-2 text-[17px] font-medium text-ink"
+              className="group/roll ml-2 flex items-center gap-2 type-body font-medium text-ink"
             >
               <RollText>B2B Inquiry</RollText>
               <ArrowRight
@@ -90,7 +90,7 @@ export default function Navbar() {
         }`}
       >
         <div className="flex h-[78px] items-center justify-between px-6">
-          <span className="font-display text-[26px] font-bold tracking-[0.02em]">
+          <span className="font-display type-logo font-bold">
             HISKIN
           </span>
           <button aria-label="Close menu" onClick={() => setMenuOpen(false)}>
@@ -103,7 +103,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`border-b border-hairline py-5 font-display text-3xl font-semibold tracking-tight transition-all duration-500 ${
+              className={`border-b border-hairline py-5 font-display type-h3 font-semibold transition-all duration-500 ${
                 menuOpen
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0"
@@ -116,7 +116,7 @@ export default function Navbar() {
           <a
             href="#inquiry"
             onClick={() => setMenuOpen(false)}
-            className="mt-10 flex items-center justify-center gap-2 bg-ink px-6 py-4 text-center text-sm font-medium text-white"
+            className="mt-10 flex items-center justify-center gap-2 bg-ink px-6 py-4 text-center type-body-sm font-medium text-white"
           >
             B2B Inquiry <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
           </a>

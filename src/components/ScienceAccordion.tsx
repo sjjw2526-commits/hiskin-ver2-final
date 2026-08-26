@@ -100,7 +100,7 @@ export default function ScienceAccordion() {
         </p>
         <p
           data-sci-head
-          className="max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]"
+          className="max-w-xl type-lead font-medium text-ink"
         >
           임상적으로 검증된 핵심 성분 조합.
           <br />
@@ -122,7 +122,7 @@ export default function ScienceAccordion() {
                 aria-expanded={isOpen}
                 className="flex w-full items-center justify-between gap-6 py-6 text-left md:py-7"
               >
-                <span className="font-display text-lg font-medium tracking-tight text-ink md:text-[22px]">
+                <span className="font-display type-h3 font-medium text-ink">
                   {item.title}
                 </span>
                 {isOpen ? (
@@ -146,13 +146,13 @@ export default function ScienceAccordion() {
                       <p className="eyebrow-tag mb-6">
                         {item.num}&ensp;·&ensp;{item.tag}
                       </p>
-                      <h3 className="text-display-md font-display font-semibold text-ink">
+                      <h3 className="type-h3 font-display font-semibold text-ink">
                         {item.title}
                       </h3>
-                      <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-ink">
+                      <p className="mt-8 max-w-xl type-body text-ink">
                         {item.kr}
                       </p>
-                      <p className="mt-4 max-w-xl text-sm leading-relaxed text-mute">
+                      <p className="mt-4 max-w-xl type-body-sm text-mute">
                         {item.en}
                       </p>
                     </div>

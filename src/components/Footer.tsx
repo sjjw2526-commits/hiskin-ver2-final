@@ -17,10 +17,10 @@ export default function Footer() {
       <div className="px-6 py-16 md:px-[80px] md:py-24">
         <div className="flex flex-col justify-between gap-14 md:flex-row">
           <div>
-            <p className="font-display text-[clamp(3rem,8vw,6rem)] font-bold leading-none tracking-[-0.02em]">
+            <p className="font-display type-wordmark font-bold">
               HISKIN
             </p>
-            <div className="mt-10 space-y-2 text-sm text-white/60">
+            <div className="mt-10 space-y-2 type-body-sm text-white/60">
               <p>
                 <span className="mr-3 font-semibold text-white/85">TEL</span>
                 +82 (0)2-0000-0000
@@ -48,7 +48,7 @@ export default function Footer() {
               <a
                 key={item.href}
                 href={item.href}
-                className="group/roll text-sm font-medium text-white/80 transition-colors hover:text-white"
+                className="group/roll type-body-sm font-medium text-white/80 transition-colors hover:text-white"
               >
                 <RollText>{item.label}</RollText>
               </a>
@@ -57,12 +57,12 @@ export default function Footer() {
         </div>
 
         <div className="mt-20 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <p className="text-xs text-white/40">
+          <p className="type-caption text-white/40">
             Copyright © 2026 HISKIN Inc. All Rights Reserved
           </p>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="group flex items-center gap-2 self-start text-sm text-white/70 transition-colors hover:text-white md:self-auto"
+            className="group flex items-center gap-2 self-start type-body-sm text-white/70 transition-colors hover:text-white md:self-auto"
             aria-label="Scroll to top"
           >
             <ArrowUp

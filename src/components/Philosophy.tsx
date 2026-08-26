@@ -127,7 +127,7 @@ export default function Philosophy() {
               <p
                 key={i}
                 data-phil-line
-                className="font-display text-[clamp(1.9rem,2.9vw,3.6rem)] font-semibold leading-[1.16] tracking-[-0.02em] text-white"
+                className="font-display type-h2 font-semibold text-white"
               >
                 {line}
               </p>
@@ -136,7 +136,7 @@ export default function Philosophy() {
             <a
               data-phil-cta
               href="#inquiry"
-              className="group mt-12 inline-flex w-fit items-center gap-3 border border-white/25 px-7 py-4 text-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
+              className="group mt-12 inline-flex w-fit items-center gap-3 border border-white/25 px-7 py-4 type-body-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
             >
               Become a Partner
               <ArrowRight
@@ -151,10 +151,10 @@ export default function Philosophy() {
             data-phil-aside
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            <p className="text-[15px] leading-relaxed text-white/60 md:text-base">
+            <p className="type-body text-white/60">
               두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
             </p>
-            <p className="mt-3 text-[15px] font-medium leading-relaxed text-white md:text-base">
+            <p className="mt-3 type-body font-medium text-white">
               HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
             </p>
 
@@ -165,14 +165,14 @@ export default function Philosophy() {
                   data-phil-row
                   className="flex gap-5 border-t border-white/12 py-4 last:border-b md:gap-6"
                 >
-                  <span className="w-[1.05em] shrink-0 font-display text-xl font-bold leading-[1.35] text-rose md:text-2xl">
+                  <span className="w-[1.05em] shrink-0 font-display type-h3 font-bold text-rose">
                     {item.letter}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[15px] font-semibold leading-[1.5] text-white md:text-base">
+                    <span className="block type-body font-semibold text-white">
                       {item.label}
                     </span>
-                    <span className="mt-0.5 block text-[14px] leading-relaxed text-white/55 md:text-[15px]">
+                    <span className="mt-0.5 block type-body-sm text-white/55">
                       {item.desc}
                     </span>
                   </span>
@@ -201,13 +201,13 @@ export default function Philosophy() {
           data-phil-stat
           className="absolute bottom-14 left-6 md:bottom-20 md:left-[60px]"
         >
-          <p className="font-display text-[clamp(3.5rem,9vw,7.5rem)] font-semibold leading-none tracking-tight text-white">
+          <p className="font-display type-stat font-semibold text-white">
             SPF 50+
           </p>
-          <p className="mt-4 text-sm font-medium text-white">
+          <p className="mt-4 type-body-sm font-medium text-white">
             피부가 허락한, 가장 높은 차단.
           </p>
-          <p className="mt-1 text-sm text-white/55">PA++++ · Every single day.</p>
+          <p className="mt-1 type-body-sm text-white/55">PA++++ · Every single day.</p>
         </div>
       </div>
     </section>

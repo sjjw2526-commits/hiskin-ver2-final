@@ -140,7 +140,7 @@ function VideoCard({
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink/30">
           <Play className="h-8 w-8" strokeWidth={1.2} />
-          <span className="eyebrow !tracking-[0.2em] text-[10px]">
+          <span className="eyebrow !tracking-[0.2em]">
             VIDEO {String(index + 1).padStart(2, "0")} · 9:16
           </span>
         </div>
@@ -148,8 +148,8 @@ function VideoCard({
 
       {/* Gradient + meta */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 pt-16">
-        <p className="text-[13px] font-semibold text-white">{review.handle}</p>
-        <p className="mt-1 text-xs leading-relaxed text-white/70">
+        <p className="type-body-sm font-semibold text-white">{review.handle}</p>
+        <p className="mt-1 type-caption text-white/70">
           {review.caption}
         </p>
       </div>
@@ -294,14 +294,14 @@ export default function VideoGrid() {
             </p>
             <h2
               data-video-head
-              className="font-display text-2xl font-semibold tracking-tight md:text-4xl"
+              className="font-display type-h2 font-semibold"
             >
               Proven in Korea. Loved by Thousands.
             </h2>
           </div>
 
           <div data-video-head className="flex items-center gap-3">
-            <span className="mr-2 text-[13px] text-mute">
+            <span className="mr-2 type-caption text-mute">
               {REVIEWS.length} reviews
             </span>
             <button
@@ -395,7 +395,7 @@ export default function VideoGrid() {
               />
               <div className="absolute inset-0 z-0 flex flex-col items-center justify-center gap-3 px-6 text-center text-white/40">
                 <Volume2 className="h-8 w-8" strokeWidth={1.2} />
-                <span className="eyebrow text-[10px]">
+                <span className="eyebrow">
                   VIDEO PLACEHOLDER — {current.src}
                 </span>
               </div>
@@ -403,16 +403,16 @@ export default function VideoGrid() {
 
             <div className="mt-4 flex items-center justify-between gap-4 text-white">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">
+                <p className="truncate type-body-sm font-semibold">
                   {current.handle}
                 </p>
-                <p className="truncate text-xs text-white/60">
+                <p className="truncate type-caption text-white/60">
                   {current.caption}
                 </p>
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <span className="mr-1 text-xs tabular-nums text-white/50">
+                <span className="mr-1 type-caption tabular-nums text-white/50">
                   {(openIndex ?? 0) + 1} / {REVIEWS.length}
                 </span>
                 <button

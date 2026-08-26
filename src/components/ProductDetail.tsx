@@ -76,8 +76,8 @@ export default function ProductDetail() {
                 data-pd-row
                 className="border-b border-hairline py-5 first:border-t md:py-6"
               >
-                <p className="text-[14px] text-mute md:text-[15px]">{spec.label}</p>
-                <p className="mt-1.5 text-[17px] font-medium leading-snug text-ink md:text-[19px]">
+                <p className="type-body-sm text-mute">{spec.label}</p>
+                <p className="mt-1.5 type-sub font-medium text-ink">
                   {spec.value}
                 </p>
               </div>
@@ -86,7 +86,7 @@ export default function ProductDetail() {
           <a
             data-pd-row
             href="#inquiry"
-            className="group mt-10 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4 text-sm font-medium text-white transition-opacity hover:opacity-85"
+            className="group mt-10 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4 type-body-sm font-medium text-white transition-opacity hover:opacity-85"
           >
             Submit B2B Inquiry
             <ArrowRight

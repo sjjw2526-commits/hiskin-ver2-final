@@ -178,7 +178,7 @@ export default function Certifications() {
           </p>
           <h2
             data-cert-head
-            className="text-display-md font-display font-semibold text-ink"
+            className="type-h2 font-display font-semibold text-ink"
           >
             Internationally Certified Manufacturing
             <br className="hidden md:block" />
@@ -186,7 +186,7 @@ export default function Certifications() {
           </h2>
           <p
             data-cert-head
-            className="mt-7 text-[17.5px] leading-[1.6] text-mute md:text-[19.5px]"
+            className="mt-7 type-sub text-mute"
           >
             글로벌 수출 규격과 cGMP 품질 관리 기준을 충족하는 공인 등록 서류 및
             독자 특허 기술.
@@ -229,13 +229,13 @@ export default function Certifications() {
               </span>
             </div>
 
-            <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-rose">
+            <p className="mt-5 type-caption font-semibold uppercase tracking-[0.08em] text-rose">
               {doc.tag}
             </p>
-            <h3 className="mt-2 font-display text-[15px] font-semibold leading-snug tracking-tight text-ink">
+            <h3 className="mt-2 font-display type-body font-semibold text-ink">
               {doc.title}
             </h3>
-            <p className="mt-2 text-[12px] leading-relaxed text-mute">
+            <p className="mt-2 type-caption text-mute">
               {doc.holder}
               <br />
               {doc.no}
@@ -277,14 +277,14 @@ export default function Certifications() {
 
             {/* Metadata */}
             <div className="flex shrink-0 flex-col text-white md:w-[300px]">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-rose">
+              <p className="type-caption font-semibold uppercase tracking-[0.08em] text-rose">
                 {current.tag}
               </p>
-              <h3 className="mt-3 font-display text-xl font-semibold leading-snug tracking-tight">
+              <h3 className="mt-3 font-display type-h3 font-semibold">
                 {current.title}
               </h3>
 
-              <dl className="mt-7 border-t border-white/15 pt-5 text-[13px]">
+              <dl className="mt-7 border-t border-white/15 pt-5 type-caption">
                 <div className="flex justify-between gap-5 py-2">
                   <dt className="shrink-0 text-white/45">명의</dt>
                   <dd className="text-right">{current.holder}</dd>
@@ -314,7 +314,7 @@ export default function Certifications() {
                   href={`/docs/${current.pdf}`}
                   download
                   onClick={(e) => e.stopPropagation()}
-                  className="mt-7 inline-flex items-center justify-center gap-2 bg-white px-5 py-3.5 text-[13px] font-semibold text-ink transition-colors hover:bg-rose hover:text-white"
+                  className="mt-7 inline-flex items-center justify-center gap-2 bg-white px-5 py-3.5 type-body-sm font-semibold text-ink transition-colors hover:bg-rose hover:text-white"
                 >
                   <Download className="h-4 w-4" strokeWidth={1.8} />
                   Download PDF
@@ -322,7 +322,7 @@ export default function Certifications() {
               )}
 
               <div className="mt-auto flex items-center gap-2 pt-7">
-                <span className="mr-1 text-xs tabular-nums text-white/45">
+                <span className="mr-1 type-caption tabular-nums text-white/45">
                   {(openIndex ?? 0) + 1} / {DOCS.length}
                 </span>
                 <button

@@ -113,7 +113,7 @@ export default function PlaceholderImage({
           }`}
         >
           <ImageIcon className="h-6 w-6" strokeWidth={1.5} />
-          <span className="eyebrow !tracking-[0.2em] text-[10px]">
+          <span className="eyebrow !tracking-[0.2em]">
             {label ?? name}
           </span>
         </div>

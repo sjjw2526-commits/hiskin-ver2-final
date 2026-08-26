@@ -92,7 +92,7 @@ export default function Manufacturing() {
           </p>
           <h2
             data-mfg-head
-            className="text-display-md font-display font-semibold text-ink"
+            className="type-h2 font-display font-semibold text-ink"
           >
             State-of-the-Art
             <br />
@@ -100,7 +100,7 @@ export default function Manufacturing() {
           </h2>
           <p
             data-mfg-head
-            className="mt-8 max-w-xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]"
+            className="mt-8 max-w-xl type-lead font-medium text-ink"
           >
             원료 배합부터 최종 완제품 충진까지, 엄격한 글로벌 품질 규격(cGMP /
             ISO)을 준수하는 첨단 자동화 스마트 팩토리에서 정밀 생산됩니다.
@@ -113,10 +113,10 @@ export default function Manufacturing() {
             {SPECS.map((spec) => (
               <div key={spec.num} data-mfg-spec>
                 <p className="eyebrow-tag mb-3">{spec.num}</p>
-                <h3 className="font-display text-lg font-semibold tracking-tight text-ink">
+                <h3 className="font-display type-body font-semibold text-ink">
                   {spec.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-mute">
+                <p className="mt-2 type-body-sm text-mute">
                   {spec.desc}
                 </p>
               </div>

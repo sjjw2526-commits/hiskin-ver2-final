@@ -67,10 +67,10 @@ export default function Statement() {
           <div key={item.num} data-usp-item className="px-6 md:px-8">
             <div className="border-t border-hairline pt-6 md:pt-7">
               <p className="eyebrow-tag mb-4">{item.num}</p>
-              <h3 className="font-display text-xl font-semibold leading-tight tracking-tight md:text-2xl">
+              <h3 className="font-display type-h3 font-semibold">
                 {item.title}
               </h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-mute">
+              <p className="mt-3 type-body text-mute">
                 {item.desc}
               </p>
             </div>

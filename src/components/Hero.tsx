@@ -324,7 +324,7 @@ export default function Hero() {
 
         <div
           ref={cueRef}
-          className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 text-[11px] font-medium tracking-[0.2em] text-white opacity-0 mix-blend-difference"
+          className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 type-caption font-medium tracking-[0.2em] text-white opacity-0 mix-blend-difference"
         >
           <ArrowDown className="h-3.5 w-3.5 animate-bounce" strokeWidth={1.5} />
           SCROLL
@@ -334,7 +334,7 @@ export default function Hero() {
       {/* ── Page 2 · grey, ordinary scroll ────────────────────── */}
       <section id="concept" ref={stmtRef} className="bg-paper-alt">
         <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-          <h2 className="text-display-xl font-display font-semibold text-ink">
+          <h2 className="type-display font-display font-semibold text-ink">
             <span className="block">
               Bare
               <span
@@ -368,7 +368,7 @@ export default function Hero() {
           </h2>
 
           <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
-          <p className="mt-5 max-w-2xl text-[19px] font-medium leading-[1.35] tracking-[-0.02em] text-ink md:text-[22px]">
+          <p className="mt-5 max-w-2xl type-lead font-medium text-ink">
             파데 없이 완벽한 아침, 단 10초로 완성하는 데일리 파데 프리 솔루션
           </p>
         </div>

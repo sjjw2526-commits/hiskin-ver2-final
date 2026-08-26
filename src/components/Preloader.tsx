@@ -112,7 +112,7 @@ export default function Preloader() {
     >
       <div
         ref={groupRef}
-        className="flex items-baseline font-display text-[clamp(2rem,7vw,4.5rem)] font-semibold tracking-[0.02em] text-ink"
+        className="flex items-baseline font-display type-counter font-semibold text-ink"
       >
         {LETTERS.map((letter, i) => (
           <span key={i} className="flex items-baseline overflow-hidden">
@@ -120,6 +120,8 @@ export default function Preloader() {
               {letter}
             </span>
             {i < LETTERS.length - 1 && (
+              /* em-relative on purpose: the dot scales with .type-counter,
+                 which a fixed step from the type scale could not do. */
               <span
                 data-dot
                 className="mx-[0.35em] inline-block text-[0.35em] leading-none text-mute"
