@@ -33,7 +33,7 @@ const COUNTRIES = [
 ];
 
 const fieldCls =
-  "w-full border-b border-hairline bg-transparent py-3 type-body text-ink outline-none transition-colors placeholder:text-mute/50 focus:border-ink";
+  "w-full border-b border-hairline bg-transparent py-3 type-field text-ink outline-none transition-colors placeholder:text-mute/50 focus:border-ink";
 
 function Field({
   label,
@@ -44,7 +44,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block type-caption text-mute">{label}</span>
+      <span className="mb-1 block type-body-sm text-mute">{label}</span>
       {children}
     </label>
   );
@@ -222,7 +222,7 @@ export default function InquiryForm() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
               />
-              <span className="type-caption text-mute">
+              <span className="type-body-sm text-mute">
                 I agree to the collection and use of personal information.
                 <br />
                 개인정보 수집 및 이용에 동의합니다.

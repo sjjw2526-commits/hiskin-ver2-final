@@ -178,6 +178,21 @@ html.is-loading {
   font-size: 1.625rem; /* 26px, weight 700 */
   letter-spacing: 0.02em;
 }
+/* Form fields. Fixed at 16px and never smaller: iOS Safari zooms the page
+   when a focused input is under 16px, and it does not zoom back out, so a
+   buyer filling this in on a phone would finish the form on a shifted,
+   magnified layout. This is the one place a fluid step is actively harmful. */
+.type-field {
+  font-size: 1rem; /* 16px, weight 400 */
+  line-height: 1.5;
+}
+
+/* Navbar links. Chrome rather than content, and fixed for the same reason
+   as the wordmark above: the bar does not change height, so its type should
+   not scale with the viewport either. */
+.type-nav {
+  font-size: 1.0625rem; /* 17px, weight 500 */
+}
 
 /* Horizontal rails carry their own affordances, so hide the native bar */
 .no-scrollbar {

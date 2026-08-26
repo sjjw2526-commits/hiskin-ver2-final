@@ -54,14 +54,14 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="group/roll type-body font-medium text-ink"
+                className="group/roll type-nav font-medium text-ink"
               >
                 <RollText>{link.label}</RollText>
               </a>
             ))}
             <a
               href="#inquiry"
-              className="group/roll ml-2 flex items-center gap-2 type-body font-medium text-ink"
+              className="group/roll ml-2 flex items-center gap-2 type-nav font-medium text-ink"
             >
               <RollText>B2B Inquiry</RollText>
               <ArrowRight
