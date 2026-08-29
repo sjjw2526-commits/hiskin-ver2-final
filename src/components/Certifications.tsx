@@ -53,25 +53,27 @@ const DOCS: Doc[] = [
   },
   {
     tag: "R&D Capability",
-    title: "항산화·탈모방지 두피 착색 잉크 조성물 특허",
+    title: "특허증 1",
     holder: "주식회사 지디엠",
     org: "대한민국 특허청",
     no: "제10-2599300호",
     date: "2023.11.02 등록 (출원 2023.05.25)",
-    detail:
-      "출원번호 제10-2023-0067460호 · 천연 추출물을 유효성분으로 포함하는 조성물 — 본 선크림과는 별개의 자사 보유 특허입니다",
+    detail: "출원번호 제10-2023-0067460호",
     img: "cert_patent",
     pdf: "cert_patent.pdf",
   },
   {
-    tag: "R&D Infrastructure",
-    title: "기업부설연구소 인정서",
-    holder: "에스엘코스메틱(주) 연구소",
-    org: "과학기술정보통신부 · KOITA",
-    no: "제2021111420호",
-    date: "2022.03.15 (최초 인정 2021.03.10)",
-    img: "cert_rnd_lab",
-    pdf: "cert_rnd_lab.pdf",
+    tag: "R&D Capability",
+    title: "특허증 2",
+    // Registered to 김주현 personally, not to the company — the scan says so
+    // in black and white, so the card has to as well.
+    holder: "김주현 (지디엠 대표이사)",
+    org: "대한민국 특허청",
+    no: "제10-2672429호",
+    date: "2024.05.31 등록 (출원 2023.06.16)",
+    detail: "출원번호 제10-2023-0077338호",
+    img: "cert_patent2",
+    pdf: "cert_patent2.pdf",
   },
   {
     tag: "Certificate of Analysis",
@@ -212,7 +214,7 @@ export default function Certifications() {
             type="button"
             onClick={() => setOpenIndex(i)}
             aria-label={`${doc.title} 크게 보기`}
-            className="group w-[74vw] shrink-0 snap-start text-left transition-transform duration-500 ease-out will-change-transform hover:-translate-y-[6px] hover:scale-[1.02] sm:w-[46vw] md:w-auto md:shrink"
+            className="group flex w-[74vw] shrink-0 snap-start flex-col text-left transition-transform duration-500 ease-out will-change-transform hover:-translate-y-[6px] hover:scale-[1.02] sm:w-[46vw] md:w-auto md:shrink"
           >
             <div className="relative overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-shadow duration-500 group-hover:shadow-[0_18px_44px_-12px_rgba(0,0,0,0.28)]">
               <PlaceholderImage
@@ -233,7 +235,7 @@ export default function Certifications() {
             <p className="mt-5 type-caption font-semibold uppercase tracking-[0.08em] text-rose">
               {doc.tag}
             </p>
-            <h3 className="mt-2 font-display type-body font-semibold text-ink">
+            <h3 className="mt-2 min-h-[2lh] font-display type-body font-semibold text-ink">
               {doc.title}
             </h3>
             <p className="mt-2 type-caption text-mute">

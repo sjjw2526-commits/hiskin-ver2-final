@@ -4,7 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { Eye, Droplets } from "lucide-react";
+import TestReports from "./TestReports";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -92,24 +92,6 @@ const UVA_START_X = 141.8; // 320 nm
 const LC_X = 414.1; // 377.6 nm
 const LC_Y = 66.7;
 
-/* Sensory characteristics, deliberately worded as design properties rather
-   than test outcomes — neither is backed by a report. Upgrade paths, in
-   order of what a buyer will ask for: an ocular-irritation study would let
-   "부담을 덜어냈습니다" become a stated result, and a cleansing-efficacy
-   study would license the much stronger "이중세안 불필요". Do not tighten
-   this copy before the corresponding document exists. */
-const IN_USE = [
-  {
-    Icon: Eye,
-    title: "눈시림 걱정 없이",
-    desc: "눈가 주변까지 편안하게 밀착되도록 설계해, 바르는 순간의 자극 부담을 덜어냈습니다.",
-  },
-  {
-    Icon: Droplets,
-    title: "물세안으로 간편하게",
-    desc: "별도의 리무버 없이, 평소 사용하던 클렌저만으로 깔끔하게 정리됩니다.",
-  },
-];
 type Meta = { label: string; value: string };
 
 function MetaRow({ items }: { items: Meta[] }) {
@@ -631,34 +613,11 @@ export default function ClinicalData() {
         </article>
       </div>
 
-      {/* ── In-use characteristics ─────────────────────────── */}
-      {/* Mirrors the two-card grid above on purpose: the numbers prove the
-          protection, this pair answers what it is like to actually wear. */}
-      <div
-        data-clin-grid
-        className="mt-[12px] grid grid-cols-1 gap-[12px] md:grid-cols-2"
-      >
-        {IN_USE.map(({ Icon, title, desc }) => (
-          <article
-            key={title}
-            data-clin-card
-            className="flex items-start gap-5 border border-black/[0.08] p-7 md:gap-6 md:p-9"
-          >
-            <Icon
-              className="mt-[3px] h-6 w-6 shrink-0 text-rose md:h-7 md:w-7"
-              strokeWidth={1.4}
-            />
-            <div className="min-w-0">
-              <p className="font-display type-h3 font-semibold text-ink">
-                {title}
-              </p>
-              <p className="mt-2 type-body text-mute">
-                {desc}
-              </p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {/* ── Source documents ─────────────────────────────────
+          The charts above are our redrawing of the reports; this is the
+          reports themselves. Placing it here rather than in the
+          certificate wall keeps the evidence next to the claim it backs. */}
+      <TestReports />
     </section>
   );
 }
