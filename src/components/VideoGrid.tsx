@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * 영상 넣는 법: `npm run video -- "<원본파일>" <슬롯번호>`
  *
- * ⚠️ review-02 를 뺀 나머지 handle·caption 은 아직 지어낸 자리표시입니다.
+ * ⚠️ review-01·02 를 뺀 나머지 handle·caption 은 아직 지어낸 자리표시입니다.
  *    영상을 채울 때 실제 계정명·문구로 같이 바꿔야 합니다.
  */
 type Review = {
@@ -29,10 +29,13 @@ type Review = {
 
 const REVIEWS: Review[] = [
   {
+    // 실제 촬영본. 메이크업 아티스트 리뷰 (2026-08-30 교체).
+    // handle 은 본인 인스타 계정을 받으면 "@..." 로 바꾸세요.
+    // 이름을 그대로 노출하지 않은 건 본인 동의를 받은 적이 없어서입니다.
     src: "/videos/review-01.mp4",
     poster: "/videos/review-01.jpg",
-    handle: "@glowdaily.kr",
-    caption: "출근 준비 10초 컷 — 톤업 실화?",
+    handle: "메이크업 아티스트",
+    caption: "HISKIN 리얼 리뷰 — 은은한 핑크빛 톤업",
   },
   {
     // 실제 영상이 들어간 유일한 슬롯. handle 은 아직 자리표시입니다.
@@ -290,14 +293,21 @@ export default function VideoGrid() {
         <div className="mb-8 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div>
             <p data-video-head className="eyebrow-tag mb-5">
-              K-Beauty Social Proof
+              Real Experiences.
             </p>
             <h2
               data-video-head
               className="font-display type-h2 font-semibold"
             >
-              Proven in Korea. Loved by Thousands.
+              Seen on Korean skin,
+              <br className="hidden md:block" /> loved in everyday life.
             </h2>
+            <p
+              data-video-head
+              className="mt-5 max-w-md type-body text-mute"
+            >
+              한국의 실제 사용자들이 경험한 HISKIN의 텍스처와 자연스러운 피부 표현.
+            </p>
           </div>
 
           <div data-video-head className="flex items-center gap-3">

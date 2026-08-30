@@ -10,8 +10,8 @@
 | img-03.jpg | 3:2           | ✅ 적용됨 — 햇빛 아래 눈 감고 미소 짓는 얼굴 (AI 생성). **아래 1/3이 어두워야** 그 위의 흰 SPF 50+ 글씨가 읽힙니다 |
 | img-04.jpg | 4:3           | ✅ 성분 01 — UV Filter (연핑크 제형 스와치, AI 생성)   |
 | img-05.jpg | 4:3           | ✅ 성분 02 — Glutathione & Niacinamide (AI 생성)      |
-| img-06.jpg | 4:3           | ✅ 성분 03 — Collagen & Peptide (AI 생성)             |
-| img-07.jpg | 4:3           | ✅ 성분 04 — White Truffle & Botanicals (AI 생성)     |
+| img-06.jpg | 4:3           | ✅ THE FORMULA — Hybrid UV Shield 텍스처 (젤 가닥, AI 생성) |
+| img-07.jpg | 4:3           | (미사용) — 이전 트러플 컷. 실제 전성분표에 없는 성분이라 THE FORMULA에서 제외 |
 | img-08.jpg | 4:3 / 가로    | (미사용) — 이전 아카이브 대형. 아카이브가 img-18로 교체되며 슬롯에서 빠짐 |
 | img-15.jpg | 4:3           | ✅ 적용됨 — 기울어진 튜브 + 삼단 분홍 제형 (실물 레퍼런스 재생성, 2880×2160 2K 업스케일). 제품 상세 좌측 대형 전용 |
 | img-09.jpg | 2:3           | ✅ 적용됨 — 핑크빛 물속의 제품 (AI 생성). 히어로 트리오 전용 (문장 속 글자 크기 → 트리오 가운데 3:5) |

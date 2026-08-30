@@ -9,26 +9,7 @@ import PlaceholderImage from "./PlaceholderImage";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const LINES = [
-  "Independent & Glowing.",
-  "The Neo-Modern Skin.",
-  "Minimal steps, effortless freedom.",
-];
-
-/**
- * The initials spell HISKIN down the left edge, which is the whole point of
- * the list — so the letter column is a fixed width and the letters stay in a
- * straight vertical line no matter how long the label beside them runs.
- * Reordering these breaks the acrostic.
- */
-const ROUTINE = [
-  { letter: "H", label: "Hello Day", desc: "맑고 생기 넘치는 아침의 시작" },
-  { letter: "I", label: "Independent", desc: "시간을 주도하는 미니멀 라이프" },
-  { letter: "S", label: "Smart Choice", desc: "스킨케어와 베이스를 단 하나로 압축" },
-  { letter: "K", label: "Keep Glowing", desc: "자외선 아래서도 지속되는 속광" },
-  { letter: "I", label: "Instant Radiance", desc: "10초 만에 완성하는 파데 프리 톤업" },
-  { letter: "N", label: "Neo-Modern", desc: "피부 해방감을 선사하는 정밀 포뮬러" },
-];
+const LINES = ["Less Steps.", "More Skin."];
 
 /**
  * pef-style dark philosophy, split two-up: the headline holds the left column
@@ -80,15 +61,6 @@ export default function Philosophy() {
         scrollTrigger: { trigger: "[data-phil-aside]", start: "top 85%" },
       });
 
-      gsap.from("[data-phil-row]", {
-        opacity: 0,
-        y: 18,
-        duration: 0.7,
-        ease: "power3.out",
-        stagger: 0.08,
-        scrollTrigger: { trigger: "[data-phil-list]", start: "top 88%" },
-      });
-
       // Full-bleed image: slow zoom-out + stat reveal
       gsap.fromTo(
         "[data-phil-bleed] [data-bleed-img]",
@@ -118,7 +90,7 @@ export default function Philosophy() {
   return (
     <section id="philosophy" ref={sectionRef} className="bg-ink text-white">
       <div className="flex min-h-svh flex-col px-6 py-16 md:px-[80px] md:py-24">
-        <p className="eyebrow-tag mb-8 md:mb-16">HISKIN Philosophy</p>
+        <p className="eyebrow-tag mb-8 md:mb-16">Our Philosophy</p>
 
         <div className="grid flex-1 grid-cols-1 content-center items-center gap-16 xl:grid-cols-12 xl:gap-16">
           {/* Left — headline + CTA */}
@@ -146,40 +118,25 @@ export default function Philosophy() {
             </a>
           </div>
 
-          {/* Right — intro + HISKIN routine */}
+          {/* Right — philosophy body */}
           <div
             data-phil-aside
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            <p className="type-sub text-white/60">
-              두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
+            <p className="type-sub text-white/70">
+              더 많이 가리는 대신, 더 자연스럽게 보여주는 것.
             </p>
-            <p className="mt-3 type-sub font-medium text-white">
-              HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
+            <p className="mt-6 type-body text-white/60">
+              HISKIN은 피부 위에 무언가를 더하기보다 본연의 피부가 가진 맑음과
+              생기를 살리는 방법을 고민합니다.
             </p>
-
-            <ul data-phil-list className="mt-10">
-              {ROUTINE.map((item, i) => (
-                <li
-                  key={i}
-                  data-phil-row
-                  className="flex gap-5 border-t border-white/12 py-5 last:border-b md:gap-7 md:py-6"
-                >
-                  <span className="w-[1.05em] shrink-0 font-display type-h2 font-bold text-rose">
-                    {item.letter}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block type-h3 font-semibold text-white">
-                      {item.label}
-                    </span>
-                    <span className="mt-1.5 block type-sub text-white/55">
-                      {item.desc}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-
+            <p className="mt-4 type-body text-white/60">
+              매일 손이 가는 텍스처, 자연스럽게 빛나는 피부 표현, 그리고 오래
+              사용할 수 있는 기준.
+            </p>
+            <p className="mt-8 font-display type-h3 font-semibold text-white">
+              Less, but better.
+            </p>
           </div>
         </div>
       </div>
@@ -205,7 +162,7 @@ export default function Philosophy() {
             SPF 50+
           </p>
           <p className="mt-4 type-body-sm font-medium text-white">
-            피부가 허락한, 가장 높은 차단.
+            매일 부담 없이, 편안한 자외선 차단.
           </p>
           <p className="mt-1 type-body-sm text-white/55">PA++++ · Every single day.</p>
         </div>

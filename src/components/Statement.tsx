@@ -15,18 +15,18 @@ gsap.registerPlugin(ScrollTrigger);
 const USP = [
   {
     num: "01",
-    title: "Weightless Rosy Glow",
-    desc: "인위적인 백탁 대신 웜/쿨톤 모두에 맑은 혈색을 부여하는 독자적 연핑크 포뮬러. 모공 끼임 없이 얇게 밀착.",
+    title: "Rosy Glow Finish",
+    desc: "연핑크 포뮬러가 피부에 자연스럽게 어우러져 맑고 생기 있는 피부 표현을 완성합니다.",
   },
   {
     num: "02",
-    title: "Clinically Proven UV Shield",
-    desc: "SPF 69.0 / UVA-PF 23.33(PA++++) 수치로 증명된 빈틈없는 데일리 쉴드.",
+    title: "Broad-Spectrum UV Protection",
+    desc: "UVA와 UVB를 함께 고려한 하이브리드 UV 시스템으로 매일 편안하게 사용할 수 있는 자외선 차단을 설계했습니다.",
   },
   {
     num: "03",
-    title: "Deep Moisture & Anti-Aging",
-    desc: "끈적임 없는 촉촉한 수분감과 고기능성 안티에이징 유효 성분을 그대로 담은 더마 포뮬러.",
+    title: "Hydrating, Never Heavy",
+    desc: "촉촉하게 밀착되면서도 끈적임은 덜어낸 가볍고 편안한 데일리 텍스처.",
   },
 ];
 

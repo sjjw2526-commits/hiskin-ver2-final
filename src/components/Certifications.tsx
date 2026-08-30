@@ -177,22 +177,20 @@ export default function Certifications() {
       <div className="px-6 md:px-[80px]">
         <div className="max-w-4xl">
           <p data-cert-head className="eyebrow-tag mb-6">
-            Official Accreditations &amp; Legal Compliance
+            Quality &amp; Certification
           </p>
           <h2
             data-cert-head
             className="type-h2 font-display font-semibold text-ink"
           >
-            Internationally Certified Manufacturing
-            <br className="hidden md:block" />
-            &amp; Proven Intellectual Property.
+            Standards behind HISKIN.
           </h2>
           <p
             data-cert-head
             className="mt-7 type-sub text-mute"
           >
-            글로벌 수출 규격과 cGMP 품질 관리 기준을 충족하는 공인 등록 서류 및
-            독자 특허 기술.
+            국제 제조 품질 규격과 공인 시험·등록 서류, 그리고 특허로 뒷받침되는
+            제품의 기준.
           </p>
         </div>
       </div>

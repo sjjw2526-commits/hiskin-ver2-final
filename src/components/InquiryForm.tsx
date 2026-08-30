@@ -171,10 +171,23 @@ export default function InquiryForm() {
           </h2>
           <p
             data-form-head
-            className="mt-8 max-w-md type-sub text-mute"
+            className="mt-6 max-w-md type-sub font-medium text-ink"
           >
-            해외 유통사, 도매상, 에스테틱 및 클리닉 파트너를 찾습니다. 아래
-            양식을 남겨주시면 영업일 기준 2일 내 회신드립니다.
+            A beauty brand from Korea, ready for your market.
+          </p>
+          <p
+            data-form-head
+            className="mt-5 max-w-md type-body text-mute"
+          >
+            한국 시장에서 실제 소비자와 만나고 있는 HISKIN을 새로운 시장의
+            파트너와 함께 확장합니다. 해외 유통·도매, 클리닉·에스테틱, OEM / ODM
+            파트너와의 협업을 기다립니다.
+          </p>
+          <p
+            data-form-head
+            className="mt-3 max-w-md type-body-sm text-mute"
+          >
+            문의는 영업일 기준 2일 내 회신드립니다.
           </p>
         </div>
 

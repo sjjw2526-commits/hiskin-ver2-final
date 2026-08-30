@@ -15,11 +15,13 @@ const SPECS = [
   // exact conversion is 2.0288, but a spec sheet that disagrees with the
   // package reads as an error in the room.
   { label: "Volume", value: "60ml / 2.02 fl.oz." },
-  { label: "Protection", value: "SPF 50+ / PA++++ (Clinically Proven)" },
+  { label: "Protection", value: "SPF 50+ / PA++++" },
+  { label: "Test Standard", value: "ISO 24444 / ISO 24443" },
   { label: "Finish", value: "Rosy Skin-Glow · Foundation-Free Fit" },
-  { label: "Texture", value: "Hydra-Light & Zero-Stickiness" },
+  { label: "Texture", value: "Hydra-Light · Zero-Stickiness" },
   { label: "Free of", value: "Mineral Oil · Talc · Stone Powder" },
-  { label: "Skin Type", value: "Dermatologist Tested · Safe for Sensitive Skin" },
+  { label: "Skin Type", value: "Dermatologist Tested · Suitable for Sensitive Skin" },
+  { label: "Origin", value: "Made in Korea" },
 ];
 
 /**
