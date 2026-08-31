@@ -12,22 +12,22 @@ const SPECS = [
   {
     num: "01",
     title: "cGMP / ISO 22716",
-    desc: "국제 제조 품질 규격을 따르는 위생·품질 관리 공정",
+    desc: "글로벌 수출 규격을 완벽히 충족하는 위생 및 품질 관리 공정",
   },
   {
     num: "02",
     title: "Proprietary R&D",
-    desc: "포뮬러 안정화를 위한 자체 연구개발",
+    desc: "유효 성분의 파괴를 방지하는 독자적 포뮬레이션 안정화 기술",
   },
   {
     num: "03",
     title: "High-Capacity Smart Line",
-    desc: "대량 발주에도 일관된 품질을 위한 자동화 생산 시스템",
+    desc: "글로벌 대량 발주(Bulk Order)에도 일관된 품질을 보장하는 자동화 라인",
   },
   {
     num: "04",
     title: "Strict Dermatological QC",
-    desc: "출고 전 로트별 품질 관리 및 피부 저자극 테스트",
+    desc: "출고 전 전 로트(Lot) 정밀 분석 및 피부 저자극 안전성 테스트 완료",
   },
 ];
 
@@ -94,20 +94,16 @@ export default function Manufacturing() {
             data-mfg-head
             className="type-h2 font-display font-semibold text-ink"
           >
-            Seven Years
+            State-of-the-Art
             <br />
-            in the Making.
+            Facility &amp; Global Standards.
           </h2>
           <p
             data-mfg-head
             className="mt-8 max-w-xl type-lead font-medium text-ink"
           >
-            하나의 제품을 완성하기까지 7년. 좋은 원료를 담는 것을 넘어, 피부
-            위에서의 사용감과 안정성, 자외선 차단 성능까지 오랜 시간 다듬었습니다.
-          </p>
-          <p data-mfg-head className="mt-4 max-w-xl type-body text-mute">
-            그 결과를 실제 제품으로 구현하기 위해 국제 품질 규격에 부합하는 제조
-            환경과 엄격한 품질 관리 과정을 거쳐 완성합니다.
+            원료 배합부터 최종 완제품 충진까지, 엄격한 글로벌 품질 규격(cGMP /
+            ISO)을 준수하는 첨단 자동화 스마트 팩토리에서 정밀 생산됩니다.
           </p>
 
           <div

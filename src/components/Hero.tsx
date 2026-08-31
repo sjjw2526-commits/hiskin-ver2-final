@@ -465,9 +465,9 @@ export default function Hero() {
             </span>
           </h2>
 
-          <span className="eyebrow-tag mt-10">Foundation-Free, Naturally.</span>
+          <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
           <p className="mt-5 max-w-2xl type-lead font-medium text-ink">
-            파운데이션은 덜어내고, 자연스러운 피부 표현은 더했습니다.
+            파데 없이 완벽한 아침, 단 10초로 완성하는 데일리 파데 프리 솔루션
           </p>
         </div>
 
@@ -494,7 +494,7 @@ export default function Hero() {
           >
             <PlaceholderImage
               name="img-02"
-              alt="산뜻한 톤업 마무리의 맑은 피부 클로즈업"
+              alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
               aspect="aspect-[4/5] md:aspect-auto"
               className="h-full w-full"
               imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"

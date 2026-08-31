@@ -42,17 +42,14 @@ export default function ArchiveGallery() {
     <section id="archive" ref={sectionRef} className="bg-paper-alt">
       <div className="px-6 py-16 md:px-[80px] md:py-36">
         <p data-arc-head className="eyebrow-tag mb-5">
-          The Archive
+          HISKIN Archive
         </p>
         <h2
           data-arc-head
-          className="mb-6 font-display type-h2 font-semibold"
+          className="mb-10 font-display type-h2 font-semibold md:mb-20"
         >
-          The details behind HISKIN.
+          Clean by Standard, Every Detail.
         </h2>
-        <p data-arc-head className="mb-10 max-w-xl type-body text-mute md:mb-20">
-          HISKIN의 기준과 제품이 완성되는 모든 과정을 기록합니다.
-        </p>
 
         <div
           data-arc-grid

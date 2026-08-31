@@ -459,8 +459,8 @@ Higgsfield MCP(Nano Banana 2, 2K, 4:3)로 생성했습니다. 톤은 보내주�
 |---|---|---|
 | `img-04` | UV Filter & Titanium Dioxide | **연핑크 크림 스와치** — 유리 위 얇은 막, 빛 굴절 |
 | `img-05` | Glutathione & Niacinamide | 진주빛 표면 위 투명 세럼 방울, 광채 하이라이트 |
-| `img-06` | Hybrid UV Shield (텍스처) | 늘어나는 젤 가닥 — THE FORMULA 01 |
-| `img-07` | (미사용) | 트러플 컷 — 없는 성분이라 카피 리뉴얼 때 제외 |
+| `img-06` | Collagen & Peptide | 탄력 있게 늘어나는 젤 가닥 |
+| `img-07` | White Truffle & Botanicals | 화이트 트러플 + 허브 + 투명 젤 |
 
 **연핑크는 img-04에 넣었습니다.** 두 가지 이유입니다 — 제형 컬러를 가장 직접적으로
 보여주는 게 자외선 차단 크림 스와치이고, 아코디언이 **1번 항목을 기본으로 열어두기**

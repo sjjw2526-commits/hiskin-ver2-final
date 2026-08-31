@@ -293,21 +293,14 @@ export default function VideoGrid() {
         <div className="mb-8 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
           <div>
             <p data-video-head className="eyebrow-tag mb-5">
-              Real Experiences.
+              K-Beauty Social Proof
             </p>
             <h2
               data-video-head
               className="font-display type-h2 font-semibold"
             >
-              Seen on Korean skin,
-              <br className="hidden md:block" /> loved in everyday life.
+              Proven in Korea. Loved by Thousands.
             </h2>
-            <p
-              data-video-head
-              className="mt-5 max-w-md type-body text-mute"
-            >
-              한국의 실제 사용자들이 경험한 HISKIN의 텍스처와 자연스러운 피부 표현.
-            </p>
           </div>
 
           <div data-video-head className="flex items-center gap-3">

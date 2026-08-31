@@ -15,17 +15,14 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "HISKIN — Less Cover. More Skin.",
+  title: "HISKIN — Daily Suncream Protect",
   description:
-    "파운데이션 없이 자연스럽고 맑은 피부 표현을 완성하는 데일리 선크림. SPF 50+ / PA++++. 해외 유통·도매·클리닉·에스테틱 파트너를 위한 HISKIN B2B 브랜드 사이트.",
+    "One Step. Zero Effort. SPF 50+ PA++++ 3-in-1 daily tone-up suncream. B2B inquiries for overseas distributors, wholesalers, and clinics.",
   openGraph: {
-    title: "HISKIN — Less Cover. More Skin.",
-    description: "Foundation-free daily suncream. SPF 50+ / PA++++.",
+    title: "HISKIN — Daily Suncream Protect",
+    description:
+      "One Step. Zero Effort. SPF 50+ PA++++ 3-in-1 daily tone-up suncream.",
     type: "website",
-  },
-  twitter: {
-    card: "summary",
-    description: "Foundation-free daily suncream. SPF 50+ / PA++++.",
   },
 };
 
