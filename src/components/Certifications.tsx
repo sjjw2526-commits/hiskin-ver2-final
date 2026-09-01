@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { ArrowLeft, ArrowRight, Download, Maximize2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Maximize2, X } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -22,8 +22,6 @@ type Doc = {
   detail?: string;
   /** /public/images/{img}.jpg */
   img: string;
-  /** /public/docs/{pdf} — 파일이 실제로 있을 때만 다운로드 버튼이 뜹니다 */
-  pdf: string;
 };
 
 /* 값은 전부 스캔본 원문에서 읽은 것입니다. 숫자를 고칠 일이 생기면
@@ -38,7 +36,6 @@ const DOCS: Doc[] = [
     date: "2026.03.27 ~ 2029.03.26",
     detail: "앰플·토너·크림·로션·에센스·폼클렌저·마스크팩 등 연구개발·생산·판매",
     img: "cert_iso22716",
-    pdf: "cert_iso22716.pdf",
   },
   {
     tag: "Regulatory Approval",
@@ -49,7 +46,6 @@ const DOCS: Doc[] = [
     date: "2025.03.06",
     detail: "직접 제조 + 위탁 제조 영업 등록",
     img: "cert_mfg_license",
-    pdf: "cert_mfg_license.pdf",
   },
   {
     tag: "R&D Capability",
@@ -60,7 +56,6 @@ const DOCS: Doc[] = [
     date: "2023.11.02 등록 (출원 2023.05.25)",
     detail: "출원번호 제10-2023-0067460호",
     img: "cert_patent",
-    pdf: "cert_patent.pdf",
   },
   {
     tag: "R&D Capability",
@@ -73,7 +68,6 @@ const DOCS: Doc[] = [
     date: "2024.05.31 등록 (출원 2023.06.16)",
     detail: "출원번호 제10-2023-0077338호",
     img: "cert_patent2",
-    pdf: "cert_patent2.pdf",
   },
   {
     tag: "Certificate of Analysis",
@@ -84,7 +78,6 @@ const DOCS: Doc[] = [
     date: "2025.09.06",
     detail: "Glutathione 1.75mg/g · Collagen 142.15mg/100g · SPF 50+ / PA++++",
     img: "cert_irdop_analysis",
-    pdf: "cert_irdop_analysis.pdf",
   },
 ];
 
@@ -93,30 +86,13 @@ const DOCS: Doc[] = [
  *
  * Five A4 scans a buyer's compliance team will want to open full-size, so
  * the thumbnails are deliberately unreadable and every card is a lightbox
- * trigger. Download buttons only render for PDFs that actually exist —
- * a HEAD probe on mount beats shipping five 404 links.
+ * trigger. View-only by design — the scans carry a business registration
+ * number, a patent number and a birthdate, so nothing is downloadable.
  */
 export default function Certifications() {
   const sectionRef = useRef<HTMLElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [havePdf, setHavePdf] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    let alive = true;
-    Promise.all(
-      DOCS.map((d) =>
-        fetch(`/docs/${d.pdf}`, { method: "HEAD" })
-          .then((r) => [d.pdf, r.ok] as const)
-          .catch(() => [d.pdf, false] as const)
-      )
-    ).then((pairs) => {
-      if (alive) setHavePdf(Object.fromEntries(pairs));
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -311,18 +287,6 @@ export default function Certifications() {
                   </div>
                 )}
               </dl>
-
-              {havePdf[current.pdf] && (
-                <a
-                  href={`/docs/${current.pdf}`}
-                  download
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-7 inline-flex items-center justify-center gap-2 bg-white px-5 py-3.5 type-body-sm font-semibold text-ink transition-colors hover:bg-rose hover:text-white"
-                >
-                  <Download className="h-4 w-4" strokeWidth={1.8} />
-                  Download PDF
-                </a>
-              )}
 
               <div className="mt-auto flex items-center gap-2 pt-7">
                 <span className="mr-1 type-caption tabular-nums text-white/45">

@@ -7,8 +7,8 @@ import RollText from "./RollText";
 
 const LINKS = [
   { href: "#concept", label: "Concept" },
-  { href: "#reviews", label: "Reviews" },
   { href: "#philosophy", label: "Philosophy" },
+  { href: "#reviews", label: "Reviews" },
   { href: "#science", label: "Science" },
   { href: "#archive", label: "Archive" },
 ];

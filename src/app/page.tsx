@@ -4,8 +4,8 @@ import Preloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Statement from "@/components/Statement";
-import VideoGrid from "@/components/VideoGrid";
 import Philosophy from "@/components/Philosophy";
+import VideoGrid from "@/components/VideoGrid";
 import ProductDetail from "@/components/ProductDetail";
 import ScienceAccordion from "@/components/ScienceAccordion";
 import ArchiveGallery from "@/components/ArchiveGallery";
@@ -24,8 +24,8 @@ export default function Home() {
         <main>
           <Hero />
           <Statement />
-          <VideoGrid />
           <Philosophy />
+          <VideoGrid />
           <ProductDetail />
           <ScienceAccordion />
           <ArchiveGallery />

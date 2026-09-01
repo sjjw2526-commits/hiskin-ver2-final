@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -14,14 +14,24 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 /**
+ * Consumes the --gs custom property GSAP animates below: 1 is fully
+ * desaturated, 0 is the photograph's own colour. A variable rather than a
+ * filter string, so the tween carries a plain number and there is no
+ * declaration to re-parse every frame.
+ */
+const desaturate = {
+  filter: "grayscale(var(--gs, 1))",
+  willChange: "filter",
+} as CSSProperties;
+
+/**
  * Page 1 — a white runway where img-01 fills the viewport and shrinks into
  * the gap of "One [ ] Step." as the grey page rises to meet it.
  *
  * Page 2 — ordinary document flow, so the copy simply scrolls up. img-09
- * lifts out of "Zero [ ] Effort." and settles into the centre column of a
- * full-bleed row; img-02 fades in on the left on the way up, and img-10
- * materialises in place the moment the row squares up with the top of the
- * window.
+ * lifts out of "Zero [ ] Foundation." and settles into the centre column of
+ * the trio that opens Statement.tsx. The trio itself lives there, pinned
+ * with the captions it belongs to; this file only flies the tube into it.
  */
 export default function Hero() {
   const { introDone } = useIntro();
@@ -35,10 +45,6 @@ export default function Hero() {
   const slot09Ref = useRef<HTMLSpanElement>(null);
   const img01Ref = useRef<HTMLSpanElement>(null);
 
-  const rowRef = useRef<HTMLDivElement>(null);
-  const cell02Ref = useRef<HTMLDivElement>(null);
-  const cell09Ref = useRef<HTMLDivElement>(null);
-  const cell10Ref = useRef<HTMLDivElement>(null);
   const fly09Ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -46,8 +52,15 @@ export default function Hero() {
       const stmt = stmtRef.current;
       const slot01 = slot01Ref.current;
       const slot09 = slot09Ref.current;
-      const row = rowRef.current;
-      const cell09 = cell09Ref.current;
+      // The trio of photographs lives in Statement.tsx now: it is pinned
+      // together with the captions it belongs to, and a pin owns exactly one
+      // element, so the two had to end up under one roof. The flight still
+      // lands on it. This hook is scoped to the runway, so a selector string
+      // handed to gsap would be resolved inside page one and quietly find
+      // nothing — these have to be looked up against the document. They are
+      // already there: the whole tree commits before any layout effect runs.
+      const row = document.querySelector<HTMLElement>("[data-trio-row]");
+      const cell09 = document.querySelector<HTMLElement>("[data-trio-cell-09]");
       const fly = fly09Ref.current;
       if (!runwayRef.current || !stmt || !slot01 || !slot09) return;
       if (!row || !cell09 || !fly) return;
@@ -78,18 +91,6 @@ export default function Hero() {
       // sentence, and the trio is a plain vertical stack that fades in.
       mm.add("(max-width: 767.98px)", () => {
         gsap.set(img01Ref.current, { opacity: 1 });
-        gsap.fromTo(
-          [cell02Ref.current, cell09Ref.current, cell10Ref.current],
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.12,
-            scrollTrigger: { trigger: row, start: "top 82%" },
-          }
-        );
       });
 
       // ══ Desktop ═════════════════════════════════════════════
@@ -277,45 +278,6 @@ export default function Hero() {
       flight();
       gsap.ticker.add(flight);
 
-      // img-02 eases in on the left as the row climbs. It resolves well before
-      // the row reaches the fold so that, by the time the sentence is leaving
-      // the top of the window, the left column is already filled.
-      gsap.fromTo(
-        cell02Ref.current,
-        { opacity: 0, x: -70 },
-        {
-          opacity: 1,
-          x: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: row,
-            start: "top 85%",
-            end: "top 48%",
-            scrub: true,
-          },
-        }
-      );
-
-      // img-10 materialises in place, following img-02 across so the trio is
-      // complete well before the row squares up with the top of the window —
-      // finishing it *at* the ceiling left the right column empty for a whole
-      // screen of scrolling.
-      gsap.fromTo(
-        cell10Ref.current,
-        { opacity: 0, scale: 1.06 },
-        {
-          opacity: 1,
-          scale: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: row,
-            start: "top 70%",
-            end: "top 38%",
-            scrub: true,
-          },
-        }
-      );
-
       return () => gsap.ticker.remove(flight);
       });
 
@@ -471,70 +433,17 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Just a breath between the sentence and the trio — the climb is
-            paced by scroll progress below, not by empty space here. */}
+        {/* Just a breath before the spread that follows — the trio of
+            photographs and its captions are pinned together in
+            Statement.tsx, so nothing else belongs between them. */}
         <div className="h-[5svh]" />
-
-        {/* Full-bleed trio — plain document flow, so it simply scrolls up.
-            White from here down, so page three reads as its own screen
-            against the grey the sentence sits on. */}
-        {/* Short of the full viewport on purpose: at h-screen the photographs
-            filled the window and pushed their captions below the fold, so the
-            two halves of the same idea were never on screen together. */}
-        {/* One column on a phone. Three 122px-wide slivers of a 4:3 photograph
-            show a neck and half a word; stacked at 4:5 each picture is
-            actually legible. */}
-        <div
-          ref={rowRef}
-          className="grid w-full grid-cols-1 gap-[12px] bg-paper py-[12px] md:h-[60vh] md:min-h-[380px] md:grid-cols-3"
-        >
-          <div
-            ref={cell02Ref}
-            className="group relative overflow-hidden opacity-0"
-          >
-            <PlaceholderImage
-              name="img-02"
-              alt="도시의 강한 직사광 아래 드러난 맨 어깨와 목선"
-              aspect="aspect-[4/5] md:aspect-auto"
-              className="h-full w-full"
-              imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
-              label="IMG 02 · 3:4"
-            />
-          </div>
-          {/* The flying img-09 comes to rest exactly over this cell. Nothing
-              flies on a phone, so the picture simply lives here instead. */}
-          <div ref={cell09Ref} className="group relative overflow-hidden">
-            <PlaceholderImage
-              name="img-09"
-              alt="HISKIN skin texture close-up"
-              aspect="aspect-[4/5]"
-              className="w-full md:hidden"
-              label="IMG 09 · 3:4"
-            />
-          </div>
-          <div
-            ref={cell10Ref}
-            className="group relative overflow-hidden opacity-0"
-          >
-            <PlaceholderImage
-              name="img-10"
-              alt="벚꽃잎에 둘러싸인 연분홍 제형 위에 HISKIN 글씨를 새긴 클로즈업"
-              aspect="aspect-[4/5] md:aspect-auto"
-              className="h-full w-full"
-              imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
-              label="IMG 10 · 3:4"
-            />
-          </div>
-        </div>
-
-        {/* No breath here on purpose: the three claims in Statement sit on
-            this same grid and read as the captions to these photographs. A
-            gap would split them back into two separate sections. */}
       </section>
 
       {/* img-09 — sits inline in the sentence, then flies into its column */}
       <div
         ref={fly09Ref}
+        data-trio-tint="09"
+        style={desaturate}
         className="group fixed left-0 top-0 z-30 hidden origin-top-left overflow-hidden will-change-transform md:block"
       >
         <PlaceholderImage

@@ -16,8 +16,14 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * 영상 넣는 법: `npm run video -- "<원본파일>" <슬롯번호>`
  *
- * ⚠️ review-01·02 를 뺀 나머지 handle·caption 은 아직 지어낸 자리표시입니다.
- *    영상을 채울 때 실제 계정명·문구로 같이 바꿔야 합니다.
+ * ⚠️ 3·4·5 번의 handle 은 아직 지어낸 자리표시입니다. 실제 계정을 받으면
+ *    caption 과 함께 바꿔야 합니다. 1·2 번은 실명 대신 역할명을 쓰고 있는데,
+ *    본인 동의를 받은 적이 없어서입니다.
+ *
+ * 빈 슬롯은 두지 않습니다 — 파일 없는 항목은 자리표시 카드로 렌더되고,
+ * 그 자리는 바이어에게 "아직 못 채운 칸"으로 읽힙니다 (2026-09-02 에 6·7·8
+ * 번을 뺀 이유). 아래 hasVideo 분기는 파일이 깨졌을 때를 위한 안전망으로만
+ * 남겨둡니다.
  */
 type Review = {
   src: string;
@@ -38,12 +44,15 @@ const REVIEWS: Review[] = [
     caption: "HISKIN 리얼 리뷰 — 은은한 핑크빛 톤업",
   },
   {
-    // 실제 영상이 들어간 유일한 슬롯. handle 은 아직 자리표시입니다.
+    // 실제 촬영본, 기름종이 테스트 (2026-09-02 추가).
+    // ⚠️ handle 과 caption 은 아직 정해지지 않았습니다. 본인 계정을 받으면
+    // "@..." 로 바꾸고, 이름을 노출할지는 동의를 받은 뒤에 정하세요 —
+    // review-01 을 역할명으로 둔 것과 같은 이유입니다.
     src: "/videos/review-02.mp4",
     // 재생 전에 보이는 정지 컷. 없으면 카드가 검게 비어 보입니다.
     poster: "/videos/review-02.jpg",
-    handle: "@sunny.beautylog",
-    caption: "하이스킨 데일리 선크림 제품 소개",
+    handle: "실사용 후기",
+    caption: "기름종이로 확인한 마무리감",
   },
   {
     src: "/videos/review-03.mp4",
@@ -52,32 +61,18 @@ const REVIEWS: Review[] = [
     caption: "민감성 피부 2주 사용 솔직 후기",
   },
   {
+    // 2026-09-02 에 2번 자리에서 내려온 영상. handle 은 자리표시입니다.
     src: "/videos/review-04.mp4",
     poster: "/videos/review-04.jpg",
-    handle: "@daily.uv.diary",
-    caption: "한여름 8시간 지속력 테스트",
+    handle: "@sunny.beautylog",
+    caption: "하이스킨 데일리 선크림 제품 소개",
   },
   {
+    // 2026-09-02 에 4번 자리에서 내려온 영상. handle 은 자리표시입니다.
     src: "/videos/review-05.mp4",
     poster: "/videos/review-05.jpg",
-    handle: "@minz_cosmetic",
-    caption: "파운데이션 없이 출근한 날",
-  },
-  {
-    src: "/videos/review-06.mp4",
-    poster: "/videos/review-06.jpg",
-    handle: "@seoul.skinnote",
-    caption: "속건조 없는 촉촉 마무리감",
-  },
-  {
-    src: "/videos/review-07.mp4",
-    handle: "@beauty.editor.h",
-    caption: "에디터가 고른 데일리 선크림",
-  },
-  {
-    src: "/videos/review-08.mp4",
-    handle: "@clinic.aesthetic",
-    caption: "시술 후에도 쓸 수 있나요?",
+    handle: "@daily.uv.diary",
+    caption: "한여름 8시간 지속력 테스트",
   },
 ];
 
@@ -94,6 +89,12 @@ function VideoCard({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasVideo, setHasVideo] = useState(true);
+  // The still sits in a layer of its own rather than relying on the video's
+  // poster attribute. A poster is only ever shown *before* the first frame is
+  // decoded — once the card has been hovered and played, pausing and rewinding
+  // leaves frame zero on screen and the poster never returns. Owning the still
+  // means the card goes back to the frame that was chosen for it, every time.
+  const [showStill, setShowStill] = useState(true);
 
   // The load error can fire before React hydrates (onError never runs),
   // so re-check the network state on mount. (3 = NETWORK_NO_SOURCE)
@@ -112,6 +113,9 @@ function VideoCard({
   const pause = () => {
     const v = videoRef.current;
     if (!v) return;
+    // Cover first, then stop. The other order shows one frame of the rewound
+    // video before the still lands on top of it.
+    setShowStill(true);
     v.pause();
     v.currentTime = 0;
   };
@@ -138,6 +142,10 @@ function VideoCard({
           playsInline
           preload="metadata"
           onError={() => setHasVideo(false)}
+          // Not onPlay: that fires on the request, before there is anything to
+          // look at. onPlaying fires once frames are actually running, so the
+          // still is only pulled away when the video is ready to replace it.
+          onPlaying={() => setShowStill(false)}
           className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       ) : (
@@ -148,6 +156,18 @@ function VideoCard({
           </span>
         </div>
       )}
+
+      {/* Sits over the video and carries the same hover scale, so the swap in
+          either direction changes nothing but which layer is on top. No fade:
+          letting go of a card should put the still back at once. */}
+      {hasVideo && review.poster && showStill ? (
+        <img
+          src={review.poster}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : null}
 
       {/* Gradient + meta */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 pt-16">
