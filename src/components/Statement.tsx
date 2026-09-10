@@ -60,20 +60,18 @@ const USP = [
     problem: { en: "WHITE CAST", ko: "부담스러운 백탁은 그만" },
     solution: {
       en: "ROSY, NOT WHITE",
-      ko: "화사한 연핑크 톤업으로",
-      koStrong: "맑고 빛나는 피부",
+      ko: "화사한 연핑크 톤업으로 맑고 빛나는 피부",
     },
   },
   {
     num: "02",
     problem: {
       en: "INCOMPLETE UV PROTECTION",
-      ko: "한쪽만 막는 차단으로는 충분하지 않으니까",
+      ko: "기미부터 노화까지, 자외선이 남기는 흔적",
     },
     solution: {
       en: "FULL SPECTRUM, COVERED",
-      ko: "유기 3종 + 무기 2종으로",
-      koStrong: "UVA·UVB를 빈틈없이 차단",
+      ko: "유기 3종 + 무기 2종으로 UVA·UVB를 빈틈없이 차단",
     },
   },
   {
@@ -81,8 +79,7 @@ const USP = [
     problem: { en: "HEAVY & STICKY", ko: "무겁고 끈적이는 사용감은 그만" },
     solution: {
       en: "LIGHT ALL DAY",
-      ko: "가볍게 밀착되어",
-      koStrong: "하루 종일 편안하게",
+      ko: "가볍게 밀착되어 하루 종일 편안하게",
     },
   },
 ];
@@ -105,31 +102,38 @@ function Caption({ item }: { item: (typeof USP)[number] }) {
         the headline swaps without shifting, and the box is as tall as the
         taller of the two, so the scrim never changes height.
 
-        They are set in different greys on purpose. Swapping one line of
-        type for another at the same size and colour is the kind of change a
-        reader's eye goes straight past — the words differ but the shape
-        does not. So the problem is written in the flat grey of the
-        photograph behind it while that photograph is still desaturated, and
-        the answer lands in full ink as the colour comes back. */}
-      <div className="relative grid px-6 pb-6 md:px-7 md:pb-7">
-        <div data-usp-problem className="[grid-area:1/1]">
-          <h3 className="font-display type-h3 font-semibold text-mute">
-            {item.problem.en}
-          </h3>
-          <p className="mt-2.5 type-body text-ink/35">{item.problem.ko}</p>
-        </div>
+        They are set in different greys on purpose, and the answer lands in
+        full ink as the colour comes back into the photograph behind it.
 
-        <div data-usp-solution className="[grid-area:1/1]">
-          <h3 className="font-display type-h3 font-semibold text-ink">
-            {item.solution.en}
-          </h3>
-          <p className="mt-2.5 type-body text-mute">
-            {item.solution.ko}
-            <br />
-            <span className="font-medium text-ink">
-              {item.solution.koStrong}
-            </span>
-          </p>
+        Colour alone was not enough. Swapping one line of type for another at
+        the same size, in the same place, is the least noticeable change a
+        page can make — nothing moves, so the eye has nothing to catch, and
+        readers watched the whole handover without registering that the words
+        had changed at all. So the two states now roll: the problem leaves
+        upward and the answer rises into the space it left, both stopping at
+        the identical resting position. Motion is what makes it read as an
+        event rather than as a slow dissolve.
+
+        overflow-hidden is the window they roll through, and it is why this
+        cannot drift out of alignment the way an earlier offset-based attempt
+        did: outside the window there is nothing to see, and inside it there
+        is only ever one resting position. The padding sits on the wrapper,
+        not on the window, so the clip hugs the type. */}
+      <div className="relative px-6 pb-6 md:px-7 md:pb-7">
+        <div className="grid overflow-hidden">
+          <div data-usp-problem className="[grid-area:1/1]">
+            <h3 className="font-display type-h3 font-semibold text-mute">
+              {item.problem.en}
+            </h3>
+            <p className="mt-2.5 type-sub text-ink/50">{item.problem.ko}</p>
+          </div>
+
+          <div data-usp-solution className="[grid-area:1/1]">
+            <h3 className="font-display type-h3 font-semibold text-ink">
+              {item.solution.en}
+            </h3>
+            <p className="mt-2.5 type-sub text-ink">{item.solution.ko}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -184,14 +188,20 @@ export default function Statement() {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.set(tinted, { "--gs": 0 });
         gsap.set([cell02Ref.current, cell10Ref.current], { opacity: 1 });
-        gsap.set(problems, { opacity: 0 });
-        gsap.set(solutions, { opacity: 1 });
+        gsap.set(problems, { y: 0, yPercent: -100 });
+        gsap.set(solutions, { y: 0, yPercent: 0 });
         return;
       }
 
       gsap.set(tinted, { "--gs": 1 });
-      gsap.set(problems, { opacity: 1 });
-      gsap.set(solutions, { opacity: 0 });
+      // y: 0 alongside every yPercent, here and in the tweens below.
+      // getComputedStyle reports a percentage translate as a resolved pixel
+      // matrix, so on the next read GSAP books those pixels as `y` and then
+      // applies yPercent on top of them — the two stack, and the answer
+      // starts a full block lower than intended and comes to rest one block
+      // short. Naming y explicitly holds the pixel component at zero.
+      gsap.set(problems, { y: 0, yPercent: 0 });
+      gsap.set(solutions, { y: 0, yPercent: 100 });
 
       const mm = gsap.matchMedia();
 
@@ -294,17 +304,22 @@ export default function Statement() {
             { "--gs": 0, ease: "none", duration: 0.24 },
             at,
           )
+            // Eased, unlike the colour, which is scrubbed flat. The colour is
+            // a state the scroll is scrubbing through; the roll is a gesture,
+            // and a gesture that starts and stops at a constant speed reads
+            // as a slider being dragged. They overlap by 0.03 so the window
+            // is never empty.
             .fromTo(
               problems[col],
-              { opacity: 1 },
-              { opacity: 0, ease: "none", duration: 0.09 },
-              at + 0.1,
+              { y: 0, yPercent: 0 },
+              { y: 0, yPercent: -100, ease: "power2.in", duration: 0.12 },
+              at + 0.09,
             )
             .fromTo(
               solutions[col],
-              { opacity: 0 },
-              { opacity: 1, ease: "none", duration: 0.11 },
-              at + 0.19,
+              { y: 0, yPercent: 100 },
+              { y: 0, yPercent: 0, ease: "power2.out", duration: 0.14 },
+              at + 0.16,
             );
         });
 
@@ -351,9 +366,10 @@ export default function Statement() {
           );
           gsap.fromTo(
             problems[i],
-            { opacity: 1 },
+            { y: 0, yPercent: 0 },
             {
-              opacity: 0,
+              y: 0,
+              yPercent: -100,
               ease: "none",
               scrollTrigger: {
                 trigger: cell,
@@ -365,14 +381,15 @@ export default function Statement() {
           );
           gsap.fromTo(
             solutions[i],
-            { opacity: 0 },
+            { y: 0, yPercent: 100 },
             {
-              opacity: 1,
+              y: 0,
+              yPercent: 0,
               ease: "none",
               scrollTrigger: {
                 trigger: cell,
-                start: "top 54%",
-                end: "top 38%",
+                start: "top 56%",
+                end: "top 40%",
                 scrub: true,
               },
             },
@@ -431,8 +448,21 @@ export default function Statement() {
           </div>
 
           {/* The tube flown in from Hero.tsx comes to rest exactly over this
-              picture, which is why it stays empty from md up. Nothing flies on
-              a phone, so the picture simply lives here instead. */}
+              cell — and then hands over to the picture below, which is the
+              same photograph laid out in the ordinary way.
+
+              The hand-over is not cosmetic. A fixed element does not move
+              with the page; Hero repositions it from a ticker every frame,
+              which reads the cell's rect before the frame's scroll has been
+              applied. Standing still, inside the pin, that is invisible.
+              Scrolling out of the pin it is a frame of lag, and the middle
+              photograph visibly drags behind its two neighbours. Once the
+              flight is over there is nothing left for it to animate, so it
+              steps aside. This is also what gives the column its hover back:
+              a real picture inside the cell answers the cell's own group.
+
+              md:opacity-0 is the pre-hand-over state — Hero lifts it. Nothing
+              flies on a phone, so there the picture is simply visible. */}
           <div
             data-trio-cell
             data-trio-cell-09
@@ -443,13 +473,16 @@ export default function Statement() {
               style={desaturate}
               className="h-full w-full"
             >
-              <PlaceholderImage
-                name="img-09"
-                alt="HISKIN skin texture close-up"
-                aspect=""
-                className="h-full w-full md:hidden"
-                label="IMG 09 · 3:4"
-              />
+              <div data-trio-still className="h-full w-full md:opacity-0">
+                <PlaceholderImage
+                  name="img-09"
+                  alt="HISKIN skin texture close-up"
+                  aspect=""
+                  className="h-full w-full"
+                  imgClassName="transition duration-700 ease-out group-hover:scale-[1.04] group-hover:brightness-[0.93]"
+                  label="IMG 09 · 3:4"
+                />
+              </div>
             </div>
             <Caption item={USP[1]} />
           </div>

@@ -10,9 +10,10 @@ import PlaceholderImage from "./PlaceholderImage";
 gsap.registerPlugin(ScrollTrigger);
 
 const LINES = [
-  "Independent & Glowing.",
-  "The Neo-Modern Skin.",
-  "Minimal steps, effortless freedom.",
+  "Better Ingredients,",
+  "Higher Standards,",
+  "More Thought in Every Detail.",
+  "Made Without Compromise.",
 ];
 
 /**
@@ -22,12 +23,24 @@ const LINES = [
  * Reordering these breaks the acrostic.
  */
 const ROUTINE = [
-  { letter: "H", label: "Hello Day", desc: "맑고 생기 넘치는 아침의 시작" },
-  { letter: "I", label: "Independent", desc: "시간을 주도하는 미니멀 라이프" },
-  { letter: "S", label: "Smart Choice", desc: "스킨케어와 베이스를 단 하나로 압축" },
-  { letter: "K", label: "Keep Glowing", desc: "자외선 아래서도 지속되는 속광" },
-  { letter: "I", label: "Instant Radiance", desc: "10초 만에 완성하는 파데 프리 톤업" },
-  { letter: "N", label: "Neo-Modern", desc: "피부 해방감을 선사하는 정밀 포뮬러" },
+  { letter: "H", label: "HIGH STANDARD", desc: "제품 하나에도 더 높은 기준을" },
+  {
+    letter: "I",
+    label: "INGREDIENTS FIRST",
+    desc: "좋은 제품의 시작은 좋은 원료에서",
+  },
+  {
+    letter: "S",
+    label: "SELECTED WITH CARE",
+    desc: "직접 찾고 선택해온 원료의 기준",
+  },
+  { letter: "K", label: "KNOW-HOW", desc: "오랜 연구와 경험으로 쌓아온 노하우" },
+  { letter: "I", label: "INTEGRITY", desc: "보이는 것보다 제품의 본질에 충실하게" },
+  {
+    letter: "N",
+    label: "NO COMPROMISE",
+    desc: "더 오래 걸리더라도 쉽게 타협하지 않는 것",
+  },
 ];
 
 /**
@@ -64,30 +77,52 @@ export default function Philosophy() {
         );
       });
 
-      gsap.from("[data-phil-cta]", {
-        opacity: 0,
-        y: 24,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: { trigger: "[data-phil-cta]", start: "top 90%" },
-      });
+      // fromTo, not from: a ScrollTrigger refresh re-applies a from-tween's
+      // start values and can leave the element sitting at opacity 0 with no
+      // second pass to finish it. That is how the enquiry link on the product
+      // dossier went missing, and every reveal here carries the same risk.
+      gsap.fromTo(
+        "[data-phil-cta]",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: { trigger: "[data-phil-cta]", start: "top 90%" },
+        },
+      );
 
-      gsap.from("[data-phil-aside]", {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: { trigger: "[data-phil-aside]", start: "top 85%" },
-      });
+      gsap.fromTo(
+        "[data-phil-aside]",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: "[data-phil-aside]", start: "top 85%" },
+        },
+      );
 
-      gsap.from("[data-phil-row]", {
-        opacity: 0,
-        y: 18,
-        duration: 0.7,
-        ease: "power3.out",
-        stagger: 0.08,
-        scrollTrigger: { trigger: "[data-phil-list]", start: "top 88%" },
-      });
+      // The initials spell HISKIN, so the list wants to be read down rather
+      // than taken in at a glance. At the old 0.08 the six rows landed inside
+      // half a second — measured, they arrived within a single frame sample —
+      // which is a block appearing, not a word being spelled. 0.2 apart is
+      // slow enough that each letter is its own arrival and the eye follows
+      // H, I, S, K, I, N in turn, and still done inside a second and a half.
+      gsap.fromTo(
+        "[data-phil-row]",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power3.out",
+          stagger: 0.2,
+          scrollTrigger: { trigger: "[data-phil-list]", start: "top 88%" },
+        },
+      );
 
       // Full-bleed image: slow zoom-out + stat reveal
       gsap.fromTo(
@@ -104,13 +139,17 @@ export default function Philosophy() {
           },
         }
       );
-      gsap.from("[data-phil-stat]", {
-        opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: { trigger: "[data-phil-bleed]", start: "top 45%" },
-      });
+      gsap.fromTo(
+        "[data-phil-stat]",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: "[data-phil-bleed]", start: "top 45%" },
+        },
+      );
     },
     { scope: sectionRef }
   );
@@ -152,10 +191,10 @@ export default function Philosophy() {
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
             <p className="type-sub text-white/60">
-              두껍게 덮는 메이크업 대신 본연의 가벼운 숨결을 선택합니다.
+              좋은 제품을 만드는 데에는 고집이 필요합니다.
             </p>
             <p className="mt-3 type-sub font-medium text-white">
-              HISKIN이 제안하는 6가지 데일리 파데 프리 루틴
+              그 고집이 HISKIN의 기준이 됩니다.
             </p>
 
             <ul data-phil-list className="mt-10">
@@ -165,11 +204,14 @@ export default function Philosophy() {
                   data-phil-row
                   className="flex gap-5 border-t border-white/12 py-5 last:border-b md:gap-7 md:py-6"
                 >
-                  <span className="w-[1.05em] shrink-0 font-display type-h2 font-bold text-rose">
+                  <span className="w-[1.05em] shrink-0 font-display type-h2 font-bold text-rose-soft">
                     {item.letter}
                   </span>
                   <span className="min-w-0">
-                    <span className="block type-h3 font-semibold text-white">
+                    <span
+                      className="block type-h3 font-semibold text-white"
+                      style={{ letterSpacing: "0.015em", wordSpacing: "0.08em" }}
+                    >
                       {item.label}
                     </span>
                     <span className="mt-1.5 block type-sub text-white/55">
@@ -197,17 +239,50 @@ export default function Philosophy() {
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+        {/* The caption sits on the right, over bokeh that is bright enough in
+            places to swallow white type. This second wash darkens that side
+            only, so the model's face keeps its light. */}
+        <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/15 to-transparent md:via-black/10" />
         <div
           data-phil-stat
-          className="absolute bottom-14 right-6 text-right md:bottom-20 md:right-[60px]"
+          /* Left-aligned inside a fixed column, not right-aligned against
+              the frame. Ranged right, the three sizes each began at a
+              different x and the block read as three unrelated fragments;
+              sharing a left edge makes them one. The width also forces the
+              headline onto two lines, which keeps it off the model's face —
+              at full width it ran 703px and crossed her jaw. */
+          className="absolute bottom-14 right-6 w-[min(430px,74vw)] text-left md:bottom-20 md:right-[60px]"
         >
-          <p className="font-display type-stat font-semibold text-white">
-            SPF 50+
+          {/* type-h1, not the type-stat this block used to carry: that step
+              runs to 120px, sized for a short figure like "SPF 50+", and
+              would push eighteen characters clean off the frame. */}
+          {/* Tracking is set inline because it has to be. The .type-* classes
+              live outside Tailwind's utility layer, so an unlayered
+              letter-spacing beats any tracking-* class silently — this line was
+              running at type-h1's -0.02em, which is tuned for lower-case
+              display type and glues capitals together: MADEFOR. Capitals want
+              the opposite. */}
+          <p
+            className="font-display type-h1 font-semibold uppercase text-white"
+            style={{ letterSpacing: "0.015em", wordSpacing: "0.14em" }}
+          >
+            Made For Every Day
           </p>
-          <p className="mt-4 type-body-sm font-medium text-white">
-            피부가 허락한, 가장 높은 차단.
+          <p className="mt-6 type-lead text-white/90 md:mt-7">
+            매일 사용하는 선케어일수록
+            <br />
+            편안하고, 아름다워야 하니까
           </p>
-          <p className="mt-1 type-body-sm text-white/55">PA++++ · Every single day.</p>
+          {/* The rating still has to appear here. This photograph is the only
+              full-screen moment the page gives it, and a buyer checks that
+              number before anything else — so the message leads and the spec
+              sits underneath rather than disappearing entirely. */}
+          {/* white/65 was too faint against the bright side of this frame —
+              the one line on the page a buyer actually goes looking for
+              should not be the hardest to read. */}
+          <p className="mt-8 type-body-sm font-semibold tracking-[0.12em] text-white/85 md:mt-10">
+            SPF 50+ · PA++++
+          </p>
         </div>
       </div>
     </section>

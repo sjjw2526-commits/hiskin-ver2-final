@@ -61,9 +61,12 @@ export default function Hero() {
       // already there: the whole tree commits before any layout effect runs.
       const row = document.querySelector<HTMLElement>("[data-trio-row]");
       const cell09 = document.querySelector<HTMLElement>("[data-trio-cell-09]");
+      // The picture that lives inside the column. The flight hands over to it
+      // on landing — see the note on the cell in Statement.tsx.
+      const still09 = document.querySelector<HTMLElement>("[data-trio-still]");
       const fly = fly09Ref.current;
       if (!runwayRef.current || !stmt || !slot01 || !slot09) return;
-      if (!row || !cell09 || !fly) return;
+      if (!row || !cell09 || !still09 || !fly) return;
 
       // The cue is pinned to the window at both sizes, so it has to stand
       // down at both — leave this inside the desktop branch and it stays lit
@@ -228,6 +231,8 @@ export default function Hero() {
       // transformed — same reason as img-01, no per-frame re-sampling.
       let baseW = 0;
       let baseH = 0;
+      // null so the first frame always writes, whichever side it lands on
+      let handedOver: boolean | null = null;
 
       // Last line of defence, every frame: past the runway the fixed hero
       // must be dark and the inline copy lit, whatever any tween thinks.
@@ -274,11 +279,29 @@ export default function Hero() {
         fly.style.transform =
           `translate3d(${lerp(s.left, c.left, p)}px, ${lerp(s.top, c.top, p)}px, 0)` +
           ` scale(${w / baseW}, ${h / baseH})`;
+
+        // Landed. The two are exactly congruent at p === 1, so the swap is
+        // invisible — and from here the column is an ordinary picture that
+        // scrolls with the page instead of a fixed one chasing it a frame
+        // behind. Guarded on a change so this is not two style writes every
+        // frame for the rest of the page.
+        const landed = p >= 1;
+        if (landed !== handedOver) {
+          handedOver = landed;
+          fly.style.opacity = landed ? "0" : "1";
+          still09.style.opacity = landed ? "1" : "0";
+        }
       };
       flight();
       gsap.ticker.add(flight);
 
-      return () => gsap.ticker.remove(flight);
+      return () => {
+        gsap.ticker.remove(flight);
+        // Leaving desktop: the phone layout shows the still and has no fly,
+        // and the inline opacities we wrote would outrank the classes.
+        fly.style.opacity = "";
+        still09.style.opacity = "";
+      };
       });
 
       return () => mm.revert();

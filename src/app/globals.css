@@ -7,13 +7,30 @@
   --color-ink: #111111;
   --color-navy: #111111; /* dark sections are near-black now */
   --color-mute: #767676;
-  --color-rose: #be8e76; /* rose beige accent */
+  /* Taken from hiskin.nemosvietnam.com, which runs the brand's own pink.
+     It ships two, and needs to: a pink light enough to read as 연핑크 is far
+     too pale to carry 14px type on white (#ffcccc scores 1.4:1 there), and a
+     pink dark enough for white paper goes muddy on the ink ground. So the
+     deep one is the accent everywhere the page is light, and the soft one
+     takes over inside the dark section — 3.5:1 and 13.3:1 respectively,
+     against the 2.9:1 the old beige managed anywhere.
+
+     The deep one is pulled toward magenta and desaturated from the site's
+     own #d94e68: pink has to go dark to hold 14px on white, and dark pink
+     slides into red — at #d94e68 the eyebrows simply read as crimson. Moving
+     the hue over and dropping the saturation keeps it legible while it still
+     reads as pink.
+
+     The previous value, #be8e76, was named rose but read as tan; the product
+     is a pink tone-up, and the accent now matches the cream in the bottle. */
+  --color-rose: #c0728f;
+  --color-rose-soft: #ffcccc;
   --color-hairline: rgba(17, 17, 17, 0.14);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif,
-    system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter),
+    var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -23,7 +40,25 @@ html {
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);
-  font-family: var(--font-sans);
+  /* The stack is written out here rather than reached for as
+     var(--font-sans). @theme inline does not emit its entries as runtime
+     custom properties — it folds them into the utilities it generates — so
+     --font-sans does not exist at this point, the declaration is invalid,
+     and every piece of body copy on the site silently fell back to whatever
+     sans-serif the reader's machine happened to offer: Segoe UI on Windows,
+     something else on a Mac. Inter was being downloaded and never used.
+     --font-inter is set by next/font on <body>, so it does resolve here.
+
+     Order matters as much as the fix did. Fallback runs per character, and
+     Windows links system-ui straight through to Malgun Gothic for Hangul —
+     so with the UI fonts listed first the list is satisfied there and never
+     reaches Noto Sans KR, quietly downgrading every Korean line on the site.
+     The Korean faces therefore sit directly behind Inter, which has no
+     Hangul of its own: Latin resolves to Inter, Hangul carries on to the
+     best Korean face the machine has. */
+  font-family: var(--font-inter), var(--font-pretendard),
+    "Apple SD Gothic Neo", "Noto Sans KR", ui-sans-serif, system-ui,
+    -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -100,6 +135,18 @@ html.is-loading {
 .type-h2 {
   font-size: clamp(1.6rem, 3.2vw, 2.75rem); /* 26 → 44px, weight 600 */
   line-height: 1.14;
+  letter-spacing: -0.015em;
+}
+/* The lead line of a block that sits inside a section — the SPF figure on
+   the product dossier, the Korean headline in an open science-accordion
+   panel. It has to dominate its block without claiming to be a section
+   title, and the gap between .type-h2 (44px) and .type-h3 (26px) is too
+   wide to do that with either: h2 shouts across the whole page, h3 sits
+   level with the copy around it (in the accordion, level with the row title
+   it belongs under). */
+.type-figure {
+  font-size: clamp(1.75rem, 2.4vw, 2.25rem); /* 28 → 36px, weight 600 */
+  line-height: 1.1;
   letter-spacing: -0.015em;
 }
 /* Card and accordion titles — a step below a section title, so the two
@@ -211,20 +258,33 @@ html.is-loading {
   text-transform: uppercase;
   font-weight: 600;
 }
+/* Section openers, 18 of them across the page. Fluid rather than the flat
+   12px it used to be: every headline on the site grows with the viewport and
+   this did not, so on a wide monitor it shrank away from the type it belongs
+   to — 12px against a 44px heading at 1920. It now tops out at 14px, which
+   holds its own without ever being mistaken for body copy. */
 .eyebrow-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  gap: 0.6rem;
+  font-size: clamp(0.75rem, 1vw, 0.875rem); /* 12 → 14px */
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
   color: var(--color-rose);
 }
+/* Philosophy is the one section on an ink ground, and the deep accent drops
+   to 3.7:1 there. The soft pink is the same family and reads at 13:1. */
+.bg-ink .eyebrow-tag {
+  color: var(--color-rose-soft);
+}
+.bg-ink .eyebrow-tag::before {
+  background: var(--color-rose-soft);
+}
 .eyebrow-tag::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--color-rose);
   flex-shrink: 0;
 }

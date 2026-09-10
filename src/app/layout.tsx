@@ -1,6 +1,30 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+
+/**
+ * Hangul. Inter and Plus Jakarta carry no Korean at all, so before this the
+ * Korean half of every line fell through to whatever the reader's machine
+ * offered — Noto Sans KR here, Malgun Gothic on a machine without it, and
+ * something else again on a Mac. Pretendard is set tighter and more evenly
+ * than any of those and sits properly beside Inter.
+ *
+ * Subset build, and only the three weights the page's Korean actually uses
+ * (400 carries 84% of it, 500 and 600 the rest): 264KB each rather than the
+ * 748KB of the full cut, and the whole page is under a megabyte of assets.
+ * Self-hosted rather than pulled from a CDN so it cannot fail separately
+ * from the deploy.
+ */
+const pretendard = localFont({
+  src: [
+    { path: "./fonts/Pretendard-Regular.subset.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Pretendard-Medium.subset.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/Pretendard-SemiBold.subset.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-pretendard",
+  display: "swap",
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,7 +74,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${jakarta.variable} antialiased`}>
+      <body className={`${inter.variable} ${pretendard.variable} ${jakarta.variable} antialiased`}>
         {children}
       </body>
     </html>
