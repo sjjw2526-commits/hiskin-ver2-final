@@ -415,7 +415,11 @@ export default function Hero() {
       {/* ── Page 2 · grey, ordinary scroll ────────────────────── */}
       <section id="concept" ref={stmtRef} className="bg-paper-alt">
         <div className="flex min-h-svh flex-col items-center justify-center px-6 text-center">
-          <h2 className="type-display font-display font-semibold text-ink">
+          {/* The page's one h1. "Bare Skin, Zero Foundation" is the line the
+              whole page argues for, and it is the largest type on the site, so
+              the document outline and the visual one agree. Styling comes from
+              the classes, not the tag. */}
+          <h1 className="type-display font-display font-semibold text-ink">
             <span className="block">
               Bare
               <span
@@ -448,7 +452,7 @@ export default function Hero() {
               />
               Foundation
             </span>
-          </h2>
+          </h1>
 
           <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
           <p className="mt-5 max-w-2xl type-lead font-medium text-ink">

@@ -579,7 +579,7 @@ git push             # ← 이걸 빠뜨리면 다른 PC에서 못 받습니다
 ## 참고
 
 - 프로젝트 전반·배포·수정 방법 → [`README.md`](README.md)
-- 이미지 파일명·규격 → [`public/images/README.md`](public/images/README.md)
-- 인증서 PDF 넣는 법 → [`public/docs/README.md`](public/docs/README.md)
+- 이미지 파일명·규격 → [`docs/images.md`](docs/images.md)
+- 시험성적서 이미지·인증서 안내 → [`docs/reports.md`](docs/reports.md)
 - **스크롤 모션은 건드리기 전에 README 7번 항목을 꼭 읽으세요.** 서로 맞물려 있어서
   이유를 모르고 고치면 예전에 잡은 문제가 되살아납니다.

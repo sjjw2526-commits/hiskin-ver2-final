@@ -39,14 +39,37 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  // The same page answers at hiskin.netlify.app and www.hiskinlab.com. The
+  // canonical tells search engines which one is the real address, so the two
+  // are not counted as duplicate content. metadataBase also turns relative
+  // Open Graph URLs into the absolute ones link previews require.
+  metadataBase: new URL("https://www.hiskinlab.com"),
+  alternates: { canonical: "/" },
   title: "HISKIN — Daily Suncream Protect",
   description:
     "One Step. Zero Effort. SPF 50+ PA++++ 3-in-1 daily tone-up suncream. B2B inquiries for overseas distributors, wholesalers, and clinics.",
   openGraph: {
+    url: "/",
+    siteName: "HISKIN",
     title: "HISKIN — Daily Suncream Protect",
     description:
       "One Step. Zero Effort. SPF 50+ PA++++ 3-in-1 daily tone-up suncream.",
     type: "website",
+    // The link preview shown in KakaoTalk, WhatsApp, LinkedIn and mail.
+    // 1200×630: img-03 (the Philosophy bleed) with the wordmark set in the
+    // open right half, clear of the face.
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "HISKIN",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og-image.jpg"],
   },
 };
 

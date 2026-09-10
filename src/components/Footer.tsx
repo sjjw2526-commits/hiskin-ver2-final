@@ -3,10 +3,11 @@
 import { ArrowUp } from "lucide-react";
 import RollText from "./RollText";
 
+// Same order as the page and the top nav: Philosophy now sits before Reviews.
 const MENU = [
   { href: "#concept", label: "Concept" },
-  { href: "#reviews", label: "Reviews" },
   { href: "#philosophy", label: "Philosophy" },
+  { href: "#reviews", label: "Reviews" },
   { href: "#science", label: "Science" },
   { href: "#inquiry", label: "B2B Inquiry" },
 ];

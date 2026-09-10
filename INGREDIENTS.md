@@ -179,7 +179,7 @@
 
 **검색해서 지울 곳 — 본문만 고치면 안 됩니다:**
 - `src/components/ScienceAccordion.tsx`
-- `public/images/README.md` (img-07 설명)
+- `docs/images.md` (img-07 설명)
 - `WORKLOG.md` 463행
 - **메타 description · OG 태그 · 이미지 alt · 구조화 데이터(JSON-LD)**
 - 이미 바이어에게 보낸 자료가 있다면 그것도
