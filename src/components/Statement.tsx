@@ -205,6 +205,21 @@ export default function Statement() {
 
       const mm = gsap.matchMedia();
 
+      // Both sizes resolve the columns in the same order: the middle tube
+      // first, then the face on the left, then the texture on the right.
+      // Indices into USP: 1 is the tube, 0 the face, 2 the texture.
+      const SEQUENCE = [1, 0, 2];
+      const IMG = ["02", "09", "10"];
+      // The tube is two elements: the empty middle picture and the flying
+      // copy from Hero.tsx that comes to rest over it. Both answer to one
+      // attribute, which is why this looks in the document.
+      const photoOf = (col: number) =>
+        Array.from(
+          document.querySelectorAll<HTMLElement>(
+            `[data-trio-tint="${IMG[col]}"]`,
+          ),
+        );
+
       // ══ Desktop ═════════════════════════════════════════════
       mm.add("(min-width: 768px)", () => {
         // The two outer columns arrive before the spread squares up with the
@@ -278,19 +293,8 @@ export default function Statement() {
           },
         });
 
-        // Indices into USP: 1 is the tube, 0 the face, 2 the texture.
-        const SEQUENCE = [1, 0, 2];
-        const IMG = ["02", "09", "10"];
-
         SEQUENCE.forEach((col, step) => {
-          // The tube is two elements: the empty middle picture and the flying
-          // copy from Hero.tsx that comes to rest over it. Both answer to
-          // this one attribute.
-          const photo = Array.from(
-            document.querySelectorAll<HTMLElement>(
-              `[data-trio-tint="${IMG[col]}"]`,
-            ),
-          );
+          const photo = photoOf(col);
           // Three blocks of 0.30 starting at 0.02, so they run back to back
           // and fill the pin: 0.02, 0.32, 0.62, with the last finishing at
           // 0.92. Inside a block the colour takes the first 0.24 while the
@@ -328,73 +332,112 @@ export default function Statement() {
       });
 
       // ══ Phone ═══════════════════════════════════════════════
-      // Stacked, so the three cards are never on screen together and there is
-      // no single moment worth holding. A pin here would also fight the
-      // address bar folding, which changes the viewport mid-gesture. Each
-      // card turns over on its own as it comes up instead.
+      // A deck rather than a row. Three columns at 390px are 122px slivers of
+      // a portrait photograph — a neck and half a word — so the cards share
+      // one screen-sized stage instead: the tube the flight has just landed
+      // is already there, and the face and the texture wait below the
+      // stage's lower edge, out of sight behind its overflow. The stage pins
+      // under the nav bar and the scroll resolves the tube, raises the face
+      // over it and resolves that, then raises the texture. A card rising
+      // into place stands in for the eye moving along the row.
+      //
+      // The pin used to be ruled out here because the address bar folding
+      // changes the viewport mid-gesture. The stage is sized in svh, so it
+      // does not change height when that happens, and ScrollTrigger ignores
+      // the resize on touch devices rather than re-measuring under a finger.
+      //
+      // anticipatePin is safe on a phone, unlike on desktop: there is no
+      // Lenis here to hand it a stale velocity, and without it a native
+      // momentum scroll carries the stage past the nav bar for a frame
+      // before the pin catches it.
       mm.add("(max-width: 767.98px)", () => {
         const cells = gsap.utils.toArray<HTMLElement>("[data-trio-cell]");
 
-        gsap.fromTo(
-          cells,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.12,
-            scrollTrigger: { trigger: row, start: "top 82%" },
-          },
-        );
+        // Every timing below is in windows of scroll, so the timeline's own
+        // length is the length of the pin and nothing needs converting. The
+        // caption roll keeps the desktop's proportions inside a colour
+        // block: it starts 0.375 of the way through and finishes a quarter
+        // of a block after the colour does.
+        const COLOUR = 0.36;
+        const RESOLVED = COLOUR * 1.25;
+        const RISE = 0.5;
+        const GAP = 0.08;
+        const BEAT = 0.12;
 
-        cells.forEach((cell, i) => {
-          const photo = cell.querySelector<HTMLElement>("[data-trio-tint]");
-          gsap.fromTo(
-            photo,
-            { "--gs": 1 },
-            {
-              "--gs": 0,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 74%",
-                end: "top 44%",
-                scrub: true,
-              },
-            },
-          );
-          gsap.fromTo(
-            problems[i],
-            { y: 0, yPercent: 0 },
-            {
-              y: 0,
-              yPercent: -100,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 66%",
-                end: "top 52%",
-                scrub: true,
-              },
-            },
-          );
-          gsap.fromTo(
-            solutions[i],
-            { y: 0, yPercent: 100 },
-            {
-              y: 0,
-              yPercent: 0,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 56%",
-                end: "top 40%",
-                scrub: true,
-              },
-            },
-          );
+        let at = 0.02;
+        const steps = SEQUENCE.map((col, step) => {
+          const rise = step === 0 ? null : at;
+          if (rise !== null) at += RISE;
+          const resolve = at;
+          at += RESOLVED + (step < SEQUENCE.length - 1 ? GAP : BEAT);
+          return { col, rise, resolve };
         });
+        const total = at;
+
+        // The two waiting cards are dealt from below the stage.
+        gsap.set([cell02Ref.current, cell10Ref.current], {
+          opacity: 1,
+          y: 0,
+          yPercent: 100,
+        });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: pin,
+            start: "top 78px",
+            end: () => "+=" + window.innerHeight * total,
+            pin: true,
+            pinSpacing: true,
+            scrub: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        steps.forEach(({ col, rise, resolve }) => {
+          // Eased at both ends so the card leaves its mark gently and settles
+          // flush with the stage rather than stopping dead against it.
+          if (rise !== null) {
+            tl.fromTo(
+              cells[col],
+              { y: 0, yPercent: 100 },
+              { y: 0, yPercent: 0, ease: "power1.inOut", duration: RISE },
+              rise,
+            );
+          }
+          tl.fromTo(
+            photoOf(col),
+            { "--gs": 1 },
+            { "--gs": 0, ease: "none", duration: COLOUR },
+            resolve,
+          )
+            .fromTo(
+              problems[col],
+              { y: 0, yPercent: 0 },
+              {
+                y: 0,
+                yPercent: -100,
+                ease: "power2.in",
+                duration: COLOUR * 0.5,
+              },
+              resolve + COLOUR * 0.375,
+            )
+            .fromTo(
+              solutions[col],
+              { y: 0, yPercent: 100 },
+              {
+                y: 0,
+                yPercent: 0,
+                ease: "power2.out",
+                duration: COLOUR * 0.583,
+              },
+              resolve + COLOUR * 0.667,
+            );
+        });
+
+        // Pads the timeline to the full pin, so the finished deck holds for a
+        // beat before the page moves on.
+        tl.to({}, { duration: BEAT }, total - BEAT);
       });
 
       return () => mm.revert();
@@ -414,21 +457,29 @@ export default function Statement() {
           still shows because the middle cell holds no picture of its own on
           desktop and nothing here paints a background over it — which is why
           the row below is transparent and the section carries the white. */}
-      <div ref={pinRef} className="relative z-[35]">
-        {/* Desktop: the row fills the screen below the nav bar — 78px of nav
-            and the row's own 24px of gutter — so the cells take the window's
-            proportions instead of a fixed 60vh that came out square on a wide
-            screen. Phone: one column, each card at 4:5. Three 122px-wide
-            slivers of a portrait photograph show a neck and half a word. */}
+      <div ref={pinRef} className="relative z-[35] max-md:motion-safe:py-[12px]">
+        {/* The row fills the screen below the nav bar — 78px of nav and 24px
+            of gutter — so the cells take the window's proportions instead of
+            a fixed 60vh that came out square on a wide screen.
+
+            Desktop: three columns. Phone: the deck described in the effect
+            above — all three cards in the one grid cell, stacked face over
+            tube and texture over face, and the stage clips the two waiting
+            below it. On a phone the gutter moves from the row onto the pin,
+            because overflow clips at the padding edge and a card parked just
+            under the content box would show its top 12px through the padding.
+
+            Asking for less motion on a phone gets no deck, since nothing would
+            ever deal the cards: one column instead, each card at 4:5. */}
         <div
           ref={rowRef}
           data-trio-row
-          className="grid w-full grid-cols-1 gap-[12px] py-[12px] md:h-[calc(100svh-102px)] md:grid-cols-3"
+          className="grid w-full grid-cols-1 gap-[12px] py-[12px] max-md:motion-safe:h-[calc(100svh-102px)] max-md:motion-safe:overflow-hidden max-md:motion-safe:py-0 md:h-[calc(100svh-102px)] md:grid-cols-3"
         >
           <div
             ref={cell02Ref}
             data-trio-cell
-            className="group relative aspect-[4/5] overflow-hidden opacity-0 md:aspect-auto"
+            className="group relative aspect-[4/5] overflow-hidden opacity-0 max-md:z-10 max-md:motion-safe:aspect-auto max-md:motion-safe:[grid-area:1/1] md:aspect-auto"
           >
             <div
               data-trio-tint="02"
@@ -461,19 +512,18 @@ export default function Statement() {
               steps aside. This is also what gives the column its hover back:
               a real picture inside the cell answers the cell's own group.
 
-              md:opacity-0 is the pre-hand-over state — Hero lifts it. Nothing
-              flies on a phone, so there the picture is simply visible. */}
+              opacity-0 is the pre-hand-over state — Hero lifts it. */}
           <div
             data-trio-cell
             data-trio-cell-09
-            className="group relative aspect-[4/5] overflow-hidden md:aspect-auto"
+            className="group relative aspect-[4/5] overflow-hidden max-md:motion-safe:aspect-auto max-md:motion-safe:[grid-area:1/1] md:aspect-auto"
           >
             <div
               data-trio-tint="09"
               style={desaturate}
               className="h-full w-full"
             >
-              <div data-trio-still className="h-full w-full md:opacity-0">
+              <div data-trio-still className="h-full w-full opacity-0">
                 <PlaceholderImage
                   name="img-09"
                   alt="HISKIN skin texture close-up"
@@ -490,7 +540,7 @@ export default function Statement() {
           <div
             ref={cell10Ref}
             data-trio-cell
-            className="group relative aspect-[4/5] overflow-hidden opacity-0 md:aspect-auto"
+            className="group relative aspect-[4/5] overflow-hidden opacity-0 max-md:z-20 max-md:motion-safe:aspect-auto max-md:motion-safe:[grid-area:1/1] md:aspect-auto"
           >
             <div
               data-trio-tint="10"
