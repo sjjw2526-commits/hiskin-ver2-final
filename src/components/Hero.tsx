@@ -113,20 +113,19 @@ export default function Hero() {
 
       const mm = gsap.matchMedia();
 
-      // ══ Phone ═══════════════════════════════════════════════
-      // The shrink-into-the-headline flight is a desktop conceit. At 390px
-      // the headline slot is barely 60px wide, so a full-screen photograph
-      // spends most of the runway as a chip adrift in an empty grey field —
-      // and the per-frame rect reads and full-bleed scale are exactly what
-      // makes touch scrolling stutter. Here the hero is an ordinary image
-      // that scrolls away, the headline photo is simply part of the
-      // sentence, and the trio is a plain vertical stack that fades in.
-      mm.add("(max-width: 767.98px)", () => {
-        gsap.set(img01Ref.current, { opacity: 1 });
-      });
+      // Both sizes run the same two moves: img-01 shrinking into the headline
+      // and img-09 flying into the trio. Phones used to get neither — the
+      // headline slot was 68px wide there, so a full-screen photograph spent
+      // most of the runway as a chip adrift in an empty grey field (WORKLOG
+      // 2026-08-24). What fixes that is the two phone settings below, a wider
+      // slot and a shrink that holds the picture large and lands it late.
+      // Split by condition rather than written twice, so crossing 768px
+      // re-measures everything with the other set.
+      mm.add(
+        { phone: "(max-width: 767.98px)", desktop: "(min-width: 768px)" },
+        (ctx) => {
+      const { phone } = ctx.conditions as { phone: boolean };
 
-      // ══ Desktop ═════════════════════════════════════════════
-      mm.add("(min-width: 768px)", () => {
       // ---- Page 1 · img-01 shrinks into the headline gap ----
       // Measured against page 2, whose top sits at the viewport top exactly
       // when the shrink finishes — so these are viewport coords at that moment.
@@ -155,10 +154,36 @@ export default function Hero() {
       // actually sees. Framing against that — rather than the whole window —
       // is what stops the product hiding behind the bar.
       const NAV = 78;
-      const seen = () => Math.max(1, window.innerHeight - NAV);
+      // A phone's window grows when the address bar folds away, which is
+      // exactly what the first scroll down does — and ScrollTrigger ignores
+      // that resize on touch devices rather than re-measuring mid-gesture. A
+      // box sized to the window as first measured would leave a band of white
+      // under the photograph the moment the reader starts moving. Sized to the
+      // largest the window gets instead; with the bar still showing, the
+      // extra hangs off the bottom of the clip.
+      const tallest = () => {
+        const probe = document.createElement("div");
+        probe.style.cssText =
+          "position:fixed;top:0;height:100lvh;visibility:hidden;pointer-events:none";
+        document.body.appendChild(probe);
+        const h = probe.offsetHeight;
+        probe.remove();
+        return Math.max(h, window.innerHeight);
+      };
+      const seen = () =>
+        Math.max(1, (phone ? tallest() : window.innerHeight) - NAV);
 
+      // Desktop sizes the slot to the window's aspect. A phone window is taller
+      // than it is wide, so that would clamp the slot to its narrowest; there
+      // it takes the photograph's own
+      // proportions instead (img-01 is 1928×816): the widest slot that costs
+      // nothing, because the cover box is built at the slot's ratio and any
+      // ratio past the picture's own would zoom the resting hero in beyond
+      // the crop the campaign line was placed against.
       const sizeSlot = () => {
-        const r = Math.min(2.6, Math.max(1.4, window.innerWidth / seen()));
+        const r = phone
+          ? 2.36
+          : Math.min(2.6, Math.max(1.4, window.innerWidth / seen()));
         slot01.style.width = `${(1.02 * r).toFixed(3)}em`;
       };
 
@@ -208,7 +233,11 @@ export default function Hero() {
           x: () => shrink().x,
           y: () => shrink().y,
           scale: () => shrink().scale,
-          ease: "none",
+          // Flat on desktop, where the slot is big enough to be worth
+          // travelling toward. On a phone the landing is a 90px chip, so the
+          // picture holds most of its size while the headline rises under it
+          // and gives the reduction up in the last stretch.
+          ease: phone ? "power2.in" : "none",
           scrollTrigger: {
             trigger: runwayRef.current,
             start: "top top",
@@ -326,12 +355,14 @@ export default function Hero() {
 
       return () => {
         gsap.ticker.remove(flight);
-        // Leaving desktop: the phone layout shows the still and has no fly,
-        // and the inline opacities we wrote would outrank the classes.
+        // Crossing 768px: hand the two back to their classes, so the other
+        // size starts from the pre-hand-over state rather than inheriting
+        // this one's.
         fly.style.opacity = "";
         still09.style.opacity = "";
       };
-      });
+        }
+      );
 
       return () => mm.revert();
     },
@@ -350,12 +381,8 @@ export default function Hero() {
       // scrub has already carried it to its shrunken end state, so it reads
       // as a ghost of the headline image. Past the runway, hand straight
       // over to the copy that lives in the headline slot instead.
-      // None of that applies on a phone: the hero is an ordinary image inside
-      // the runway there, so it leaves the screen by scrolling like the rest
-      // of the page and can never strand itself over the middle of it.
       const runway = runwayRef.current;
-      const phone = !window.matchMedia("(min-width: 768px)").matches;
-      if (!runway || (!phone && runway.getBoundingClientRect().bottom <= 0)) {
+      if (!runway || runway.getBoundingClientRect().bottom <= 0) {
         gsap.set(fixedRef.current, { opacity: 0 });
         gsap.set(copyRef.current, { opacity: 0 });
         gsap.set(img01Ref.current, { opacity: 1 });
@@ -372,7 +399,7 @@ export default function Hero() {
         // the runway by the time the fade lands, hand over instead of
         // leaving the hero lit over the middle of the page.
         onComplete: () => {
-          if (!phone && runway.getBoundingClientRect().bottom <= 0) {
+          if (runway.getBoundingClientRect().bottom <= 0) {
             gsap.set([fixedRef.current, copyRef.current], { opacity: 0 });
             gsap.set(img01Ref.current, { opacity: 1 });
           }
@@ -443,23 +470,23 @@ export default function Hero() {
   return (
     <>
       {/* ── Page 1 · white runway ─────────────────────────────── */}
-      {/* Phone: one screen of photograph that scrolls away. Desktop: a 130vh
-          runway the shrink is scrubbed across. svh, not vh — a phone's vh
-          counts the retracted address bar, so a plain 100vh hero sits taller
-          than the window and every trigger under it shifts as the bar folds. */}
+      {/* A runway 1.3 windows tall that the shrink is scrubbed across. svh on
+          a phone, not vh — a phone's vh counts the retracted address bar, so
+          the runway would be taller than it measures and every trigger under
+          it would shift as the bar folds. */}
       <section
         id="top"
         ref={runwayRef}
-        className="relative h-[100svh] bg-paper md:h-[130vh]"
+        className="relative h-[130svh] bg-paper md:h-[130vh]"
       >
         {/* Full-viewport clip: the scaled-up image bleeds past the edges and is
-            trimmed here, which is what gives the cover crop at rest. Fixed
-            only from md up — on a phone it is an ordinary block inside the
-            runway, so it leaves with the section instead of being handed over. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[78px] z-40 overflow-hidden md:fixed">
+            trimmed here, which is what gives the cover crop at rest. Fixed,
+            so the picture stays in the window while it shrinks and the page
+            rises underneath it, then hands over to the copy in the slot. */}
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 top-[78px] z-40 overflow-hidden">
           <div
             ref={fixedRef}
-            className="absolute inset-0 overflow-hidden opacity-0 md:will-change-transform"
+            className="absolute inset-0 overflow-hidden opacity-0 will-change-transform"
           >
             <PlaceholderImage
               name="img-01"
@@ -571,11 +598,10 @@ export default function Hero() {
             </span>
             <span className="block">
               Zero
-              {/* Holds the place img-09 flies out of. Nothing flies on a
-                  phone, so the slot closes up to a plain word space there. */}
+              {/* Holds the place img-09 flies out of. */}
               <span
                 ref={slot09Ref}
-                className="mx-[0.14em] inline-block h-[0.82em] w-0 align-baseline md:w-[0.62em]"
+                className="mx-[0.14em] inline-block h-[0.82em] w-[0.62em] align-baseline"
                 aria-hidden
               />
               Foundation
@@ -607,7 +633,7 @@ export default function Hero() {
         ref={fly09Ref}
         data-trio-tint="09"
         style={desaturate}
-        className="group fixed left-0 top-0 z-30 hidden origin-top-left overflow-hidden will-change-transform md:block"
+        className="group fixed left-0 top-0 z-30 origin-top-left overflow-hidden will-change-transform"
       >
         <PlaceholderImage
           name="img-09"
