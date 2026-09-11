@@ -3,7 +3,7 @@
 날짜순으로 무엇을 왜 그렇게 했는지 남깁니다.
 "왜"가 없으면 나중에 같은 실수를 되풀이하게 되므로, 판단 근거를 같이 적습니다.
 
-배포처: **https://hiskin.netlify.app**
+배포처: **https://www.hiskinlab.com** (가비아 도메인 → Netlify. `hiskinlab.com`·`http://` 는 이리로 넘어옴, `hiskin.netlify.app` 도 계속 열리지만 canonical 이 www.hiskinlab.com 을 가리킴)
 저장소: **https://github.com/sjjw2526-commits/hiskin-ver2-final** (Private)
 
 **`git push` 하면 Netlify가 알아서 배포합니다.** (master 브랜치 연결됨)

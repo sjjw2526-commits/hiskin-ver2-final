@@ -38,6 +38,9 @@ export default function Hero() {
 
   const runwayRef = useRef<HTMLElement>(null);
   const fixedRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLParagraphElement>(null);
+  const headlineRef = useRef<HTMLParagraphElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
 
   const stmtRef = useRef<HTMLElement>(null);
@@ -81,6 +84,32 @@ export default function Hero() {
           scrub: true,
         },
       });
+
+      // The campaign line leaves a little before the cue does. It has to
+      // leave at all because on desktop the frame it sits in is fixed, so
+      // anything still lit here would hang over the whole page — and it has
+      // to go early because the photograph under it starts shrinking away
+      // from the first pixel of scroll, leaving the words stranded over the
+      // white margin the shrink opens up. Gone by 8%, while the picture is
+      // still within a few per cent of full bleed.
+      // fromTo rather than to — a plain to-tween would record its start
+      // value while the preloader still has the line at opacity 0, and then
+      // scrub 0 → 0, snuffing it out on the first scroll tick.
+      gsap.fromTo(
+        copyRef.current,
+        { opacity: 1 },
+        {
+          opacity: 0,
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: runwayRef.current,
+            start: "top top",
+            end: "8% top",
+            scrub: true,
+          },
+        }
+      );
 
       const mm = gsap.matchMedia();
 
@@ -328,6 +357,7 @@ export default function Hero() {
       const phone = !window.matchMedia("(min-width: 768px)").matches;
       if (!runway || (!phone && runway.getBoundingClientRect().bottom <= 0)) {
         gsap.set(fixedRef.current, { opacity: 0 });
+        gsap.set(copyRef.current, { opacity: 0 });
         gsap.set(img01Ref.current, { opacity: 1 });
         return;
       }
@@ -343,11 +373,48 @@ export default function Hero() {
         // leaving the hero lit over the middle of the page.
         onComplete: () => {
           if (!phone && runway.getBoundingClientRect().bottom <= 0) {
-            gsap.set(fixedRef.current, { opacity: 0 });
+            gsap.set([fixedRef.current, copyRef.current], { opacity: 0 });
             gsap.set(img01Ref.current, { opacity: 1 });
           }
         },
       });
+      // The campaign line follows the photograph in rather than arriving with
+      // it — a beat behind, so the picture reads first and the words settle
+      // onto it. Then the label leads the headline by a fifth of a second:
+      // read in the order it is written, not revealed as one block. Barely a
+      // lift, 8px, and the two overlap heavily — a stagger long enough to
+      // see as two separate arrivals would turn a fade into a sequence.
+      //
+      // The wrapper takes the opacity in one step and the children carry the
+      // reveal. It has to be that way round: the wrapper's opacity is what
+      // the scroll fade-out scrubs, and two tweens on one property would
+      // fight for it.
+      const copyIn = gsap.timeline({
+        delay: reduced ? 0 : 0.5,
+        // Same race as the cue below: scroll away while this is still
+        // running and the line would be left lit over the middle of the
+        // page, since its own fade-out is a scrub that only writes on
+        // scroll and has already passed its end.
+        onUpdate: () => {
+          const r = runway.getBoundingClientRect();
+          if (r.top <= -0.12 * r.height) {
+            copyIn.kill();
+            gsap.set(copyRef.current, { opacity: 0 });
+          }
+        },
+      });
+      copyIn.set(copyRef.current, { opacity: 1 }).fromTo(
+        [eyebrowRef.current, headlineRef.current],
+        { opacity: 0, y: reduced ? 0 : 8 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: reduced ? 0 : 1.2,
+          stagger: reduced ? 0 : 0.2,
+          ease: "power2.out",
+        }
+      );
+
       // Same race for the cue: its scroll fade-out is a scrub that only
       // writes on scroll, so a late intro fade-in would leave "SCROLL"
       // lit over the trio. Stand down as soon as the runway is left.
@@ -366,6 +433,7 @@ export default function Hero() {
 
       return () => {
         fade.kill();
+        copyIn.kill();
         cueIn.kill();
       };
     },
@@ -400,6 +468,66 @@ export default function Hero() {
               className="h-full w-full"
               label="IMG 01 · 21:9"
             />
+          </div>
+
+          {/* Campaign line — a sibling of the frame above, never a child of
+              it: that div is the one scaled into the headline gap on
+              desktop, so type placed inside would shrink away with the
+              photograph.
+
+              Upper left, on the empty backdrop beside her head. How much of
+              that margin survives depends on the window: the photograph is
+              21:9 laid into a taller frame, so the narrower the window the
+              harder the crop bites in from the sides — 440px of clear
+              backdrop at 1920×950, 300px at 1440×790, 140px at 1024. Below
+              about 1600 the second word reaches her hair.
+
+              Which is what the white is for. Ink would be legible on the
+              backdrop and gone the moment it touched the hair; white is the
+              other way round — a quiet tone-on-tone whisper over the pale
+              ground, and brighter, not weaker, where it crosses her. It is
+              the one colour that survives the whole range of crops, and the
+              understatement is the point: this sits behind the model and
+              the tube, not in front of them.
+
+              The phone crop is a tall centre slice of the same frame, so
+              there is no backdrop in it at all: the upper left is her hair
+              and forehead. 8% rather than 13% is what puts the line on the
+              hair instead of across her face — white on that is the highest
+              contrast it gets anywhere. Sizes need no breakpoint either
+              way: .type-caption is fixed by the system, .type-campaign is
+              fluid, and neither is touched here. */}
+          <div
+            ref={copyRef}
+            className="absolute inset-x-0 top-[8%] px-6 opacity-0 md:top-[13%] md:px-[80px]"
+          >
+            {/* The rose square is the mark .eyebrow-tag carries everywhere
+                else on the site, a size down and set on its own so the
+                label keeps the wide 0.2em tracking it shares with the
+                SCROLL cue rather than the tag's 0.1em. */}
+            <p
+              ref={eyebrowRef}
+              className="flex items-center gap-2 opacity-0 type-caption font-medium tracking-[0.2em] text-white/70"
+            >
+              <span
+                aria-hidden
+                className="h-[5px] w-[5px] shrink-0 bg-rose"
+              />
+              DAILY SUN CARE, REDEFINED.
+            </p>
+            {/* A paragraph, not a heading. The page's one h1 is "Bare Skin,
+                Zero Foundation" below, and this line comes before it in the
+                document — as a heading it would be either a second h1 or an
+                h2 ahead of the h1. Styling comes from the classes, so the
+                tag changes nothing on screen. */}
+            <p
+              ref={headlineRef}
+              className="mt-4 max-w-[18rem] type-campaign font-display font-semibold text-white opacity-0 md:mt-5 md:max-w-none"
+            >
+              A Higher Standard
+              <br />
+              for Your Skin.
+            </p>
           </div>
         </div>
 
@@ -454,9 +582,17 @@ export default function Hero() {
             </span>
           </h1>
 
-          <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
+          {/* The tag is uppercased by .eyebrow-tag, so it is written here in
+              the case it is read in, not the case it renders in. */}
+          <span className="eyebrow-tag mt-10">Foundation-Free Daily Sun Care</span>
+          {/* The break is set rather than left to the container: both lines
+              clear the measure at every width, so without it the wrap point
+              would move with the viewport and the two clauses would split
+              mid-thought. */}
           <p className="mt-5 max-w-2xl type-lead font-medium text-ink">
-            파데 없이 완벽한 아침, 단 10초로 완성하는 데일리 파데 프리 솔루션
+            선크림 하나로 가볍게 완성하는
+            <br />
+            파운데이션 프리 모닝 루틴
           </p>
         </div>
 

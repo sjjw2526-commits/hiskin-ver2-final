@@ -186,17 +186,28 @@ html.is-loading {
 /* ─────────────────────────────────────────────────────────────
    Single-use display type
    ─────────────────────────────────────────────────────────────
-   Five oversized elements, each appearing exactly once (twice for the
-   metric readout). They are compositional rather than steps in the
-   hierarchy above — collapsing them onto one shared size would flatten
-   the page, so each keeps the size it was composed at. They live here
-   rather than inline so there are no unexplained numbers in the JSX and
-   every one of them is findable from a single place.
+   Six elements, each appearing exactly once (twice for the metric
+   readout). They are compositional rather than steps in the hierarchy
+   above — collapsing them onto one shared size would flatten the page, so
+   each keeps the size it was composed at. They live here rather than
+   inline so there are no unexplained numbers in the JSX and every one of
+   them is findable from a single place.
 
    Two label tracking conventions are used across the site and nowhere
    else: 0.08em for a normal uppercase label (see .eyebrow) and 0.2em for
    a wide-set accent label. Anything else was a one-off guess. */
 
+/* The campaign line laid over the hero photograph. Deliberately not one of
+   the steps in the scale: 0.91 of .type-h2 at every width, which is what it takes to
+   sit just under the section titles — a message on a picture, not a title —
+   without dropping to .type-h3, where it would read as a card heading. It
+   borrows h2's line-height and tracking so the two are the same voice at
+   two sizes. */
+.type-campaign {
+  font-size: clamp(1.456rem, 2.912vw, 2.5rem); /* 23 → 40px, weight 600 */
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+}
 /* The 69.0 / 23.33 readouts in the clinical cards. */
 .type-metric {
   font-size: clamp(3.625rem, 5.2vw, 4.5rem); /* 58 → 72px, weight 600 */
