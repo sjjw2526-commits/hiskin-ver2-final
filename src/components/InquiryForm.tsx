@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { Fragment, useRef, useState, type FormEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -8,13 +8,39 @@ import { ArrowRight, Check, Loader2, X } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Each tab asks for what that kind of partner actually needs, rather than
+ * repeating one form under three names (2026-09-14). The quantity field
+ * changes its label between distributor and sample; a clinic is asked what it
+ * is interested in instead. `guide` is the placeholder in the message box.
+ */
 const TABS = [
-  { id: "distributor", label: "Distributor / Wholesale" },
-  { id: "sample", label: "Sample Request" },
-  { id: "clinic", label: "Clinic & Aesthetic" },
+  {
+    id: "distributor",
+    label: "Distributor / Wholesale",
+    quantityLabel: "Expected Order Quantity / 예상 주문 수량",
+    guide: "유통 지역, 판매 채널, 예상 일정 등 파트너십에 필요한 내용을 남겨주세요",
+    cta: "Send Inquiry",
+  },
+  {
+    id: "sample",
+    label: "Sample Request",
+    quantityLabel: "Requested Sample Quantity / 요청 샘플 수량",
+    guide: "샘플 요청 목적과 검토 중인 시장·채널 등 관련 내용을 남겨주세요",
+    cta: "Request Sample",
+  },
+  {
+    id: "clinic",
+    label: "Clinic & Aesthetic",
+    quantityLabel: null,
+    guide: "클리닉 도입, 제품 구매, 협업 등 문의하실 내용을 남겨주세요",
+    cta: "Send Inquiry",
+  },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
+
+const INTERESTS = ["클리닉 도입", "제품 구매", "협업", "기타"];
 
 const COUNTRIES = [
   "United States",
@@ -38,10 +64,14 @@ const COUNTRIES = [
  * from a real acceptance — so without this check, submitting locally shows the
  * success modal for an inquiry that went nowhere. Refusing outright is the
  * honest behaviour: better a clear "not here" than a false receipt.
+ *
+ * Private network addresses count as local too: the dev server is opened
+ * from a phone on the same Wi-Fi (next.config.ts, allowedDevOrigins), and
+ * there the hostname is the computer's LAN address, not localhost.
  */
 const isLocalHost = () =>
   typeof window !== "undefined" &&
-  /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(
+  /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)$/.test(
     window.location.hostname
   );
 
@@ -64,9 +94,22 @@ function Field({
 }
 
 /**
+ * Copy broken where the owner broke it, at every width. Where a column is too
+ * narrow to hold one of the lines, balance splits it evenly instead of
+ * leaving its last word stranded on a row of its own.
+ */
+function Lines({ lines }: { lines: string[] }) {
+  return lines.map((line, i) => (
+    <span key={i} className="block text-balance">
+      {line}
+    </span>
+  ));
+}
+
+/**
  * pef-style inquiry: eyebrow tag, headline + Korean sub-copy on the left;
- * rectangular outline tabs, underline-style labeled inputs, consent
- * checkbox, and a full-width black submit bar on the right.
+ * light outline tabs, underline-style labeled inputs, consent checkbox and a
+ * slim black submit button on the right.
  */
 export default function InquiryForm() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -98,11 +141,20 @@ export default function InquiryForm() {
     { scope: sectionRef }
   );
 
+  const active = TABS.find((t) => t.id === tab) ?? TABS[0];
+  const isClinic = active.quantityLabel === null;
+
   /**
    * Netlify collects form posts at the site root. The build bot finds the
    * form by scanning the deployed HTML for data-netlify, which works here
    * because the page is prerendered by output: "export" — the markup is in
    * out/index.html before a browser ever runs.
+   *
+   * The bot only sees the first tab, and a field it has not seen is dropped
+   * from every submission. So both tab-specific fields — quantity and
+   * interest — are always in the markup, the one that does not apply simply
+   * hidden, and the hidden one is taken out of the post here so a quantity
+   * typed before switching to the clinic tab does not ride along.
    *
    * Posting by fetch rather than letting the browser submit keeps the user
    * on the page, but it also means a failure is ours to surface. It is not
@@ -131,6 +183,7 @@ export default function InquiryForm() {
     new FormData(form).forEach((value, key) => {
       params.append(key, typeof value === "string" ? value : value.name);
     });
+    params.delete(isClinic ? "quantity" : "interest");
 
     try {
       const res = await fetch("/", {
@@ -147,53 +200,77 @@ export default function InquiryForm() {
     }
   };
 
-  const activeTabLabel = TABS.find((t) => t.id === tab)?.label;
-
   return (
-    // A pale wash of the brand pink (2026-09-14), so the page closes on a
-    // section that reads as the call to act, set apart from the white
-    // gallery above it.
+    // A pale wash of the brand pink, so the page closes on a section that
+    // reads as the call to act, set apart from the white gallery above it.
+    // Lightened from #f7edf0 on 2026-09-14: the deeper pink next to grey
+    // type made the section look tired.
     <section
       id="inquiry"
       ref={sectionRef}
-      className="bg-[#f7edf0] px-6 py-16 md:px-[80px] md:py-36"
+      className="bg-[#fbf4f6] px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="grid gap-14 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-24">
         {/* Left: headline */}
-        <div>
+        <div className="break-keep @container">
           <p data-form-head className="eyebrow-tag mb-6">
-            Become a Partner
+            Partnership
           </p>
+          {/* Two lines, as written. At full size "Beyond Borders." is 7.85
+              times its font size wide, more than this column holds below
+              about 1540px, and it broke into three. So from lg the size is
+              also capped by the column's own width (cqi) — the `!` because
+              .type-h1 is unlayered and would otherwise win. Below lg the
+              column is too narrow for any sensible display size, and it
+              wraps as before; on a phone the column is full width and it
+              fits. */}
           <h2
             data-form-head
-            className="type-h1 font-display font-semibold"
+            className="type-h1 font-display font-semibold lg:text-[length:min(4.25rem,5vw,12.2cqi)]!"
           >
-            Bring HISKIN
+            HISKIN,
             <br />
-            to Your Market.
+            Beyond Borders.
           </h2>
+          <p data-form-head className="mt-8 type-lead font-medium text-ink">
+            <Lines
+              lines={["HISKIN과 새로운 시장을 함께 만들어갈", "글로벌 파트너를 기다립니다"]}
+            />
+          </p>
+          <p data-form-head className="mt-4 type-sub text-mute">
+            <Lines
+              lines={[
+                "유통 · 도매 · 클리닉 등 다양한 파트너십을 통해",
+                "HISKIN의 가능성을 더 넓은 시장으로 이어가고자 합니다",
+              ]}
+            />
+          </p>
           <p
             data-form-head
-            className="mt-8 max-w-md type-sub text-mute"
+            className="mt-10 max-w-sm border-t border-hairline pt-6 type-body-sm text-mute"
           >
-            해외 유통사, 도매상, 에스테틱 및 클리닉 파트너를 찾습니다. 아래
-            양식을 남겨주시면 영업일 기준 2일 내 회신드립니다.
+            <Lines
+              lines={["문의 내용을 남겨주시면", "영업일 기준 2일 이내 회신드립니다"]}
+            />
           </p>
         </div>
 
         {/* Right: form */}
         <div data-form-panel>
-          {/* Rectangular tabs */}
-          <div className="mb-10 grid grid-cols-1 gap-[10px] sm:grid-cols-3">
+          {/* Light outline tabs; only the open one is filled. Stacked on a
+              phone, where three abreast would squeeze each label to two
+              lines. */}
+          <div className="mb-12 grid grid-cols-1 gap-[10px] sm:grid-cols-3">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 type="button"
+                aria-pressed={tab === t.id}
                 onClick={() => setTab(t.id)}
-                className={`border px-4 py-3.5 type-body-sm font-medium transition-all duration-300 ${
+                className={`border px-4 py-[11px] type-body-sm font-medium transition-colors duration-300 ${
                   tab === t.id
-                    ? "border-ink bg-paper-alt text-ink"
-                    : "border-hairline bg-transparent text-mute hover:text-ink"
+                    ? "border-ink bg-ink text-white"
+                    : "border-ink/20 bg-transparent text-ink/60 hover:border-ink/45 hover:text-ink"
                 }`}
               >
                 {t.label}
@@ -207,14 +284,14 @@ export default function InquiryForm() {
             data-netlify="true"
             data-netlify-honeypot="bot-field"
             onSubmit={handleSubmit}
-            className="grid gap-x-10 gap-y-7 sm:grid-cols-2"
+            className="grid gap-x-10 gap-y-8 sm:grid-cols-2 md:gap-y-10"
           >
             {/* Netlify matches the post to the form by this value. */}
             <input type="hidden" name="form-name" value="b2b-inquiry" />
             {/* Which tab was open. It is React state, not an input, so
                 without this the message arrives with no idea whether it is a
                 distributor, a sample request or a clinic. */}
-            <input type="hidden" name="inquiryType" value={activeTabLabel ?? tab} />
+            <input type="hidden" name="inquiryType" value={active.label} />
             {/* Honeypot: invisible to a person, irresistible to a bot.
                 Anything that fills it in is discarded by Netlify. */}
             <p className="hidden">
@@ -238,7 +315,7 @@ export default function InquiryForm() {
                 autoComplete="organization"
               />
             </Field>
-            <Field label="Official Email / 이메일 *">
+            <Field label="Business Email / 이메일 *">
               <input
                 name="email"
                 type="email"
@@ -262,15 +339,27 @@ export default function InquiryForm() {
                 ))}
               </select>
             </Field>
-            <div className="sm:col-span-2">
-              <Field
-                label={
-                  tab === "sample"
-                    ? "Requested Sample Quantity / 샘플 수량"
-                    : "Target Order Quantity / 목표 주문 수량"
-                }
-              >
+            {/* Both stay in the markup on every tab — see handleSubmit. */}
+            <div className="sm:col-span-2" hidden={isClinic}>
+              <Field label={active.quantityLabel ?? TABS[0].quantityLabel}>
                 <input name="quantity" className={fieldCls} />
+              </Field>
+            </div>
+            <div className="sm:col-span-2" hidden={!isClinic}>
+              <Field label="Partnership Interest / 관심 분야 *">
+                <select
+                  name="interest"
+                  required={isClinic}
+                  defaultValue=""
+                  className={`${fieldCls} appearance-none`}
+                >
+                  <option value="" disabled />
+                  {INTERESTS.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </Field>
             </div>
             <div className="sm:col-span-2">
@@ -280,27 +369,10 @@ export default function InquiryForm() {
                   required
                   rows={4}
                   className={`${fieldCls} resize-none`}
-                  placeholder="취급 채널, 유통 지역, 예상 일정 등을 알려주세요."
+                  placeholder={active.guide}
                 />
               </Field>
             </div>
-
-            <label className="flex cursor-pointer items-start gap-3 sm:col-span-2">
-              <input
-                type="checkbox"
-                name="consent"
-                value="개인정보 수집·이용 동의함"
-                required
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
-              />
-              <span className="type-body-sm text-mute">
-                I agree to the collection and use of personal information.
-                <br />
-                개인정보 수집 및 이용에 동의합니다.
-              </span>
-            </label>
 
             {status === "error" && (
               <p
@@ -327,26 +399,51 @@ export default function InquiryForm() {
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="group mt-2 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4.5 type-body font-medium text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:col-span-2"
-            >
-              {status === "loading" ? (
-                <>
-                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
-                  Submitting…
-                </>
-              ) : (
-                <>
-                  Submit B2B Inquiry
-                  <ArrowRight
-                    className="h-4.5 w-4.5 transition-transform duration-300 group-hover:translate-x-1"
-                    strokeWidth={1.8}
-                  />
-                </>
-              )}
-            </button>
+            {/* A slim button sized to its label rather than a bar across the
+                panel. It stays under the consent line at every width: beside
+                it, the consent text was squeezed to five lines on a laptop.
+                Full width on a phone, where it is the thumb's target. The
+                minimum width is the longer label's, so switching tabs does
+                not make the button jump. */}
+            <div className="flex flex-col items-start gap-7 sm:col-span-2">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  value="개인정보 수집·이용 동의함"
+                  required
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
+                />
+                <span className="type-body-sm text-mute">
+                  I agree to the collection and use of personal information.
+                  <br />
+                  개인정보 수집 및 이용에 동의합니다.
+                </span>
+              </label>
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="group flex w-full shrink-0 items-center justify-center gap-2.5 bg-ink px-9 py-3.5 type-body-sm font-semibold uppercase tracking-[0.08em] text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:w-auto sm:min-w-[240px]"
+              >
+                {status === "loading" ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Sending…
+                  </>
+                ) : (
+                  <>
+                    {active.cta}
+                    <ArrowRight
+                      className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                      strokeWidth={1.8}
+                    />
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -374,13 +471,13 @@ export default function InquiryForm() {
               <Check className="h-7 w-7 text-white" strokeWidth={2} />
             </div>
             <h3 className="font-display type-h3 font-semibold">
-              Inquiry Received
+              {tab === "sample" ? "Request Received" : "Inquiry Received"}
             </h3>
-            <p className="mt-4 type-body-sm text-mute">
-              <span className="font-medium text-ink">{activeTabLabel}</span>{" "}
+            <p className="mt-4 break-keep type-body-sm text-mute">
+              <span className="font-medium text-ink">{active.label}</span>{" "}
               문의가 정상적으로 접수되었습니다.
               <br />
-              영업일 기준 2일 내 공식 이메일로 회신드리겠습니다.
+              영업일 기준 2일 이내 입력하신 비즈니스 이메일로 회신드립니다.
             </p>
             <button
               onClick={() => setStatus("idle")}

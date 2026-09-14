@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -25,8 +25,29 @@ const desaturate = {
 } as CSSProperties;
 
 /**
- * Page 1 — a white runway where img-01 fills the viewport and shrinks into
- * the gap of "One [ ] Step." as the grey page rises to meet it.
+ * Phone intro timings, taken from project-pef.com's mobile landing
+ * (measured 2026-09-14: 0.85s out, 0.38s back, sine.inOut both ways, a 20px
+ * swipe to set it off).
+ */
+const LAND = { duration: 0.85, ease: "sine.inOut" };
+const RETURN = { duration: 0.38, ease: "sine.inOut" };
+const GESTURE_PX = 20;
+
+/** Handed from the layout hook to the intro hook, which knows when the preloader is done. */
+type PhoneIntro = {
+  /** Intro finished at the top of the page: wait there for the first swipe. */
+  arm: () => void;
+  /** Go straight to the landed state, without the move. */
+  skip: () => void;
+};
+
+/**
+ * Page 1 — img-01 fills the screen and ends up in the gap of
+ * "Bare [ ] Skin".
+ *   Desktop: a white runway the shrink is scrubbed across as the grey page
+ *   rises to meet it.
+ *   Phone: no runway. The page holds at the top until the first swipe, then
+ *   the photograph lands in the gap on its own clock and the page is free.
  *
  * Page 2 — ordinary document flow, so the copy simply scrolls up. img-09
  * lifts out of "Zero [ ] Foundation." and settles into the centre column of
@@ -38,6 +59,7 @@ export default function Hero() {
 
   const runwayRef = useRef<HTMLElement>(null);
   const fixedRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
 
   const stmtRef = useRef<HTMLElement>(null);
@@ -46,6 +68,14 @@ export default function Hero() {
   const img01Ref = useRef<HTMLSpanElement>(null);
 
   const fly09Ref = useRef<HTMLDivElement>(null);
+
+  const phoneIntro = useRef<PhoneIntro | null>(null);
+  // Read by the phone branch when it is built after the intro has already
+  // finished — a window resized across the breakpoint.
+  const introDoneRef = useRef(false);
+  useEffect(() => {
+    introDoneRef.current = introDone;
+  }, [introDone]);
 
   useGSAP(
     () => {
@@ -65,42 +95,22 @@ export default function Hero() {
       // on landing — see the note on the cell in Statement.tsx.
       const still09 = document.querySelector<HTMLElement>("[data-trio-still]");
       const fly = fly09Ref.current;
+      const fixed = fixedRef.current;
+      const backdrop = backdropRef.current;
+      const cue = cueRef.current;
+      const img01 = img01Ref.current;
       if (!runwayRef.current || !stmt || !slot01 || !slot09) return;
       if (!row || !cell09 || !still09 || !fly) return;
-
-      // The cue is pinned to the window at both sizes, so it has to stand
-      // down at both — leave this inside the desktop branch and it stays lit
-      // over the whole phone page.
-      gsap.to(cueRef.current, {
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: runwayRef.current,
-          start: "top top",
-          end: "12% top",
-          scrub: true,
-        },
-      });
+      if (!fixed || !backdrop || !cue || !img01) return;
 
       // A phone's address bar folds and unfolds as the reader scrolls, and
-      // every fold is a resize. Left alone, each one re-measures the shrink
-      // and the pinned trio mid-gesture and the page visibly jumps, so those
-      // resizes are ignored and the geometry is measured once.
+      // every fold is a resize. Left alone, each one re-measures the pinned
+      // trio mid-gesture and the page visibly jumps, so those resizes are
+      // ignored and the geometry is measured once.
       ScrollTrigger.config({ ignoreMobileResize: true });
 
       const mm = gsap.matchMedia();
 
-      // ══ Both sizes ══════════════════════════════════════════
-      // The phone runs the same two moves as the desktop — img-01 shrinking
-      // into "Bare [ ] Skin", img-09 flying from "Zero [ ] Foundation" into
-      // the trio — with three differences, each behind `isDesktop` below:
-      //  · the headline slot keeps its CSS size (the existing chip was chosen
-      //    over enlarging it for the phone);
-      //  · the photograph starts at the width of the screen rather than
-      //    cropped to cover it, so the product is in the very first frame;
-      //  · the flight lands just before Statement.tsx pins the stacked trio,
-      //    and stops reading rects once it has landed — per-frame rect reads
-      //    are what made touch scrolling stutter.
       mm.add(
         { isDesktop: "(min-width: 768px)", isPhone: "(max-width: 767.98px)" },
         (context) => {
@@ -177,7 +187,7 @@ export default function Hero() {
         // Desktop only: on a phone the slot keeps its CSS size.
         if (isDesktop) sizeSlot();
         const c = coverBox();
-        gsap.set(fixedRef.current, {
+        gsap.set(fixed, {
           left: c.left,
           // the clip frame already starts at NAV, so subtract it back out
           top: c.top - NAV,
@@ -200,57 +210,275 @@ export default function Hero() {
 
       place();
 
-      gsap.fromTo(
-        fixedRef.current,
-        { x: 0, y: 0, scale: 1 },
-        {
-          x: () => shrink().x,
-          y: () => shrink().y,
-          scale: () => shrink().scale,
+      // Set by the phone branch once the photograph is in the gap. Desktop
+      // reads the runway instead.
+      let phoneLanded = false;
+      let phoneCleanup = () => {};
+
+      if (isDesktop) {
+        // The cue is pinned to the window, so it has to stand down as the
+        // runway is left or it stays lit over the whole page.
+        gsap.to(cue, {
+          opacity: 0,
           ease: "none",
           scrollTrigger: {
             trigger: runwayRef.current,
             start: "top top",
-            end: "bottom top",
-            // Lenis already smooths the scroll; a scrub delay on top of it
-            // adds a second, competing ease that reads as wobble.
+            end: "12% top",
             scrub: true,
-            invalidateOnRefresh: true,
-            onRefreshInit: place,
-            // Hand over to the copy that lives inside the slot, so it scrolls
-            // away with the sentence like any other piece of the page.
-            // The intro fades the hero in over a second. Scroll past the
-            // runway inside that second and this set() lands, only for the
-            // still-running fade to put the opacity straight back to 1 on
-            // the next frame — a ghost of the headline image that never
-            // clears. The hand-over has to win, so kill the fade first.
-            onLeave: () => {
-              gsap.killTweensOf(fixedRef.current, "opacity");
-              gsap.set([fixedRef.current, img01Ref.current], {
-                opacity: (i: number) => i,
-              });
-            },
-            onEnterBack: () =>
-              gsap.set([fixedRef.current, img01Ref.current], {
-                opacity: (i: number) => 1 - i,
-              }),
-            // onLeave/onEnterBack only fire while *crossing* the boundary, so
-            // anything that lands past the end without scrolling through it —
-            // a refresh after late images resize the page, an anchor jump —
-            // leaves the hero visible with nothing to hide it. Re-assert the
-            // handed-over state on every refresh. Only the past-the-end case
-            // is forced: showing it again here would override the intro fade.
-            onRefresh: (self) => {
-              if (self.progress >= 1) {
-                gsap.killTweensOf(fixedRef.current, "opacity");
-                gsap.set([fixedRef.current, img01Ref.current], {
+          },
+        });
+
+        gsap.fromTo(
+          fixed,
+          { x: 0, y: 0, scale: 1 },
+          {
+            x: () => shrink().x,
+            y: () => shrink().y,
+            scale: () => shrink().scale,
+            ease: "none",
+            scrollTrigger: {
+              trigger: runwayRef.current,
+              start: "top top",
+              end: "bottom top",
+              // Lenis already smooths the scroll; a scrub delay on top of it
+              // adds a second, competing ease that reads as wobble.
+              scrub: true,
+              invalidateOnRefresh: true,
+              onRefreshInit: place,
+              // Hand over to the copy that lives inside the slot, so it scrolls
+              // away with the sentence like any other piece of the page.
+              // The intro fades the hero in over a second. Scroll past the
+              // runway inside that second and this set() lands, only for the
+              // still-running fade to put the opacity straight back to 1 on
+              // the next frame — a ghost of the headline image that never
+              // clears. The hand-over has to win, so kill the fade first.
+              onLeave: () => {
+                gsap.killTweensOf(fixed, "opacity");
+                gsap.set([fixed, img01], {
                   opacity: (i: number) => i,
                 });
-              }
+              },
+              onEnterBack: () =>
+                gsap.set([fixed, img01], {
+                  opacity: (i: number) => 1 - i,
+                }),
+              // onLeave/onEnterBack only fire while *crossing* the boundary, so
+              // anything that lands past the end without scrolling through it —
+              // a refresh after late images resize the page, an anchor jump —
+              // leaves the hero visible with nothing to hide it. Re-assert the
+              // handed-over state on every refresh. Only the past-the-end case
+              // is forced: showing it again here would override the intro fade.
+              onRefresh: (self) => {
+                if (self.progress >= 1) {
+                  gsap.killTweensOf(fixed, "opacity");
+                  gsap.set([fixed, img01], {
+                    opacity: (i: number) => i,
+                  });
+                }
+              },
             },
+          }
+        );
+      } else {
+        // ---- Phone · the photograph lands on the first swipe ----
+        // Why not the desktop's scrub: on a phone the shrink ran across 130svh
+        // of scroll measured once on arrival. In KakaoTalk's browser the bars
+        // retract as the reader scrolls and the page itself grows, so by the
+        // end of the runway the gap had moved ~240px down and the photograph
+        // vanished above it, with the inline copy popping in below. Here the
+        // move is measured at the moment it starts, with the page held at the
+        // top so nothing can shift under it, and it runs on its own clock —
+        // a fling cannot hurry it into its last frames.
+        const root = document.documentElement;
+        const reduced = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        // Every block of the page sized in svh is held at the height it had
+        // on arrival (see --svh-lock in Hero, Philosophy). Safari's svh never
+        // changes, so this changes nothing there; an in-app browser that
+        // resizes the page as its bars retract can no longer push the pinned
+        // trio away from where ScrollTrigger measured it.
+        root.style.setProperty("--svh-lock", `${viewportH()}px`);
+
+        type Phase = "waiting" | "landing" | "landed" | "returning";
+        let phase: Phase = "waiting";
+        // False until the preloader has handed over: before that the reader
+        // cannot see the photograph, so a swipe must not set it off.
+        let armed = false;
+        let move: gsap.core.Timeline | null = null;
+        let touchY: number | null = null;
+        let touchAtTop = false;
+
+        const atTop = () => window.scrollY <= 2;
+
+        // Viewport coords the transform needs to put the box in the gap now.
+        const toGap = () => {
+          place();
+          const c = coverBox();
+          const r = slot01.getBoundingClientRect();
+          return { x: r.left - c.left, y: r.top - c.top, scale: r.width / c.width };
+        };
+
+        const showLanded = () => {
+          gsap.killTweensOf(fixed, "opacity");
+          gsap.set(fixed, { opacity: 0 });
+          gsap.set(img01, { opacity: 1 });
+          gsap.set([backdrop, cue], { opacity: 0 });
+          phase = "landed";
+          phoneLanded = true;
+          listen("passive");
+        };
+
+        const land = () => {
+          if (phase !== "waiting") return;
+          phase = "landing";
+          listen("blocking");
+          move?.kill();
+          move = gsap
+            .timeline({ onComplete: showLanded })
+            .to(fixed, { ...toGap(), ...LAND }, 0)
+            // The paper behind the photograph clears while it travels, so
+            // the headline is already there to receive it.
+            .to(backdrop, { opacity: 0, duration: 0.55, ease: "sine.inOut" }, 0.2)
+            .to(cue, { opacity: 0, duration: 0.25, overwrite: true }, 0);
+        };
+
+        const returnToTop = () => {
+          if (phase !== "landed") return;
+          phase = "returning";
+          phoneLanded = false;
+          listen("blocking");
+          window.scrollTo(0, 0);
+          move?.kill();
+          gsap.set(fixed, { ...toGap(), opacity: 1 });
+          gsap.set(img01, { opacity: 0 });
+          move = gsap
+            .timeline({
+              onComplete: () => {
+                phase = "waiting";
+              },
+            })
+            .to(fixed, { x: 0, y: 0, scale: 1, ...RETURN }, 0)
+            .to(backdrop, { opacity: 1, duration: 0.3, ease: "sine.out" }, 0)
+            .to(cue, { opacity: 1, duration: 0.3 }, RETURN.duration);
+        };
+
+        const skip = () => {
+          move?.kill();
+          move = null;
+          gsap.set(fixed, { x: 0, y: 0, scale: 1 });
+          showLanded();
+        };
+
+        // Finger up (page down) is positive.
+        const pulled = (e: TouchEvent) =>
+          touchY === null ? 0 : touchY - (e.touches[0]?.clientY ?? touchY);
+
+        const onTouchStart = (e: TouchEvent) => {
+          touchY = e.touches[0]?.clientY ?? null;
+          touchAtTop = atTop();
+        };
+        const onTouchMove = (e: TouchEvent) => {
+          if (!armed) return;
+          if (phase !== "landed") {
+            if (e.cancelable) e.preventDefault();
+            if (phase === "waiting" && pulled(e) >= GESTURE_PX) land();
+            return;
+          }
+          if (touchAtTop && atTop() && pulled(e) <= -GESTURE_PX) returnToTop();
+        };
+        const onWheel = (e: WheelEvent) => {
+          if (!armed) return;
+          if (phase !== "landed") {
+            e.preventDefault();
+            if (phase === "waiting" && e.deltaY > 0) land();
+            return;
+          }
+          if (atTop() && e.deltaY < 0) returnToTop();
+        };
+        const onKey = (e: KeyboardEvent) => {
+          if (!armed || phase === "landed") return;
+          const target = e.target as HTMLElement | null;
+          if (target?.closest("input, textarea, select, [contenteditable]")) return;
+          if (!["ArrowDown", "PageDown", " ", "End"].includes(e.key)) return;
+          e.preventDefault();
+          land();
+        };
+        const onScroll = () => {
+          if (armed && phase !== "landed" && window.scrollY > 0) {
+            window.scrollTo(0, 0);
+          }
+        };
+        // A link to a section (the menu, "B2B Inquiry") has to be able to
+        // leave the intro, so it skips straight to the landed state before
+        // the browser jumps.
+        const onLinkClick = (e: MouseEvent) => {
+          const link = (e.target as HTMLElement | null)?.closest?.('a[href^="#"]');
+          if (!link || link.getAttribute("href") === "#top") return;
+          if (phase !== "landed") skip();
+        };
+
+        // Holding the page at the top needs listeners that can cancel the
+        // gesture, and those make the browser wait on script before every
+        // scroll. Once landed they are swapped for passive ones, which only
+        // watch for the pull back at the top.
+        let mode: "" | "blocking" | "passive" = "";
+        const unlisten = () => {
+          window.removeEventListener("touchstart", onTouchStart);
+          window.removeEventListener("touchmove", onTouchMove);
+          window.removeEventListener("wheel", onWheel);
+          window.removeEventListener("keydown", onKey);
+          window.removeEventListener("scroll", onScroll);
+          mode = "";
+        };
+        const listen = (next: "blocking" | "passive") => {
+          if (mode === next) return;
+          unlisten();
+          const passive = next === "passive";
+          window.addEventListener("touchstart", onTouchStart, { passive: true });
+          window.addEventListener("touchmove", onTouchMove, { passive });
+          window.addEventListener("wheel", onWheel, { passive });
+          if (!passive) {
+            window.addEventListener("keydown", onKey);
+            window.addEventListener("scroll", onScroll, { passive: true });
+          }
+          mode = next;
+        };
+
+        listen("blocking");
+        document.addEventListener("click", onLinkClick, true);
+
+        phoneIntro.current = {
+          arm: () => {
+            if (phase === "landed") return;
+            armed = true;
           },
+          skip,
+        };
+
+        // Built after the intro already finished: decide on the spot.
+        if (introDoneRef.current) {
+          if (atTop() && !reduced) {
+            gsap.set(fixed, { opacity: 1 });
+            gsap.set(img01, { opacity: 0 });
+            armed = true;
+          } else {
+            skip();
+          }
         }
-      );
+
+        phoneCleanup = () => {
+          move?.kill();
+          unlisten();
+          document.removeEventListener("click", onLinkClick, true);
+          root.style.removeProperty("--svh-lock");
+          gsap.set([backdrop, cue], { clearProps: "opacity" });
+          gsap.set(fixed, { clearProps: "x,y,scale" });
+          phoneIntro.current = null;
+        };
+      }
 
       // ---- Page 2 · img-09 travels from the sentence into its column ----
       // Both ends move with the page, so this is resolved every frame rather
@@ -262,19 +490,20 @@ export default function Hero() {
       // null so the first frame always writes, whichever side it lands on
       let handedOver: boolean | null = null;
 
-      // Last line of defence, every frame: past the runway the fixed hero
+      // Last line of defence, every frame: once the photograph has reached the
+      // gap — past the runway on a desktop, landed on a phone — the fixed hero
       // must be dark and the inline copy lit, whatever any tween thinks.
       // Ticker callbacks run after the global timeline renders, so this
       // always has the final say within a frame. Only the hidden side is
       // enforced — the visible side belongs to the intro fade and the
-      // scroll hand-over above.
-      const fixedEl = fixedRef.current;
-      const inlineEl = img01Ref.current;
+      // hand-overs above.
       const enforceHandover = () => {
-        if (!fixedEl || !inlineEl) return;
-        if (runwayRef.current!.getBoundingClientRect().bottom > 0) return;
-        if (fixedEl.style.opacity !== "0") fixedEl.style.opacity = "0";
-        if (inlineEl.style.opacity !== "1") inlineEl.style.opacity = "1";
+        const reached = isDesktop
+          ? runwayRef.current!.getBoundingClientRect().bottom <= 0
+          : phoneLanded;
+        if (!reached) return;
+        if (fixed.style.opacity !== "0") fixed.style.opacity = "0";
+        if (img01.style.opacity !== "1") img01.style.opacity = "1";
       };
 
       const flight = () => {
@@ -339,6 +568,7 @@ export default function Hero() {
 
       return () => {
         gsap.ticker.remove(flight);
+        phoneCleanup();
         // Crossing the breakpoint: the other branch starts from the classes,
         // and the inline values written here would outrank them.
         fly.style.opacity = "";
@@ -359,6 +589,36 @@ export default function Hero() {
     () => {
       if (!introDone) return;
 
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
+        .matches;
+
+      // Phone: fade the photograph in and wait at the top for the first
+      // swipe. Anywhere else — a link to a section, or reduced motion — it is
+      // already where it would have landed.
+      if (!window.matchMedia("(min-width: 768px)").matches) {
+        const intro = phoneIntro.current;
+        if (!intro) return;
+        if (window.scrollY > 2 || reduced) {
+          intro.skip();
+          return;
+        }
+        intro.arm();
+        const fade = gsap.to(fixedRef.current, {
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out",
+        });
+        const cueIn = gsap.to(cueRef.current, {
+          opacity: 1,
+          duration: 0.8,
+          delay: 0.4,
+        });
+        return () => {
+          fade.kill();
+          cueIn.kill();
+        };
+      }
+
       // The page is not always at the top when the intro finishes. A reload
       // restores the previous scroll position, and in dev a fast refresh
       // replays the preloader wherever the reader happens to be. Fading the
@@ -366,7 +626,6 @@ export default function Hero() {
       // scrub has already carried it to its shrunken end state, so it reads
       // as a ghost of the headline image. Past the runway, hand straight
       // over to the copy that lives in the headline slot instead.
-      // The phone runs the same shrink, so the same guard applies there.
       const runway = runwayRef.current;
       if (!runway || runway.getBoundingClientRect().bottom <= 0) {
         gsap.set(fixedRef.current, { opacity: 0 });
@@ -374,8 +633,6 @@ export default function Hero() {
         return;
       }
 
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
-        .matches;
       const fade = gsap.to(fixedRef.current, {
         opacity: 1,
         duration: reduced ? 0 : 1,
@@ -416,20 +673,22 @@ export default function Hero() {
 
   return (
     <>
-      {/* ── Page 1 · white runway ─────────────────────────────── */}
-      {/* The runway the shrink is scrubbed across: 130vh on a desktop, 130svh
-          on a phone. svh, not vh — a phone's vh counts the retracted address
-          bar, so the runway would sit taller than the window and every
-          trigger under it would shift as the bar folds. */}
+      {/* ── Page 1 ────────────────────────────────────────────── */}
+      {/* Desktop: the 130vh white runway the shrink is scrubbed across.
+          Phone: no height at all — page 2 starts at the top, under the
+          photograph and the paper behind it, and the move is not scroll. */}
       <section
         id="top"
         ref={runwayRef}
-        className="relative h-[130svh] bg-paper md:h-[130vh]"
+        className="relative h-0 bg-paper md:h-[130vh]"
       >
         {/* Full-viewport clip: the scaled-up image bleeds past the edges and is
             trimmed here, which is what gives the cover crop at rest. Fixed at
-            both sizes, since the phone shrinks the photograph too. */}
+            both sizes. */}
         <div className="pointer-events-none fixed inset-x-0 bottom-0 top-[78px] z-40 overflow-hidden">
+          {/* Phone: the paper the photograph waits on, over page 2. It clears
+              as the photograph lands. */}
+          <div ref={backdropRef} className="absolute inset-0 bg-paper md:hidden" />
           <div
             ref={fixedRef}
             className="absolute inset-0 overflow-hidden opacity-0 will-change-transform"
@@ -455,7 +714,9 @@ export default function Hero() {
 
       {/* ── Page 2 · grey, ordinary scroll ────────────────────── */}
       <section id="concept" ref={stmtRef} className="bg-paper-alt">
-        <div className="flex min-h-svh flex-col items-center justify-center px-6 text-center">
+        {/* --svh-lock: the phone branch above holds this at the screen height
+            on arrival; elsewhere it is plain 100svh. */}
+        <div className="flex min-h-[var(--svh-lock,100svh)] flex-col items-center justify-center px-6 text-center">
           {/* The page's one h1. "Bare Skin, Zero Foundation" is the line the
               whole page argues for, and it is the largest type on the site, so
               the document outline and the visual one agree. Styling comes from
@@ -503,7 +764,7 @@ export default function Hero() {
         {/* Just a breath before the spread that follows — the trio of
             photographs and its captions are pinned together in
             Statement.tsx, so nothing else belongs between them. */}
-        <div className="h-[5svh]" />
+        <div className="h-[calc(var(--svh-lock,100svh)*0.05)]" />
       </section>
 
       {/* img-09 — sits inline in the sentence, then flies into its column */}

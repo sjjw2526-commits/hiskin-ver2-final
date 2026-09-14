@@ -379,7 +379,12 @@ export default function Statement() {
         // before it: tube, then face, then texture. The tube starts in place;
         // face and texture wait below the stage, clipped by the row.
         gsap.set(cells, { zIndex: (i: number) => [2, 1, 3][i] });
-        gsap.set([cells[0], cells[2]], { yPercent: 100 });
+        // y: 0 with every yPercent on the cards too, for the reason given at
+        // the top of this hook. Without it a second run of this block — a
+        // rotation, or React running effects twice in development — booked the
+        // first run's 100% as pixels and added another 100% on top, so the
+        // face and texture started two cards low and never rose into view.
+        gsap.set([cells[0], cells[2]], { y: 0, yPercent: 100 });
 
         const NAV = 78;
         const tl = gsap.timeline({
@@ -464,8 +469,9 @@ export default function Statement() {
         const rise = (from: number, to: number, at: number) => {
           tl.fromTo(
             cells[from],
-            { yPercent: 0 },
+            { y: 0, yPercent: 0 },
             {
+              y: 0,
               yPercent: -15,
               ease: "power2.inOut",
               duration: 0.2,
@@ -474,8 +480,8 @@ export default function Statement() {
             at,
           ).fromTo(
             cells[to],
-            { yPercent: 100 },
-            { yPercent: 0, ease: "power2.inOut", duration: 0.2 },
+            { y: 0, yPercent: 100 },
+            { y: 0, yPercent: 0, ease: "power2.inOut", duration: 0.2 },
             at,
           );
         };

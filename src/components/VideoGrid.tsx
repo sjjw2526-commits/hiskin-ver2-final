@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -9,72 +9,67 @@ import { ArrowLeft, ArrowRight, Play, Volume2, X } from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Add or remove entries freely — the rail, the counter and the modal's
- * prev/next all read from this list. Drop the matching file into
- * /public/videos with the same name and it plays; until then the card
- * shows a placeholder.
+ * REAL REVIEW — 실제로 촬영한 사용 후기만 둡니다. 레일, 번호(REVIEW 01…),
+ * 모달의 이전/다음이 전부 이 목록 순서를 따릅니다.
  *
- * 영상 넣는 법: `npm run video -- "<원본파일>" <슬롯번호>`
+ * 영상 넣는 법: `npm run video -- "<원본파일>" <슬롯번호> [썸네일초]`
  *
- * ⚠️ 3·4·5 번의 handle 은 아직 지어낸 자리표시입니다. 실제 계정을 받으면
- *    caption 과 함께 바꿔야 합니다. 1·2 번은 실명 대신 역할명을 쓰고 있는데,
- *    본인 동의를 받은 적이 없어서입니다.
+ * ⚠️ AI 로 만든 영상은 넣지 마세요. "REAL REVIEW" 아래에 두면 허위 후기가
+ *    됩니다. review-05.mp4 (AI 생성, "한여름 8시간 지속력 테스트")를
+ *    2026-09-14 에 이 목록에서 뺀 이유입니다. 파일은 public/videos 에 남아
+ *    있지만 페이지에서는 쓰지 않습니다.
  *
- * 빈 슬롯은 두지 않습니다 — 파일 없는 항목은 자리표시 카드로 렌더되고,
- * 그 자리는 바이어에게 "아직 못 채운 칸"으로 읽힙니다 (2026-09-02 에 6·7·8
- * 번을 뺀 이유). 아래 hasVideo 분기는 파일이 깨졌을 때를 위한 안전망으로만
- * 남겨둡니다.
+ * 카드에는 계정명 대신 번호와 한 줄 제목만 씁니다. 출연자에게 이름·계정
+ * 노출 동의를 받은 적이 없어서입니다.
  */
 type Review = {
   src: string;
-  /** 재생 전 정지 컷 (/videos/review-NN.jpg). 없으면 카드가 검게 비어 보입니다 */
-  poster?: string;
-  handle: string;
-  caption: string;
+  /** 레일에 보이는 정지 컷 (/videos/review-NN.jpg) */
+  poster: string;
+  /** 이 영상이 가장 잘 보여주는 사용 경험, 한 줄 */
+  title: string;
 };
 
 const REVIEWS: Review[] = [
   {
-    // 실제 촬영본. 메이크업 아티스트 리뷰 (2026-08-30 교체).
-    // handle 은 본인 인스타 계정을 받으면 "@..." 로 바꾸세요.
-    // 이름을 그대로 노출하지 않은 건 본인 동의를 받은 적이 없어서입니다.
+    // 메이크업 아티스트가 손등에 발라 양손을 비교하는 실촬영본 (2026-08-30 교체)
     src: "/videos/review-01.mp4",
     poster: "/videos/review-01.jpg",
-    handle: "메이크업 아티스트",
-    caption: "HISKIN 리얼 리뷰 — 은은한 핑크빛 톤업",
+    title: "메이크업 아티스트가 선택한 사용감",
   },
   {
-    // 실제 촬영본, 기름종이 테스트 (2026-09-02 추가).
-    // ⚠️ handle 과 caption 은 아직 정해지지 않았습니다. 본인 계정을 받으면
-    // "@..." 로 바꾸고, 이름을 노출할지는 동의를 받은 뒤에 정하세요 —
-    // review-01 을 역할명으로 둔 것과 같은 이유입니다.
+    // 기름종이로 마무리감을 확인하는 실촬영본 (2026-09-02 추가)
     src: "/videos/review-02.mp4",
-    // 재생 전에 보이는 정지 컷. 없으면 카드가 검게 비어 보입니다.
     poster: "/videos/review-02.jpg",
-    handle: "실사용 후기",
-    caption: "기름종이로 확인한 마무리감",
+    title: "보송한 마무리와 자연스러운 톤업",
   },
   {
+    // 출근 전 5분 메이크업 GRWM 실촬영본 (2026-09-01 교체)
     src: "/videos/review-03.mp4",
     poster: "/videos/review-03.jpg",
-    handle: "@k.skin_lab",
-    caption: "민감성 피부 2주 사용 솔직 후기",
+    title: "HISKIN으로 완성하는 5분 데일리 메이크업",
   },
   {
-    // 2026-09-02 에 2번 자리에서 내려온 영상. handle 은 자리표시입니다.
+    // 제품을 들고 사용감과 톤업을 설명하는 실촬영본
     src: "/videos/review-04.mp4",
     poster: "/videos/review-04.jpg",
-    handle: "@sunny.beautylog",
-    caption: "하이스킨 데일리 선크림 제품 소개",
-  },
-  {
-    // 2026-09-02 에 4번 자리에서 내려온 영상. handle 은 자리표시입니다.
-    src: "/videos/review-05.mp4",
-    poster: "/videos/review-05.jpg",
-    handle: "@daily.uv.diary",
-    caption: "한여름 8시간 지속력 테스트",
+    title: "맑고 화사하게 살아나는 피부 톤",
   },
 ];
+
+const reviewLabel = (i: number) => `Review ${String(i + 1).padStart(2, "0")}`;
+
+/** Drift speed of the rail in px per second — slow enough to read as almost still. */
+const DRIFT = 24;
+/** After a finger lets go of the rail, it waits this long before drifting again. */
+const TOUCH_RESUME_MS = 3000;
+/**
+ * The list is laid out three times end to end. At rest the rail shows the
+ * middle copy, and whenever drift or a drag carries it towards either end it
+ * jumps back by exactly one copy's width. The content repeats, so the jump
+ * cannot be seen — that is the whole loop.
+ */
+const COPIES = 3;
 
 /**
  * Section colours. On 2026-09-13 a warm ivory (#f3eee8) and Philosophy's ink
@@ -83,111 +78,58 @@ const REVIEWS: Review[] = [
 const T = {
   section: "bg-paper text-ink",
   media: "bg-[#ecebe8]",
-  handle: "text-ink",
-  caption: "text-mute",
-  track: "bg-hairline",
-  fill: "bg-ink",
-  arrow: "text-mute hover:text-ink",
+  label: "text-mute",
+  title: "text-ink",
 };
+
+const META = "type-caption font-semibold uppercase";
+const META_TRACK = { letterSpacing: "0.08em" };
 
 function VideoCard({
   review,
   index,
+  real,
   onOpen,
   suppressClick,
 }: {
-  review: (typeof REVIEWS)[number];
+  review: Review;
   index: number;
+  /** false for the two copies either side, which exist only to close the loop */
+  real: boolean;
   onOpen: () => void;
   suppressClick: () => boolean;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasVideo, setHasVideo] = useState(true);
-  // The still sits in a layer of its own rather than relying on the video's
-  // poster attribute. A poster is only ever shown *before* the first frame is
-  // decoded — once the card has been hovered and played, pausing and rewinding
-  // leaves frame zero on screen and the poster never returns. Owning the still
-  // means the card goes back to the frame that was chosen for it, every time.
-  const [showStill, setShowStill] = useState(true);
-
-  // The load error can fire before React hydrates (onError never runs),
-  // so re-check the network state on mount. (3 = NETWORK_NO_SOURCE)
-  useEffect(() => {
-    const check = () => {
-      if (videoRef.current?.networkState === 3) setHasVideo(false);
-    };
-    check();
-    const t = setTimeout(check, 800);
-    return () => clearTimeout(t);
-  }, []);
-
-  const play = () => {
-    videoRef.current?.play().catch(() => {});
-  };
-  const pause = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    // Cover first, then stop. The other order shows one frame of the rewound
-    // video before the still lands on top of it.
-    setShowStill(true);
-    v.pause();
-    v.currentTime = 0;
-  };
-
   return (
     <button
       data-video-card
-      onMouseEnter={play}
-      onMouseLeave={pause}
       onClick={() => {
         if (suppressClick()) return;
         onOpen();
       }}
-      // lg: three cards to a view across the centred 1000px rail — two gaps of
-      // 32px between them.
-      className="group w-[72%] shrink-0 snap-start text-left sm:w-[40%] lg:w-[calc((100%-64px)/3)]"
-      aria-label={`Play review video: ${review.caption}`}
+      // The copies stay clickable with a mouse or finger, but are skipped by
+      // the keyboard and screen readers so the list is announced once.
+      tabIndex={real ? undefined : -1}
+      aria-hidden={real ? undefined : true}
+      // Phone: one film and a slice of the next. lg: about three and a half to
+      // a view, so a list of four never shows the same film at both edges.
+      className="group block w-[72vw] shrink-0 text-left sm:w-[40vw] lg:w-[clamp(300px,24vw,380px)]"
+      aria-label={`Play ${reviewLabel(index)}: ${review.title}`}
     >
       <div className={`relative aspect-[9/16] overflow-hidden ${T.media}`}>
-        {hasVideo ? (
-          <video
-            ref={videoRef}
-            src={review.src}
-            poster={review.poster}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onError={() => setHasVideo(false)}
-            // Not onPlay: that fires on the request, before there is anything to
-            // look at. onPlaying fires once frames are actually running, so the
-            // still is only pulled away when the video is ready to replace it.
-            onPlaying={() => setShowStill(false)}
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-40">
-            <Play className="h-8 w-8" strokeWidth={1.2} />
-            <span className="eyebrow !tracking-[0.2em]">
-              VIDEO {String(index + 1).padStart(2, "0")} · 9:16
-            </span>
-          </div>
-        )}
+        {/* Stills only. No <video> sits in the rail, so the page loads four
+            small JPEGs here instead of five films' metadata; the film is
+            fetched when a card is opened. */}
+        <img
+          src={review.poster}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        />
 
-        {/* Sits over the video and carries the same hover scale, so the swap in
-            either direction changes nothing but which layer is on top. No fade:
-            letting go of a card should put the still back at once. */}
-        {hasVideo && review.poster && showStill ? (
-          <img
-            src={review.poster}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          />
-        ) : null}
-
-        {/* A thin play mark, always there so a still reads as a film. It fills
-            on hover instead of popping in as a white badge with a shadow. The
+        {/* A thin play mark, always there so a still reads as a film. The
             faint dark fill keeps the ring visible on bright stills (review-02
             is shot against a white wall). */}
         <span className="pointer-events-none absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/80 bg-black/20 text-white transition-colors duration-300 group-hover:bg-white group-hover:text-ink">
@@ -196,12 +138,13 @@ function VideoCard({
       </div>
 
       {/* Credit under the film, not over it: most of these clips already carry
-          their own captions, and a second layer of white type on a dark
-          gradient stacked two voices on one frame. */}
-      <p className={`mt-4 type-body-sm font-medium ${T.handle}`}>
-        {review.handle}
+          their own captions. */}
+      <p className={`mt-4 ${META} ${T.label}`} style={META_TRACK}>
+        {reviewLabel(index)}
       </p>
-      <p className={`mt-0.5 type-caption ${T.caption}`}>{review.caption}</p>
+      <p className={`mt-1.5 type-body-sm font-medium ${T.title}`}>
+        {review.title}
+      </p>
     </button>
   );
 }
@@ -209,92 +152,237 @@ function VideoCard({
 export default function VideoGrid() {
   const sectionRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
 
-  // Drag-to-scroll state; also used to swallow the click that ends a drag
-  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: 0 });
+  // Rail state changes every frame and nothing in the markup depends on it,
+  // so it lives in refs and is written straight to the track's transform.
+  const pos = useRef({ x: 0, v: 0, period: 0, pad: 0 });
+  // Everything that stops the drift. `until` is the time a touch hold ends.
+  const hold = useRef({ hover: false, press: false, focus: false, modal: false, until: 0 });
+  const drag = useRef({ id: -1, touch: false, startX: 0, startY: 0, lastX: 0, axis: "", moved: 0 });
 
-  const readRail = useCallback(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    const max = rail.scrollWidth - rail.clientWidth;
-    setProgress(max > 0 ? rail.scrollLeft / max : 0);
-    setAtStart(rail.scrollLeft <= 2);
-    setAtEnd(rail.scrollLeft >= max - 2);
-  }, []);
-
-  useEffect(() => {
-    readRail();
-    window.addEventListener("resize", readRail);
-    return () => window.removeEventListener("resize", readRail);
-  }, [readRail]);
-
-  // Driven by hand rather than scrollBy({behavior:"smooth"}): mandatory snap
-  // cancels the browser's own smooth scroll, which left every arrow press
-  // landing one click late.
-  const step = (dir: 1 | -1) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    const card = rail.querySelector<HTMLElement>("[data-video-card]");
-    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
-    const by = (card?.offsetWidth ?? rail.clientWidth * 0.3) + gap;
-    const max = rail.scrollWidth - rail.clientWidth;
-    const to = Math.min(max, Math.max(0, rail.scrollLeft + by * dir));
-    gsap.to(rail, {
-      scrollLeft: to,
-      duration: 0.55,
-      ease: "power2.out",
-      overwrite: true,
-    });
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    drag.current = {
-      active: true,
-      startX: e.clientX,
-      startLeft: rail.scrollLeft,
-      moved: 0,
-    };
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    const rail = railRef.current;
-    if (!rail || !drag.current.active) return;
-    const dx = e.clientX - drag.current.startX;
-    drag.current.moved = Math.max(drag.current.moved, Math.abs(dx));
-    rail.scrollLeft = drag.current.startLeft - dx;
-  };
-  const endDrag = () => {
-    drag.current.active = false;
-  };
   // A card click that ends a drag should not open the modal
   const suppressClick = () => drag.current.moved > 6;
 
+  useEffect(() => {
+    hold.current.modal = openIndex !== null;
+  }, [openIndex]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const rail = railRef.current;
+    const track = trackRef.current;
+    if (!section || !rail || !track) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const p = pos.current;
+    let onScreen = false;
+
+    const render = () => {
+      track.style.transform = `translate3d(${p.x}px, 0, 0)`;
+    };
+
+    // Keep the three copies covering the rail: never so far right that the
+    // gutter before the first copy shows, never so far left that the end of
+    // the last copy comes in. Jumps are whole copies, so nothing visibly moves.
+    const wrap = () => {
+      if (!p.period) return;
+      const hi = -p.pad;
+      const lo = rail.clientWidth - track.offsetWidth;
+      if (p.x > hi) p.x -= Math.ceil((p.x - hi) / p.period) * p.period;
+      if (p.x < lo) p.x += Math.ceil((lo - p.x) / p.period) * p.period;
+    };
+
+    const measure = () => {
+      const cards = track.querySelectorAll<HTMLElement>("[data-video-card]");
+      const first = cards[0];
+      const nextCopy = cards[REVIEWS.length];
+      if (!first || !nextCopy) return;
+      const old = p.period;
+      p.pad = first.offsetLeft;
+      p.period = nextCopy.offsetLeft - first.offsetLeft;
+      // First measure: rest on the middle copy, its first film at the gutter.
+      // On a resize: stay at the same point in the list.
+      p.x = old ? (p.x / old) * p.period : -p.period;
+      wrap();
+      render();
+    };
+
+    const tick = (_time: number, deltaMs: number) => {
+      if (!onScreen || !p.period || drag.current.axis === "x") return;
+      const h = hold.current;
+      const drifting =
+        !reduced &&
+        !h.hover &&
+        !h.press &&
+        !h.focus &&
+        !h.modal &&
+        performance.now() >= h.until;
+      if (!drifting && p.v < 0.05) {
+        p.v = 0;
+        return;
+      }
+      // Capped so a frame after a background tab does not leap the rail.
+      const dt = Math.min(deltaMs, 100);
+      // Ease towards the target speed: a pause settles and a resume gathers
+      // pace, instead of the film stopping and starting dead.
+      p.v += ((drifting ? DRIFT : 0) - p.v) * Math.min(1, dt / 300);
+      p.x -= (p.v * dt) / 1000;
+      wrap();
+      render();
+    };
+
+    // ── Pointer: mouse drag, and touch drag on the horizontal axis only ──
+    // The rail is touch-action: pan-y, so a vertical swipe that starts on it
+    // still scrolls the page. The browser takes that gesture over and sends
+    // pointercancel, which releases the hold without the three-second wait.
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      drag.current = {
+        id: e.pointerId,
+        touch: e.pointerType !== "mouse",
+        startX: e.clientX,
+        startY: e.clientY,
+        lastX: e.clientX,
+        axis: "",
+        moved: 0,
+      };
+      hold.current.press = true;
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const d = drag.current;
+      if (e.pointerId !== d.id) return;
+      if (!d.axis) {
+        const ax = Math.abs(e.clientX - d.startX);
+        const ay = Math.abs(e.clientY - d.startY);
+        if (Math.max(ax, ay) < 6) return;
+        d.axis = ax > ay ? "x" : "y";
+        if (d.axis === "x") {
+          p.v = 0;
+          // Captured only once a drag has begun: capturing on pointerdown
+          // would retarget the click and a plain tap could never open a film.
+          rail.setPointerCapture(e.pointerId);
+        }
+      }
+      if (d.axis !== "x") return;
+      p.x += e.clientX - d.lastX;
+      d.lastX = e.clientX;
+      d.moved = Math.max(d.moved, Math.abs(e.clientX - d.startX));
+      wrap();
+      render();
+    };
+
+    const onEnd = (e: PointerEvent) => {
+      const d = drag.current;
+      if (e.pointerId !== d.id) return;
+      const pageScrolled = e.type === "pointercancel" && d.axis !== "x";
+      if (d.touch && !pageScrolled) {
+        hold.current.until = performance.now() + TOUCH_RESUME_MS;
+      }
+      hold.current.press = false;
+      d.id = -1;
+      d.axis = "";
+    };
+
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") hold.current.hover = true;
+    };
+    const onLeave = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") hold.current.hover = false;
+    };
+
+    // ── Keyboard: bring the focused film into view and hold still ──
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      const card = target.closest<HTMLElement>("[data-video-card]");
+      if (!card || !target.matches(":focus-visible")) return;
+      hold.current.focus = true;
+      // Focus scrolls the nearest scroll box to reveal the card; here the
+      // transform does the positioning, so put those scrolls back.
+      rail.scrollLeft = 0;
+      section.scrollLeft = 0;
+      p.v = 0;
+      const lo = rail.clientWidth - track.offsetWidth;
+      p.x = Math.min(-p.pad, Math.max(lo, p.pad - card.offsetLeft));
+      render();
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (!rail.contains(e.relatedTarget as Node | null)) {
+        hold.current.focus = false;
+      }
+    };
+
+    rail.addEventListener("pointerdown", onDown);
+    rail.addEventListener("pointermove", onMove);
+    rail.addEventListener("pointerup", onEnd);
+    rail.addEventListener("pointercancel", onEnd);
+    rail.addEventListener("pointerenter", onEnter);
+    rail.addEventListener("pointerleave", onLeave);
+    rail.addEventListener("focusin", onFocusIn);
+    rail.addEventListener("focusout", onFocusOut);
+
+    // Nothing moves while the section is off screen.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+      },
+      { rootMargin: "100px 0px" },
+    );
+    io.observe(section);
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(rail);
+    measure();
+
+    gsap.ticker.add(tick);
+
+    return () => {
+      gsap.ticker.remove(tick);
+      ro.disconnect();
+      io.disconnect();
+      rail.removeEventListener("pointerdown", onDown);
+      rail.removeEventListener("pointermove", onMove);
+      rail.removeEventListener("pointerup", onEnd);
+      rail.removeEventListener("pointercancel", onEnd);
+      rail.removeEventListener("pointerenter", onEnter);
+      rail.removeEventListener("pointerleave", onLeave);
+      rail.removeEventListener("focusin", onFocusIn);
+      rail.removeEventListener("focusout", onFocusOut);
+    };
+  }, []);
+
   useGSAP(
     () => {
-      gsap.from("[data-video-head]", {
-        opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: "power3.out",
-        stagger: 0.12,
-        scrollTrigger: { trigger: sectionRef.current, start: "top 70%" },
-      });
-      gsap.from("[data-video-card]", {
-        opacity: 0,
-        y: 70,
-        duration: 1.1,
-        ease: "power3.out",
-        stagger: 0.09,
-        scrollTrigger: { trigger: railRef.current, start: "top 85%" },
-      });
+      // fromTo, not from: a ScrollTrigger refresh mid-tween re-applies a
+      // from-tween's start values and can strand an element at opacity 0.
+      gsap.fromTo(
+        "[data-video-head]",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          stagger: 0.12,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 70%" },
+        },
+      );
+      gsap.fromTo(
+        railRef.current,
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: railRef.current, start: "top 85%" },
+        },
+      );
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   // Modal: entrance, Escape, arrow-key paging, scroll lock
@@ -331,85 +419,52 @@ export default function VideoGrid() {
       ref={sectionRef}
       className={`overflow-hidden py-20 md:py-36 ${T.section}`}
     >
-      {/* Centred like the product section above it, so the two read as one
-          editorial run rather than a shop carousel with its counter and boxed
-          arrows. */}
+      {/* Plain, centred copy: the films make the case, the heading only
+          introduces them. */}
       <div className="mb-12 px-6 text-center md:mb-20 md:px-[80px]">
         <div data-video-head>
-          <p className="eyebrow-tag">K-Beauty Social Proof</p>
+          <p className="eyebrow-tag">Real Review</p>
         </div>
         <h2
           data-video-head
           className="mt-5 font-display type-h2 font-semibold"
-          style={{ letterSpacing: "-0.005em", wordSpacing: "0.08em" }}
         >
-          {/* One break on a phone, between the two sentences: left to wrap,
-              "Thousands." was stranded on a line of its own. */}
-          Proven in Korea.
-          <br className="md:hidden" /> Loved by Thousands.
+          직접 써본 사람들이
+          <br />
+          먼저 알아본 차이
         </h2>
       </div>
 
-      {/* Rail — drag, arrows, snap. It only overflows horizontally, so the
-          wheel is deliberately left to the page: locking it here would trap a
-          vertical scroll on a strip that fills most of the viewport.
-          Inset by margin rather than padding: padding would leave the
-          scrollport itself spanning the full window, so cards bled past the
-          margin. Proximity, not mandatory: mandatory has no snap point at the
-          far end, so the last review could never be reached. */}
+      {/* Film rail — drifts right to left, loops without end, full bleed.
+          Held still under a mouse, while dragged, for three seconds after a
+          finger lets go, while a card has keyboard focus, and while a film
+          plays. overflow-x: clip rather than hidden, so it is not a scroll box
+          that focus could shift behind the transform's back. */}
       <div
         ref={railRef}
-        onScroll={readRail}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-        className="no-scrollbar mx-6 flex cursor-grab snap-x snap-proximity gap-4 overflow-x-auto pb-2 active:cursor-grabbing md:mx-[80px] lg:mx-auto lg:max-w-[1000px] lg:gap-8"
+        className="cursor-grab touch-pan-y select-none overflow-x-clip active:cursor-grabbing"
       >
-        {REVIEWS.map((review, i) => (
-          <VideoCard
-            key={review.src}
-            review={review}
-            index={i}
-            onOpen={() => setOpenIndex(i)}
-            suppressClick={suppressClick}
-          />
-        ))}
-      </div>
-
-      {/* Progress line with the arrows at its end, under the rail */}
-      <div className="mx-6 mt-10 flex items-center gap-6 md:mx-[80px] lg:mx-auto lg:max-w-[1000px]">
-        <div className={`h-px flex-1 ${T.track}`}>
-          <div
-            className={`h-px transition-[width,transform] duration-150 ${T.fill}`}
-            style={{
-              width: `${100 / REVIEWS.length}%`,
-              transform: `translateX(${progress * (REVIEWS.length - 1) * 100}%)`,
-            }}
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => step(-1)}
-            disabled={atStart}
-            aria-label="Previous reviews"
-            className={`p-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${T.arrow}`}
-          >
-            <ArrowLeft className="h-5 w-5" strokeWidth={1.25} />
-          </button>
-          <button
-            onClick={() => step(1)}
-            disabled={atEnd}
-            aria-label="More reviews"
-            className={`p-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${T.arrow}`}
-          >
-            <ArrowRight className="h-5 w-5" strokeWidth={1.25} />
-          </button>
+        <div
+          ref={trackRef}
+          className="flex w-max gap-4 pl-6 will-change-transform md:pl-[80px] lg:gap-8"
+        >
+          {Array.from({ length: COPIES }, (_, copy) =>
+            REVIEWS.map((review, i) => (
+              <VideoCard
+                key={`${copy}-${review.src}`}
+                review={review}
+                index={i}
+                real={copy === 1}
+                onOpen={() => setOpenIndex(i)}
+                suppressClick={suppressClick}
+              />
+            )),
+          )}
         </div>
       </div>
 
       {/* Video Modal */}
-      {current && (
+      {current && openIndex !== null && (
         <div
           ref={modalRef}
           className="fixed inset-0 z-[95] flex items-center justify-center bg-ink/85 p-6 backdrop-blur-sm"
@@ -446,23 +501,25 @@ export default function VideoGrid() {
 
             <div className="mt-4 flex items-center justify-between gap-4 text-white">
               <div className="min-w-0">
-                <p className="truncate type-body-sm font-semibold">
-                  {current.handle}
+                <p className={`${META} text-white/60`} style={META_TRACK}>
+                  {reviewLabel(openIndex)}
                 </p>
-                <p className="truncate type-caption text-white/60">
-                  {current.caption}
+                {/* Two lines rather than an ellipsis: beside the controls on a
+                    phone, one line cut the longest title to "…5분". */}
+                <p className="mt-1 line-clamp-2 break-keep type-body-sm font-semibold">
+                  {current.title}
                 </p>
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
                 <span className="mr-1 type-caption tabular-nums text-white/50">
-                  {(openIndex ?? 0) + 1} / {REVIEWS.length}
+                  {openIndex + 1} / {REVIEWS.length}
                 </span>
                 <button
                   aria-label="Previous video"
                   onClick={() =>
                     setOpenIndex(
-                      ((openIndex ?? 0) - 1 + REVIEWS.length) % REVIEWS.length
+                      (openIndex - 1 + REVIEWS.length) % REVIEWS.length
                     )
                   }
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
@@ -471,9 +528,7 @@ export default function VideoGrid() {
                 </button>
                 <button
                   aria-label="Next video"
-                  onClick={() =>
-                    setOpenIndex(((openIndex ?? 0) + 1) % REVIEWS.length)
-                  }
+                  onClick={() => setOpenIndex((openIndex + 1) % REVIEWS.length)}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
                 >
                   <ArrowRight className="h-4 w-4" strokeWidth={1.6} />
