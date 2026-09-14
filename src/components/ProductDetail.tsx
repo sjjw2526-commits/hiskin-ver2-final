@@ -89,17 +89,19 @@ export default function ProductDetail() {
   );
 
   return (
-    <section id="product" ref={sectionRef} className="bg-[#f6f5f3]">
+    <section id="product" ref={sectionRef} className="bg-paper-alt">
       <div className="px-6 pb-20 pt-20 md:px-[80px] md:pb-28 md:pt-32">
+        {/* Centred, like the hero it follows and like the reference site's
+            product opener: eyebrow, a statement title one step above the
+            section titles, then its Korean line. This is the one section
+            besides the hero that opens centred; every other section head is
+            left-set. */}
         <div data-pd-head className="text-center">
           <p className="eyebrow-tag">HISKIN — Daily Suncream Protect</p>
         </div>
         <h2
           data-pd-head
-          className="mt-5 text-center font-display type-h2 font-semibold text-ink"
-          // type-h2's -0.015em is tuned for short section titles; across a
-          // two-line sentence it closed the word gaps up ("protectionmeets").
-          style={{ letterSpacing: "-0.005em", wordSpacing: "0.08em" }}
+          className="mx-auto mt-5 max-w-4xl text-center font-display type-statement font-semibold text-ink"
         >
           {/* Phone breaks are placed by hand: left to wrap, each half dropped
               its last word ("beauty,", "glow.") onto a line of its own. */}
@@ -109,20 +111,29 @@ export default function ProductDetail() {
           your skin finds
           <br className="md:hidden" /> its natural glow.
         </h2>
+        <p
+          data-pd-head
+          className="mx-auto mt-7 max-w-2xl text-center type-statement-sub font-medium text-mute md:mt-9"
+        >
+          보호와 아름다움이 만나는 자리에서, 피부 본연의 광이 살아납니다
+        </p>
 
         {/* xl+: the object and the spec column are centred as one group
             between two equal flexible tracks. With the object alone on the
             centre line (the reference's arrangement) the group's visual centre
             sat ~140px right of the headline's at 1440px — the reference's
             bottle is narrow, this tube-and-swatches object is ~480px wide — and
-            the section read as leaning right. The spec column is pulled in
-            over the photo's empty feathered margin and dropped to the object's
-            foot. Below xl everything stacks: at 1024px there is no room for
-            the column beside the object.
+            the section read as leaning right. The spec column sits clear of
+            the photo (a 16px gap after the frame; the frame's feathered margin
+            adds the rest) and is dropped to the object's foot. The frame is
+            820px: at 660 the swatches ended almost against the column and the
+            owner asked for the object to reach further left. Below xl
+            everything stacks: at 1024px there is no room for the column beside
+            the object.
             w-full matters: as a grid item with auto margins the wrapper
             shrinks to its content, and the photo inside is sized by percentage,
             so without it the object collapsed to 0px wide. */}
-        <div className="mt-14 md:mt-20 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,660px)_250px_minmax(0,1fr)] xl:items-end">
+        <div className="mt-16 md:mt-24 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,820px)_250px_minmax(0,1fr)] xl:items-end">
           <div
             data-pd-img
             className="mx-auto w-full max-w-[640px] xl:col-start-2 xl:max-w-none"
@@ -151,7 +162,7 @@ export default function ProductDetail() {
 
           <div
             data-pd-list
-            className="mx-auto mt-10 max-w-[420px] xl:col-start-3 xl:-ml-16 xl:mb-12 xl:mt-0 xl:w-[250px] xl:max-w-none"
+            className="mx-auto mt-10 max-w-[420px] xl:col-start-3 xl:ml-4 xl:mb-12 xl:mt-0 xl:w-[250px] xl:max-w-none"
           >
             <dl>
               {SPECS.map((spec) => (
@@ -181,7 +192,7 @@ export default function ProductDetail() {
             <a
               data-pd-row
               href="#inquiry"
-              className="group mt-6 flex w-full items-center justify-center gap-2 bg-ink px-6 py-3.5 type-body-sm font-semibold text-white transition-opacity hover:opacity-85"
+              className="group mt-6 flex w-full items-center justify-center gap-2 rounded-[4px] bg-ink px-6 py-3.5 type-body-sm font-semibold text-white transition-opacity hover:opacity-85"
             >
               파트너십 문의하기
               <ArrowRight
