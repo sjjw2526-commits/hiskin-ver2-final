@@ -18,6 +18,7 @@ gsap.registerPlugin(ScrollTrigger);
  * sharing the brightening sentence, collagen sharing the wrinkle sentence,
  * and "민감 / 장벽 / 진정" in 04. The owner chose to keep every line as
  * written. Don't reword it quietly — raise any change with them first.
+ * Panel 01's body was replaced by the owner on 2026-09-14 (see the item).
  */
 type Item = {
   num: string;
@@ -41,15 +42,15 @@ const ITEMS: Item[] = [
     row: "Hybrid UV Filters",
     tag: "UV PROTECTION",
     title: "Hybrid UV Filters",
+    // Rewritten by the owner on 2026-09-14, one running line per paragraph
+    // (no hand breaks, like the reference's panels); the full stops are
+    // theirs.
     body: [
       [
-        "HISKIN은 세 가지 유기 자외선 차단 성분과",
-        "두 가지 무기 자외선 차단 성분을 함께 사용합니다",
+        "유기 자외선 차단 성분과 무기 자외선 차단 성분을 함께 설계해 서로 다른 방식으로 UVA와 UVB에 대응합니다.",
       ],
       [
-        "서로 다른 특성의 다섯 가지 UV 필터를",
-        "하나의 하이브리드 시스템으로 설계해",
-        "UVA와 UVB를 함께 차단합니다",
+        "하나의 필터 방식에 의존하지 않고, 두 가지 차단 메커니즘을 조합해 매일 사용하는 선케어의 보호력을 완성합니다.",
       ],
     ],
     groups: [
@@ -70,17 +71,21 @@ const ITEMS: Item[] = [
     num: "02",
     hash: "brightening",
     row: "Brightening",
-    tag: "BRIGHTENING",
+    tag: "What sets it apart",
     title: "Niacinamide + Glutathione",
+    // Owner's copy, 2026-09-14, one line per entry as they broke it; the
+    // full stops are theirs. The missing space in "않고,매일" was added.
     body: [
+      ["단순히 피부를 밝아 보이게 하는 것만으로는 충분하지 않습니다."],
       [
-        "피부 톤을 맑고 균일하게 케어하는",
-        "나이아신아마이드에 글루타치온을 더했습니다",
+        "칙칙한 피부 톤은 하나의 원인보다, 매일 반복되는 자외선 노출과 피부 컨디션의 영향을 함께 받습니다.",
+      ],
+      ["HISKIN은 나이아신아마이드와 글루타치온을 함께 구성해"],
+      [
+        "피부 톤을 맑고 균일하게 케어하고, 자외선 차단 이후의 피부 컨디션까지 함께 고려합니다.",
       ],
       [
-        "톤 케어와 항산화 케어를 함께 고려해",
-        "칙칙해 보이는 피부에 생기를 더하고",
-        "맑고 화사한 피부 컨디션을 완성합니다",
+        "일시적인 톤업에 그치지 않고, 매일의 선케어 안에서 보다 맑고 정돈된 피부 표현을 완성합니다.",
       ],
     ],
     img: "img-05",
@@ -90,17 +95,18 @@ const ITEMS: Item[] = [
     num: "03",
     hash: "moisture-elasticity",
     row: "Moisture & Elasticity",
-    tag: "MOISTURE & ELASTICITY",
+    tag: "What it is",
     title: "Hydrolyzed Collagen + Adenosine",
+    // Owner's copy, 2026-09-14, one line per entry as they broke it.
     body: [
       [
-        "피부에 촉촉함과 유연함을 더하는",
-        "하이드롤라이즈드 콜라겐에 아데노신을 더했습니다",
+        "하이드롤라이즈드 콜라겐은 피부에 수분감을 더해 촉촉하고 유연한 컨디션을 유지하도록 돕습니다.",
       ],
       [
-        "수분을 채우는 것에서 그치지 않고",
-        "주름과 탄력까지 함께 케어해",
-        "매끄럽고 탄탄한 피부 컨디션을 완성합니다",
+        "아데노신은 탄력과 주름 케어를 고려한 성분으로, 보습 중심의 케어에 탄력 관리까지 더합니다.",
+      ],
+      [
+        "서로 다른 역할의 두 성분을 조합해 건조함으로 손상되기 쉬운 피부 컨디션을 보다 매끄럽고 탄탄하게 케어합니다.",
       ],
     ],
     img: "img-06",
@@ -110,23 +116,28 @@ const ITEMS: Item[] = [
     num: "04",
     hash: "soothing-barrier",
     row: "Soothing & Barrier",
-    tag: "SOOTHING & BARRIER",
+    tag: "Soothing & Barrier",
     title: "Panthenol + Allantoin",
+    // Owner's copy, 2026-09-14, one line per entry as they broke it. The
+    // missing space in "돕고,알란토인" was added.
     body: [
       [
-        "건조함으로 예민해지기 쉬운 피부를 고려해",
-        "판테놀과 알란토인을 함께 담았습니다",
+        "매일 사용하는 선케어는 자외선을 막는 것만큼 피부가 편안한 상태를 유지하는 것도 중요합니다.",
       ],
       [
-        "보습과 피부 장벽 케어에 진정 케어를 더해",
-        "민감해진 피부를 편안하게 유지하고",
-        "건강한 피부 컨디션을 돕습니다",
+        "판테놀은 건조해지기 쉬운 피부의 보습과 장벽 케어를 돕고, 알란토인은 외부 자극으로 예민해진 피부를 편안하게 관리하는 데 도움을 줍니다.",
+      ],
+      [
+        "HISKIN은 두 성분을 함께 구성해 자외선에 반복적으로 노출되는 피부까지 고려한 편안한 데일리 선케어 포뮬러를 완성합니다.",
       ],
     ],
-    // img-22 (sage and thyme) left with this rewrite: neither plant is in
-    // the formula, and a photograph of one reads as an ingredient claim.
-    img: "img-23",
-    alt: "부드럽게 펼쳐진 아이보리빛 크림 제형",
+    // img-25: a molecular ball-and-stick render with one rose-pink atom,
+    // generated 2026-09-14 after the owner's reference. It replaced the
+    // cream swatch (img-23), which repeated panel 01's photograph, and a
+    // botanical was ruled out: neither panthenol nor allantoin is a plant,
+    // so a leaf would read as an ingredient claim.
+    img: "img-25",
+    alt: "흰 구슬로 이어진 분자 구조 모형, 가운데 한 원자만 연분홍빛으로 빛남",
   },
 ];
 
@@ -211,23 +222,32 @@ export default function ScienceAccordion() {
       ref={sectionRef}
       className="px-6 py-16 md:px-[80px] md:py-36"
     >
+      {/* Set to the reference's science head (1920: eyebrow 16, title 60/600,
+          Korean 18/500, three hand-broken lines) — the statement step, like
+          the product opener, but left-set here. Copy is the owner's,
+          2026-09-14; "FOUR," is capitalised on purpose, echoing the
+          reference's "20nm," on its own line. */}
       <div className="mb-14 md:mb-28">
         <p data-sci-head className="eyebrow-tag mb-6">
-          Advanced Skincare Science
+          Advanced Suncare Formula
         </p>
         <h2
           data-sci-head
-          className="font-display type-h2 font-semibold text-ink"
+          className="font-display type-statement font-semibold text-ink"
         >
-          임상적으로 검증된
+          FOUR,
           <br />
-          핵심 성분 조합
+          Precisely Chosen for Better Skin.
         </h2>
         <p
           data-sci-head
-          className="mt-6 type-body font-medium text-mute md:mt-9"
+          className="mt-7 max-w-3xl type-statement-sub font-medium text-mute md:mt-9"
         >
-          HISKIN의 포뮬러를 완성하는 네 가지 설계
+          자외선 차단, 브라이트닝, 보습·탄력, 진정·장벽까지
+          <br className="max-md:hidden" /> 피부에 필요한 네 가지 기능을 균형
+          있게 설계해
+          <br className="max-md:hidden" /> 보호와 케어를 하나의 선케어 포뮬러로
+          완성합니다
         </p>
       </div>
 
@@ -266,7 +286,7 @@ export default function ScienceAccordion() {
                     aria-controls={panelId}
                     className="flex w-full items-center justify-between gap-6 py-5 text-left md:py-[1.1rem]"
                   >
-                    <span className="min-w-0 font-display type-lead font-normal text-ink">
+                    <span className="min-w-0 font-display type-row font-normal text-ink">
                       {item.row}
                     </span>
                     <ArrowDown
@@ -307,17 +327,23 @@ export default function ScienceAccordion() {
                       </p>
 
                       <h3
-                        className={`mt-5 font-display type-figure font-medium text-ink ${rise}`}
+                        className={`mt-5 font-display type-h2 font-medium text-ink ${rise}`}
                         style={at(1)}
                       >
                         {item.title}
                       </h3>
 
-                      <div className="mt-10 max-w-xl type-body text-ink md:mt-16">
+                      {/* max-w-3xl, not xl: panel 01's paragraphs run as
+                          single lines now and want the column's width. */}
+                      <div className="mt-10 max-w-3xl type-body text-ink md:mt-16">
                         {item.body.map((para, p) => (
                           <p
                             key={para[0]}
-                            className={`mt-5 first:mt-0 ${rise}`}
+                            // No gap between paragraphs: the sentences run
+                            // on as consecutive lines, the reference's way
+                            // (owner, 2026-09-14). The one break is before
+                            // the ingredient list.
+                            className={rise}
                             style={at(2 + p)}
                           >
                             {para.map((line) => (
@@ -329,22 +355,32 @@ export default function ScienceAccordion() {
                         ))}
                       </div>
 
+                      {/* Each group is one running line — "3 ORGANIC —
+                          a · b · c" (owner, 2026-09-14) — instead of a
+                          label over a stack of names. Every INCI name is
+                          still kept whole: a wrap can only fall between
+                          names, never inside one. */}
                       {item.groups && (
                         <dl
-                          className={`mt-10 max-w-xl border-t border-hairline pt-7 ${rise}`}
+                          className={`mt-8 max-w-3xl ${rise}`}
                           style={at(2 + item.body.length)}
                         >
                           {item.groups.map((g) => (
-                            <div key={g.name} className="mt-6 first:mt-0">
-                              <dt className="type-caption font-semibold tracking-[0.16em] text-mute">
+                            <div
+                              key={g.name}
+                              className="mt-3 flex flex-wrap items-baseline gap-x-2 first:mt-0 type-body-sm text-ink"
+                            >
+                              <dt className="font-semibold tracking-[0.08em] text-mute">
                                 {g.name}
                               </dt>
-                              {/* One name per line: a long INCI name has to
-                                  be read as one piece. */}
-                              <dd className="mt-2 type-body-sm text-ink">
-                                {g.items.map((n) => (
-                                  <span key={n} className="block">
-                                    {n}
+                              <dd>
+                                <span className="text-mute">— </span>
+                                {g.items.map((n, i) => (
+                                  <span key={n}>
+                                    <span className="whitespace-nowrap">{n}</span>
+                                    {i < g.items.length - 1 && (
+                                      <span className="text-mute"> · </span>
+                                    )}
                                   </span>
                                 ))}
                               </dd>
