@@ -440,8 +440,14 @@ export default function InquiryForm() {
                   </a>
                 </span>
               </label>
-              {/* Google's widget lands here on the deployed site (304×78). */}
-              <div data-netlify-recaptcha="true" className="shrink-0" />
+              {/* Google's widget lands here on the deployed site (304×78).
+                  The placeholder must carry nothing but the attribute —
+                  with a class on it Netlify's build left it untouched
+                  (verified live, 2026-09-15) — so the layout class sits on
+                  a wrapper. */}
+              <div className="shrink-0">
+                <div data-netlify-recaptcha="true" />
+              </div>
               </div>
 
               <button

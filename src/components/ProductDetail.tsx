@@ -133,7 +133,15 @@ export default function ProductDetail() {
             w-full matters: as a grid item with auto margins the wrapper
             shrinks to its content, and the photo inside is sized by percentage,
             so without it the object collapsed to 0px wide. */}
-        <div className="mt-16 md:mt-24 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,820px)_250px_minmax(0,1fr)] xl:items-end">
+        {/* xl+ columns are set in vw so the photo's visible left edge lands
+            on the headline's left edge at every width (owner, 2026-09-15).
+            The centred headline starts at 26.2% of the viewport at every
+            width measured (1280–1920), because its size scales with vw. The
+            swatches begin 13.9% into the frame, and the frame is 42.7vw
+            (820px at 1920), so the frame starts at 26.2 − 0.139 × 42.7 =
+            20.26vw, less the section's 80px padding. The spec column follows
+            the frame; the last track takes what is left. */}
+        <div className="mt-16 md:mt-24 xl:grid xl:grid-cols-[calc(20.26vw_-_80px)_42.7vw_250px_minmax(0,1fr)] xl:items-end">
           <div
             data-pd-img
             className="mx-auto w-full max-w-[640px] xl:col-start-2 xl:max-w-none"
