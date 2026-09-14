@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { ArrowDown } from "lucide-react";
 import TestReports from "./TestReports";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -94,6 +95,18 @@ const LC_Y = 66.7;
 
 type Meta = { label: string; value: string };
 
+/* The head's right-hand block: which standard each rating was tested to,
+   and by whom. Straight from the two study reports named above. The
+   institute keeps its two-line English name; "\n" is the break. */
+const TEST_META: Meta[] = [
+  { label: "SPF", value: "ISO 24444:2019 / AMD 1:2022" },
+  { label: "UVA", value: "ISO 24443:2021" },
+  {
+    label: "Institute",
+    value: "Semyung University\nCosmetics Clinical Research Center",
+  },
+];
+
 function MetaRow({ items }: { items: Meta[] }) {
   return (
     <dl className="mt-8 border-t border-black/[0.08] pt-6">
@@ -102,7 +115,7 @@ function MetaRow({ items }: { items: Meta[] }) {
           key={m.label}
           className="flex items-baseline justify-between gap-6 py-[7px]"
         >
-          <dt className="shrink-0 type-caption font-semibold uppercase tracking-[0.08em] text-mute">
+          <dt className="shrink-0 type-caption font-medium uppercase tracking-[0.08em] text-mute">
             {m.label}
           </dt>
           <dd className="text-right type-body-sm text-ink">
@@ -137,8 +150,21 @@ function Takeaway({ items }: { items: { strong: string; rest: string }[] }) {
   );
 }
 
+/* One label treatment for the whole section — the same quiet capitals the
+   product specification uses, so the two data sections read as siblings. */
+const LABEL =
+  "type-caption font-medium uppercase tracking-[0.08em] text-mute";
+
 /**
  * Section 06.5 — clinical efficacy.
+ *
+ * Two depths, in the order a buyer reads them. First the label rating
+ * (SPF 50+ / PA++++), which is what the tube says and what every competitor
+ * also says, with the measured figure beside it — the number that is
+ * actually ours. Then, behind one control, the evidence: per-subject plot,
+ * spectral curve, panel and plate tables, study metadata. Nothing was cut;
+ * it was moved one click down, so the section stops reading as a lab report
+ * pasted whole into a brand page.
  *
  * Both plots are hand-built SVG rather than a chart library: the point is
  * two specific numbers, and a generic chart would drag in axes, legends and
@@ -146,26 +172,44 @@ function Takeaway({ items }: { items: { strong: string; rest: string }[] }) {
  */
 export default function ClinicalData() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [open, setOpen] = useState(false);
+
+  // The detail block changes height over 600ms; every trigger below it moves
+  // with it, so ScrollTrigger is told once the transition has settled.
+  useEffect(() => {
+    const t = setTimeout(() => ScrollTrigger.refresh(), 650);
+    return () => clearTimeout(t);
+  }, [open]);
 
   useGSAP(
     () => {
-      gsap.from("[data-clin-head]", {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        ease: "power3.out",
-        stagger: 0.1,
-        scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
-      });
+      // fromTo, not from: a ScrollTrigger refresh mid-tween re-applies a
+      // from-tween's start values and can strand an element at opacity 0.
+      gsap.fromTo(
+        "[data-clin-head]",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+        },
+      );
 
-      gsap.from("[data-clin-card]", {
-        opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: "power3.out",
-        stagger: 0.14,
-        scrollTrigger: { trigger: "[data-clin-grid]", start: "top 80%" },
-      });
+      gsap.fromTo(
+        "[data-clin-block]",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          stagger: 0.12,
+          scrollTrigger: { trigger: "[data-clin-rating]", start: "top 80%" },
+        },
+      );
 
       // Counters. Tweening a proxy and writing textContent avoids React
       // re-rendering 60 times a second.
@@ -185,15 +229,18 @@ export default function ClinicalData() {
       });
 
       // Scatter dots pop in along the ITA axis.
-      gsap.from("[data-dot]", {
-        opacity: 0,
-        scale: 0,
-        transformOrigin: "50% 50%",
-        duration: 0.5,
-        ease: "back.out(2)",
-        stagger: 0.05,
-        scrollTrigger: { trigger: "[data-plot-spf]", start: "top 85%" },
-      });
+      gsap.fromTo(
+        "[data-dot]",
+        { opacity: 0, scale: 0, transformOrigin: "50% 50%" },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          ease: "back.out(2)",
+          stagger: 0.05,
+          scrollTrigger: { trigger: "[data-plot-spf]", start: "top 85%" },
+        },
+      );
 
       // Left-to-right line draw.
       const curve = sectionRef.current?.querySelector<SVGPathElement>(
@@ -208,13 +255,17 @@ export default function ClinicalData() {
           ease: "power2.inOut",
           scrollTrigger: { trigger: "[data-plot-uva]", start: "top 85%" },
         });
-        gsap.from("[data-curve-mark]", {
-          opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          delay: 1.1,
-          scrollTrigger: { trigger: "[data-plot-uva]", start: "top 85%" },
-        });
+        gsap.fromTo(
+          "[data-curve-mark]",
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            delay: 1.1,
+            scrollTrigger: { trigger: "[data-plot-uva]", start: "top 85%" },
+          },
+        );
       }
     },
     { scope: sectionRef }
@@ -236,388 +287,516 @@ export default function ClinicalData() {
     <section
       id="clinical"
       ref={sectionRef}
-      className="bg-paper px-6 py-16 md:px-[80px] md:py-36"
+      // Grey with the certificates below: the two are one block of evidence.
+      className="bg-paper-alt px-6 py-16 md:px-[80px] md:py-36"
     >
-      {/* ── Heading ──────────────────────────────────────────── */}
-      <div className="max-w-3xl">
-        <p data-clin-head className="eyebrow-tag mb-6">
-          Clinical Efficacy &amp; Advanced UV Defense
-        </p>
-        <h2
+      {/* ── Heading ──────────────────────────────────────────────
+          Three steps of hierarchy (owner, 2026-09-14): the big message on
+          the left at the statement step, a small block of test metadata
+          on the right where the head used to run empty, and the results
+          below. The right block is deliberately the quietest type in the
+          section — caption labels over body-small values — so the title
+          keeps the room. Below xl the metadata stacks under the title. */}
+      {/* items-start: the metadata label sits on the eyebrow's line, so the
+          two columns share a top edge. Bottom-aligned, the label floated
+          above the eyebrow and the head read as misaligned (owner,
+          2026-09-15). */}
+      <div className="xl:grid xl:grid-cols-12 xl:items-start xl:gap-x-16">
+        <div className="max-w-3xl xl:col-span-7">
+          <p data-clin-head className="eyebrow-tag mb-6">
+            Tested &amp; Verified
+          </p>
+          <h2
+            data-clin-head
+            className="type-statement font-display font-semibold text-ink"
+          >
+            Verified by
+            <br />
+            International Standard Testing.
+          </h2>
+          <p
+            data-clin-head
+            className="mt-7 type-statement-sub font-medium text-mute md:mt-9"
+          >
+            세명대학교 화장품임상연구센터에서
+            <br />
+            국제 표준 시험법을 기반으로 확인했습니다
+          </p>
+        </div>
+
+        <div
           data-clin-head
-          className="type-h2 font-display font-semibold text-ink"
+          // xl:mt-[7px]: the caption label sits in a shorter line box than
+          // the eyebrow, so the two text centres meet only with this nudge.
+          className="mt-12 max-w-sm xl:col-span-4 xl:col-start-9 xl:mt-[7px] xl:max-w-none"
         >
-          Verified Protection by
-          <br />
-          Global Standard SOPs.
-        </h2>
-        <p
-          data-clin-head
-          className="mt-7 type-sub text-mute"
-        >
-          세명대학교 화장품임상연구센터의 ISO 국제 표준 인체적용시험 및 광학
-          분석을 통해 입증된 정량적 방어력.
-        </p>
+          <p className="type-caption font-medium uppercase tracking-[0.08em] text-mute">
+            Independent Testing
+          </p>
+          <dl className="mt-3">
+            {TEST_META.map((m) => (
+              <div
+                key={m.label}
+                className="border-t border-hairline py-4 last:border-b"
+              >
+                <dt className="type-caption font-medium uppercase tracking-[0.08em] text-mute">
+                  {m.label}
+                </dt>
+                <dd className="mt-1 whitespace-pre-line type-body-sm text-ink">
+                  {m.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
 
-      {/* ── Metric cards ─────────────────────────────────────── */}
+      {/* ── Label rating, measured figure beside it ──────────────
+          One hairline above, one between the two on desktop. The rating is
+          the largest type in the section because it is the fact a buyer
+          quotes; the measured value sits a step down and answers the
+          question the rating raises — "by how much?". */}
       <div
-        data-clin-grid
-        className="mt-14 grid grid-cols-1 gap-[12px] md:mt-20 md:grid-cols-2"
+        data-clin-rating
+        className="mt-14 grid grid-cols-1 border-t border-hairline md:mt-20 md:grid-cols-2"
       >
-        {/* ══ Card 01 — In-vivo UVB ══════════════════════════ */}
-        <article
-          data-clin-card
-          className="flex flex-col border border-black/[0.08] p-7 md:p-9"
-        >
-          <p className="type-caption font-semibold uppercase tracking-[0.08em] text-mute">
-            In-Vivo Clinical Trial
-            <span className="ml-2 text-ink/45">(ISO 24444:2019/AMD 1:2022)</span>
+        <div data-clin-block className="py-9 md:py-12 md:pr-16">
+          <p className={LABEL}>UVB Protection</p>
+          <p className="mt-5 font-display type-metric font-semibold text-ink">
+            SPF 50+
           </p>
-
-          <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-2">
-            <p className="font-display type-caption font-semibold uppercase tracking-[0.08em] text-ink">
-              SPF
-            </p>
-            <p className="font-display type-metric font-semibold text-ink tabular-nums">
-              <span data-count-to="69.0" data-count-dp="1">
-                0.0
-              </span>
-            </p>
-            <p className="pb-1 type-body font-medium tabular-nums text-mute">
+          <p className="mt-6 type-h3 font-medium text-ink">
+            실측 SPF{" "}
+            <span className="font-display font-semibold tabular-nums">
+              {SPF_MEAN.toFixed(1)}
+            </span>
+            <span className="ml-2 type-body text-mute tabular-nums">
               ± {SPF_SD.toFixed(1)}
-            </p>
-          </div>
-
-          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] type-caption font-semibold text-rose">
-            SPF 50+ 표기 기준 초과 달성
+            </span>
           </p>
+          {/* Two facts, two lines on a phone: run together they broke as
+              "(In- / vivo)", which a buyer reads as a typo. */}
+          <p className="mt-3 type-body-sm text-mute">
+            <span className="block md:inline">ISO 24444:2019 / AMD 1:2022</span>
+            <span className="hidden md:inline"> · </span>
+            <span className="block md:inline">
+              인체적용시험 (In-vivo) · 피험자 {SUBJECTS.length}명
+            </span>
+          </p>
+        </div>
 
-          <Takeaway items={SPF_TAKEAWAY} />
+        <div
+          data-clin-block
+          className="border-t border-hairline py-9 md:border-t-0 md:border-l md:py-12 md:pl-16"
+        >
+          <p className={LABEL}>UVA Protection</p>
+          <p className="mt-5 font-display type-metric font-semibold text-ink">
+            PA++++
+          </p>
+          <p className="mt-6 type-h3 font-medium text-ink">
+            실측 UVA-PF{" "}
+            <span className="font-display font-semibold tabular-nums">
+              23.33
+            </span>
+            <span className="ml-2 type-body text-mute tabular-nums">
+              ± 0.70
+            </span>
+          </p>
+          <p className="mt-3 type-body-sm text-mute">
+            <span className="block md:inline">ISO 24443:2021</span>
+            <span className="hidden md:inline"> · </span>
+            <span className="block md:inline">
+              인체외시험 (In-vitro) · PMMA 플레이트 {PLATES.length}장
+            </span>
+          </p>
+        </div>
+      </div>
 
-          {/* Per-subject scatter */}
-          <figure data-plot-spf className="mt-9">
-            {/* Sizes below are viewBox units, not screen pixels, so they are
-                outside the type scale by necessity: the SVG scales with its
-                container. The mobile value is the larger of the two because a
-                narrow viewBox scales down further. */}
-            <svg
-              viewBox={`0 0 ${PW} ${PH}`}
-              className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
-              role="img"
-              aria-label={`인체적용시험 피험자 ${SUBJECTS.length}명의 개인별 SPF 실측값. 평균 ${SPF_MEAN}, 표준편차 ${SPF_SD}.`}
-            >
-              {/* ±1 SD band */}
-              <rect
-                x={26}
-                y={py(SPF_MEAN + SPF_SD)}
-                width={PW - 34}
-                height={py(SPF_MEAN - SPF_SD) - py(SPF_MEAN + SPF_SD)}
-                className="fill-rose/[0.09]"
-              />
-              {/* mean */}
-              <line
-                x1={26}
-                x2={PW}
-                y1={py(SPF_MEAN)}
-                y2={py(SPF_MEAN)}
-                className="stroke-rose"
-                strokeWidth={1}
-              />
-              {/* SPF 50 label ceiling */}
-              <line
-                x1={26}
-                x2={PW}
-                y1={py(SPF_LABEL_MAX)}
-                y2={py(SPF_LABEL_MAX)}
-                className="stroke-ink/30"
-                strokeWidth={1}
-                strokeDasharray="3 4"
-              />
-              {/* y ticks */}
-              {[50, 69, 90].map((v) => (
-                <text
-                  key={v}
-                  x={0}
-                  y={py(v) + 3.5}
-                  className="fill-mute tabular-nums"
+      {/* ── Test Details row ─────────────────────────────────────
+          One hairline row in the ingredient accordion's language (owner,
+          2026-09-15) that unfolds the measured detail below it; it replaced
+          an outlined button with a helper caption. The original reports
+          keep their own block after it (TestReports): rows that merely open
+          a document must not look like rows that unfold. */}
+      <div data-clin-block className="border-t border-hairline">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls="clinical-details"
+          className="group flex w-full items-center justify-between gap-6 border-b border-hairline py-5 text-left md:py-[1.1rem]"
+        >
+          <span className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span className="font-display type-row font-normal text-ink">
+              Test Details
+            </span>
+            <span className="type-body-sm text-mute">
+              실측값 · 그래프 · 시험 조건
+            </span>
+          </span>
+          <ArrowDown
+            className={`h-5 w-5 shrink-0 text-mute transition-transform duration-500 ${
+              open ? "rotate-180" : ""
+            }`}
+            strokeWidth={1.25}
+          />
+        </button>
+
+      {/* ── Detail: the evidence ────────────────────────────────
+          Same grid-rows collapse the ingredient accordion uses, so the two
+          open at the same speed. */}
+      <div
+        id="clinical-details"
+        className="grid transition-[grid-template-rows] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+        aria-hidden={!open}
+      >
+        <div className="overflow-hidden">
+          {/* Two bands (owner, 2026-09-15 — "one grey page reads like a
+              test certificate"): the reading band on a white sheet — the
+              figure, what it means, the chart — then the data band back on
+              the section's grey with the tables and the study metadata.
+              The change of ground is the separation; no box, no rule. */}
+          <div className="mt-10 rounded-[4px] bg-paper px-6 py-12 md:mt-12 md:px-14 md:py-16">
+          <div className="grid grid-cols-1 gap-y-16 md:grid-cols-2 md:gap-x-16">
+            {/* ══ 01 — In-vivo SPF ═══════════════════════════════ */}
+            <div className="flex flex-col">
+              <p className={LABEL}>01 · SPF Performance</p>
+              <div className="mt-6 flex flex-wrap items-end gap-x-4 gap-y-2">
+                <p className="font-display type-figure font-semibold text-ink tabular-nums">
+                  <span data-count-to="69.0" data-count-dp="1">
+                    0.0
+                  </span>
+                </p>
+                <p className="pb-[3px] type-body text-mute tabular-nums">
+                  ± {SPF_SD.toFixed(1)} · Measured SPF
+                </p>
+              </div>
+              <p className="mt-2 type-caption uppercase tracking-[0.08em] text-mute">
+                ISO 24444:2019 / AMD 1:2022
+              </p>
+
+              <Takeaway items={SPF_TAKEAWAY} />
+
+              {/* Per-subject scatter */}
+              <figure data-plot-spf className="mt-9">
+                {/* Sizes below are viewBox units, not screen pixels, so they
+                    are outside the type scale by necessity: the SVG scales
+                    with its container. The mobile value is the larger of the
+                    two because a narrow viewBox scales down further. */}
+                <svg
+                  viewBox={`0 0 ${PW} ${PH}`}
+                  className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
+                  role="img"
+                  aria-label={`인체적용시험 피험자 ${SUBJECTS.length}명의 개인별 SPF 실측값. 평균 ${SPF_MEAN}, 표준편차 ${SPF_SD}.`}
                 >
-                  {v}
-                </text>
-              ))}
-              {/* baseline axis */}
-              <line
-                x1={26}
-                x2={PW}
-                y1={PH - 18}
-                y2={PH - 18}
-                className="stroke-black/[0.12]"
-                strokeWidth={1}
-              />
-              {SUBJECTS.map((s) => (
-                <g key={s.panel} data-dot>
+                  {/* ±1 SD band */}
+                  <rect
+                    x={26}
+                    y={py(SPF_MEAN + SPF_SD)}
+                    width={PW - 34}
+                    height={py(SPF_MEAN - SPF_SD) - py(SPF_MEAN + SPF_SD)}
+                    className="fill-rose/[0.09]"
+                  />
+                  {/* mean */}
                   <line
-                    x1={px(s.ita)}
-                    x2={px(s.ita)}
-                    y1={py(s.spf)}
-                    y2={PH - 18}
-                    className="stroke-black/[0.13]"
+                    x1={26}
+                    x2={PW}
+                    y1={py(SPF_MEAN)}
+                    y2={py(SPF_MEAN)}
+                    className="stroke-rose"
                     strokeWidth={1}
                   />
-                  <circle
-                    cx={px(s.ita)}
-                    cy={py(s.spf)}
-                    r={4.5}
-                    className="fill-ink"
+                  {/* SPF 50 label ceiling */}
+                  <line
+                    x1={26}
+                    x2={PW}
+                    y1={py(SPF_LABEL_MAX)}
+                    y2={py(SPF_LABEL_MAX)}
+                    className="stroke-ink/30"
+                    strokeWidth={1}
+                    strokeDasharray="3 4"
                   />
-                  <title>{`피험자 ${s.panel} · ITA ${s.ita}° · SPF ${s.spf}`}</title>
-                </g>
-              ))}
-              {/* x ticks */}
-              {[38, 58].map((v) => (
-                <text
-                  key={v}
-                  x={px(v)}
-                  y={PH - 4}
-                  textAnchor="middle"
-                  className="fill-mute tabular-nums"
+                  {/* y ticks */}
+                  {[50, 69, 90].map((v) => (
+                    <text
+                      key={v}
+                      x={0}
+                      y={py(v) + 3.5}
+                      className="fill-mute tabular-nums"
+                    >
+                      {v}
+                    </text>
+                  ))}
+                  {/* baseline axis */}
+                  <line
+                    x1={26}
+                    x2={PW}
+                    y1={PH - 18}
+                    y2={PH - 18}
+                    className="stroke-black/[0.12]"
+                    strokeWidth={1}
+                  />
+                  {SUBJECTS.map((s) => (
+                    <g key={s.panel} data-dot>
+                      <line
+                        x1={px(s.ita)}
+                        x2={px(s.ita)}
+                        y1={py(s.spf)}
+                        y2={PH - 18}
+                        className="stroke-black/[0.13]"
+                        strokeWidth={1}
+                      />
+                      <circle
+                        cx={px(s.ita)}
+                        cy={py(s.spf)}
+                        r={4.5}
+                        className="fill-ink"
+                      />
+                      <title>{`피험자 ${s.panel} · ITA ${s.ita}° · SPF ${s.spf}`}</title>
+                    </g>
+                  ))}
+                  {/* x ticks */}
+                  {[38, 58].map((v) => (
+                    <text
+                      key={v}
+                      x={px(v)}
+                      y={PH - 4}
+                      textAnchor="middle"
+                      className="fill-mute tabular-nums"
+                    >
+                      ITA {v}°
+                    </text>
+                  ))}
+                </svg>
+                <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 type-caption text-mute">
+                  <span className="flex items-center gap-2">
+                    <span className="h-[7px] w-[7px] rounded-full bg-ink" />
+                    피험자 {SUBJECTS.length}명 개인별 SPF 실측값
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span className="h-[2px] w-4 bg-rose" />
+                    평균 {SPF_MEAN.toFixed(1)}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span className="h-[2px] w-4 border-t border-dashed border-ink/40" />
+                    표기 상한 SPF 50
+                  </span>
+                </figcaption>
+              </figure>
+            </div>
+
+            {/* ══ 02 — In-vitro UVA ══════════════════════════════ */}
+            <div className="flex flex-col border-t border-hairline pt-14 md:border-t-0 md:pt-0">
+              <p className={LABEL}>02 · UVA Performance</p>
+              <div className="mt-6 flex flex-wrap items-end gap-x-4 gap-y-2">
+                <p className="font-display type-figure font-semibold text-ink tabular-nums">
+                  <span data-count-to="23.33" data-count-dp="2">
+                    0.00
+                  </span>
+                </p>
+                <p className="pb-[3px] type-body text-mute tabular-nums">
+                  ± 0.70 · Measured UVA-PF
+                </p>
+              </div>
+              <p className="mt-2 type-caption uppercase tracking-[0.08em] text-mute">
+                ISO 24443:2021
+              </p>
+
+              <Takeaway items={UVA_TAKEAWAY} />
+
+              {/* Spectral absorbance */}
+              <figure data-plot-uva className="mt-9">
+                <svg
+                  viewBox={`0 0 ${CURVE_W} ${CURVE_H}`}
+                  className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
+                  role="img"
+                  aria-label="290nm에서 400nm까지의 흡광 곡선 모식도. 측정된 임계파장 377.6nm."
                 >
-                  ITA {v}°
-                </text>
-              ))}
-            </svg>
-            <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 type-caption text-mute">
-              <span className="flex items-center gap-2">
-                <span className="h-[7px] w-[7px] rounded-full bg-ink" />
-                피험자 {SUBJECTS.length}명 개인별 SPF 실측값
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="h-[2px] w-4 bg-rose" />
-                평균 {SPF_MEAN.toFixed(1)}
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="h-[2px] w-4 border-t border-dashed border-ink/40" />
-                표기 상한 SPF 50
-              </span>
-            </figcaption>
+                  {/* UVA band */}
+                  <rect
+                    x={UVA_START_X}
+                    y={0}
+                    width={CURVE_W - UVA_START_X}
+                    height={CURVE_H - 18}
+                    className="fill-black/[0.028]"
+                  />
+                  {/* Both labels sit low and left, in the wedge the curve
+                      leaves empty. The absorbance line runs flat across the
+                      top and only falls away on the right, so anything set
+                      near the top of the band is printed straight over it. */}
+                  <text
+                    x={UVA_START_X + 8}
+                    y={CURVE_H - 26}
+                    className="fill-mute font-semibold uppercase"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    UVA 320–400nm
+                  </text>
+                  {/* critical wavelength */}
+                  <g data-curve-mark>
+                    <line
+                      x1={LC_X}
+                      x2={LC_X}
+                      y1={LC_Y}
+                      y2={CURVE_H - 18}
+                      className="stroke-rose"
+                      strokeWidth={1}
+                      strokeDasharray="3 4"
+                    />
+                    <circle cx={LC_X} cy={LC_Y} r={4.5} className="fill-rose" />
+                    <text
+                      x={LC_X - 12}
+                      y={LC_Y + 30}
+                      textAnchor="end"
+                      className="fill-rose font-semibold tabular-nums"
+                    >
+                      λc = 377.6nm
+                    </text>
+                  </g>
+                  {/* baseline */}
+                  <line
+                    x1={0}
+                    x2={CURVE_W}
+                    y1={CURVE_H - 18}
+                    y2={CURVE_H - 18}
+                    className="stroke-black/[0.12]"
+                    strokeWidth={1}
+                  />
+                  <path
+                    data-curve-line
+                    d={CURVE_PATH}
+                    fill="none"
+                    className="stroke-ink"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {[
+                    { l: 290, x: 0, anchor: "start" as const },
+                    { l: 320, x: UVA_START_X, anchor: "middle" as const },
+                    { l: 400, x: CURVE_W, anchor: "end" as const },
+                  ].map((t) => (
+                    <text
+                      key={t.l}
+                      x={t.x}
+                      y={CURVE_H - 4}
+                      textAnchor={t.anchor}
+                      className="fill-mute tabular-nums"
+                    >
+                      {t.l}nm
+                    </text>
+                  ))}
+                </svg>
+                <figcaption className="mt-4 type-caption text-mute">
+                  임계파장 377.6nm — 광범위 자외선 차단 기준(370nm 이상)을
+                  충족합니다. 곡선은 측정된 임계파장을 기준으로 재구성한
+                  모식도이며, 아래 표가 PMMA 플레이트 4장의 실측값입니다.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+          </div>
 
-            {/* Panel composition by ITA° band */}
-            <table className="mt-6 w-full border-t border-black/[0.08] type-caption tabular-nums">
-              <thead>
-                <tr className="type-caption uppercase tracking-[0.08em] text-mute">
-                  <th className="py-2 text-left font-semibold">ITA° 구간</th>
-                  <th className="py-2 text-right font-semibold">피험자</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ITA_BANDS.map((b) => (
-                  <tr key={b.band} className="border-t border-black/[0.05]">
-                    <td className="py-[6px] text-left text-mute">{b.band}</td>
-                    <td className="py-[6px] text-right text-ink">{b.n}명</td>
+          {/* ── Data band: the tables and the study metadata ───── */}
+          <div className="grid grid-cols-1 gap-y-12 border-b border-hairline pb-16 pt-12 md:grid-cols-2 md:gap-x-16 md:pb-20 md:pt-14">
+            <div className="flex flex-col">
+              <p className={LABEL}>Panel by ITA°</p>
+              <table className="mt-4 w-full border-t border-black/[0.08] type-caption tabular-nums">
+                <thead>
+                  <tr className="type-caption uppercase tracking-[0.08em] text-mute">
+                    <th className="py-2 text-left font-medium">ITA° 구간</th>
+                    <th className="py-2 text-right font-medium">피험자</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </figure>
+                </thead>
+                <tbody>
+                  {ITA_BANDS.map((b) => (
+                    <tr key={b.band} className="border-t border-black/[0.05]">
+                      <td className="py-[6px] text-left text-mute">{b.band}</td>
+                      <td className="py-[6px] text-right text-ink">{b.n}명</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          <div className="mt-auto">
-            <MetaRow
-              items={[
-                { label: "Study No.", value: "SMC-260731-9077_EN" },
-                {
-                  label: "Test Institution",
-                  value:
-                    "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
-                },
-                {
-                  label: "Panel",
-                  value: `${SUBJECTS.length}명 · 19~53세 · ITA° 38~58 (평균 49.3°)`,
-                },
-                { label: "95% CI", value: `69.0 ± ${SPF_CI} — 허용 17% 이내` },
-                {
-                  label: "Control Std.",
-                  value: "P8 63.3 (43.9~82.3) · P2 16.1 (13.7~18.5)",
-                },
-                { label: "Test Date", value: "2026.06.22 ~ 07.24 · 07.31 완료" },
-              ]}
-            />
-          </div>
-        </article>
-
-        {/* ══ Card 02 — In-vitro UVA ═════════════════════════ */}
-        <article
-          data-clin-card
-          className="flex flex-col border border-black/[0.08] p-7 md:p-9"
-        >
-          <p className="type-caption font-semibold uppercase tracking-[0.08em] text-mute">
-            In-Vitro Broad Spectrum
-            <span className="ml-2 text-ink/45">(ISO 24443:2021)</span>
-          </p>
-
-          <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-2">
-            <p className="font-display type-caption font-semibold uppercase tracking-[0.08em] text-ink">
-              UVA-PF
-            </p>
-            <p className="font-display type-metric font-semibold text-ink tabular-nums">
-              <span data-count-to="23.33" data-count-dp="2">
-                0.00
-              </span>
-            </p>
-            <p className="pb-1 type-body font-medium tabular-nums text-mute">
-              ± 0.70
-            </p>
-          </div>
-
-          <p className="mt-5 inline-flex w-fit items-center gap-2 border border-rose/40 bg-rose/[0.07] px-3 py-[7px] type-caption font-semibold text-rose">
-            PA++++ (최고 등급 기준치 16.0 초과)
-          </p>
-
-          <Takeaway items={UVA_TAKEAWAY} />
-
-          {/* Spectral absorbance */}
-          <figure data-plot-uva className="mt-9">
-            {/* Sizes below are viewBox units, not screen pixels, so they are
-                outside the type scale by necessity: the SVG scales with its
-                container. The mobile value is the larger of the two because a
-                narrow viewBox scales down further. */}
-            <svg
-              viewBox={`0 0 ${CURVE_W} ${CURVE_H}`}
-              className="h-auto w-full overflow-visible [&_text]:text-[17px] md:[&_text]:text-[10px]"
-              role="img"
-              aria-label="290nm에서 400nm까지의 흡광 곡선 모식도. 측정된 임계파장 377.6nm."
-            >
-              {/* UVA band */}
-              <rect
-                x={UVA_START_X}
-                y={0}
-                width={CURVE_W - UVA_START_X}
-                height={CURVE_H - 18}
-                className="fill-black/[0.028]"
-              />
-              {/* Both labels sit low and left, in the wedge the curve leaves
-                  empty. The absorbance line runs flat across the top and only
-                  falls away on the right, so anything set near the top of the
-                  band — where these used to be — is printed straight over it. */}
-              <text
-                x={UVA_START_X + 8}
-                y={CURVE_H - 26}
-                className="fill-mute font-semibold uppercase"
-                style={{ letterSpacing: "0.1em" }}
-              >
-                UVA 320–400nm
-              </text>
-              {/* critical wavelength */}
-              <g data-curve-mark>
-                <line
-                  x1={LC_X}
-                  x2={LC_X}
-                  y1={LC_Y}
-                  y2={CURVE_H - 18}
-                  className="stroke-rose"
-                  strokeWidth={1}
-                  strokeDasharray="3 4"
+              <div className="mt-auto">
+                <MetaRow
+                  items={[
+                    { label: "Study No.", value: "SMC-260731-9077_EN" },
+                    {
+                      label: "Test Institution",
+                      value:
+                        "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
+                    },
+                    {
+                      label: "Panel",
+                      value: `${SUBJECTS.length}명 · 19~53세 · ITA° 38~58 (평균 49.3°)`,
+                    },
+                    { label: "95% CI", value: `69.0 ± ${SPF_CI} — 허용 17% 이내` },
+                    {
+                      label: "Control Std.",
+                      value: "P8 63.3 (43.9~82.3) · P2 16.1 (13.7~18.5)",
+                    },
+                    { label: "Test Date", value: "2026.06.22 ~ 07.24 · 07.31 완료" },
+                  ]}
                 />
-                <circle cx={LC_X} cy={LC_Y} r={4.5} className="fill-rose" />
-                <text
-                  x={LC_X - 12}
-                  y={LC_Y + 30}
-                  textAnchor="end"
-                  className="fill-rose font-semibold tabular-nums"
-                >
-                  λc = 377.6nm
-                </text>
-              </g>
-              {/* baseline */}
-              <line
-                x1={0}
-                x2={CURVE_W}
-                y1={CURVE_H - 18}
-                y2={CURVE_H - 18}
-                className="stroke-black/[0.12]"
-                strokeWidth={1}
-              />
-              <path
-                data-curve-line
-                d={CURVE_PATH}
-                fill="none"
-                className="stroke-ink"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {[
-                { l: 290, x: 0, anchor: "start" as const },
-                { l: 320, x: UVA_START_X, anchor: "middle" as const },
-                { l: 400, x: CURVE_W, anchor: "end" as const },
-              ].map((t) => (
-                <text
-                  key={t.l}
-                  x={t.x}
-                  y={CURVE_H - 4}
-                  textAnchor={t.anchor}
-                  className="fill-mute tabular-nums"
-                >
-                  {t.l}nm
-                </text>
-              ))}
-            </svg>
-            <figcaption className="mt-4 type-caption text-mute">
-              임계파장 377.6nm — 광범위 자외선 차단 기준(370nm 이상)을
-              충족합니다. 곡선은 측정된 임계파장을 기준으로 재구성한
-              모식도이며, 아래 표가 PMMA 플레이트 4장의 실측값입니다.
-            </figcaption>
+              </div>
+            </div>
 
-            {/* Per-plate measurements */}
-            <table className="mt-6 w-full border-t border-black/[0.08] type-caption tabular-nums">
-              <thead>
-                <tr className="type-caption uppercase tracking-[0.08em] text-mute">
-                  <th className="py-2 text-left font-semibold">Plate</th>
-                  <th className="py-2 text-right font-semibold">UVA-PF</th>
-                  <th className="py-2 text-right font-semibold">λc (nm)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PLATES.map((p) => (
-                  <tr key={p.n} className="border-t border-black/[0.05]">
-                    <td className="py-[6px] text-left text-mute">#{p.n}</td>
-                    <td className="py-[6px] text-right text-ink">
-                      {p.uvapf.toFixed(2)}
-                    </td>
-                    <td className="py-[6px] text-right text-ink">
-                      {p.lc.toFixed(2)}
-                    </td>
+            <div className="flex flex-col border-t border-hairline pt-12 md:border-t-0 md:pt-0">
+              <p className={LABEL}>Plate Measurements</p>
+              <table className="mt-4 w-full border-t border-black/[0.08] type-caption tabular-nums">
+                <thead>
+                  <tr className="type-caption uppercase tracking-[0.08em] text-mute">
+                    <th className="py-2 text-left font-medium">Plate</th>
+                    <th className="py-2 text-right font-medium">UVA-PF</th>
+                    <th className="py-2 text-right font-medium">λc (nm)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </figure>
+                </thead>
+                <tbody>
+                  {PLATES.map((p) => (
+                    <tr key={p.n} className="border-t border-black/[0.05]">
+                      <td className="py-[6px] text-left text-mute">#{p.n}</td>
+                      <td className="py-[6px] text-right text-ink">
+                        {p.uvapf.toFixed(2)}
+                      </td>
+                      <td className="py-[6px] text-right text-ink">
+                        {p.lc.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          <div className="mt-auto">
-            <MetaRow
-              items={[
-                { label: "Study No.", value: "SMC-260731-9090_EN" },
-                {
-                  label: "Test Institution",
-                  value:
-                    "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
-                },
-                {
-                  label: "Method",
-                  value: "PMMA 플레이트 4장 · 25cm² · 1.3mg/cm²",
-                },
-                { label: "95% CI", value: "4.7 — 허용 17% 이내" },
-                { label: "Test Date", value: "2026.07.27 ~ 07.31 완료" },
-              ]}
-            />
+              <div className="mt-auto">
+                <MetaRow
+                  items={[
+                    { label: "Study No.", value: "SMC-260731-9090_EN" },
+                    {
+                      label: "Test Institution",
+                      value:
+                        "세명대학교 화장품임상연구센터 (ISO 9001:2015 · Q144314)",
+                    },
+                    {
+                      label: "Method",
+                      value: "PMMA 플레이트 4장 · 25cm² · 1.3mg/cm²",
+                    },
+                    { label: "95% CI", value: "4.7 — 허용 17% 이내" },
+                    { label: "Test Date", value: "2026.07.27 ~ 07.31 완료" },
+                  ]}
+                />
+              </div>
+            </div>
           </div>
-        </article>
+        </div>
       </div>
 
       {/* ── Source documents ─────────────────────────────────
           The charts above are our redrawing of the reports; this is the
-          reports themselves. Placing it here rather than in the
-          certificate wall keeps the evidence next to the claim it backs. */}
-      <TestReports />
+          reports themselves. Never behind the toggle: being able to open
+          the original is the strongest trust device on the page. */}
+        <TestReports />
+      </div>
     </section>
   );
 }

@@ -118,37 +118,46 @@ export default function TestReports() {
 
   return (
     <>
-      {/* ── Trigger card ──────────────────────────────────────
-          One wide bar under the two chart cards: the numbers make the
-          claim, this is where the claim is backed. Same border, padding
-          and 12px gutter as every other card in the section. */}
+      {/* ── Trigger list ──────────────────────────────────────
+          Two hairline rows, the same row language as the ingredient
+          accordion: the numbers above make the claim, these are the
+          documents that back it. */}
+      {/* ── Trigger list ──────────────────────────────────────
+          Its own block, apart from the "Test Details" accordion row above
+          it, with a label, a line of copy and a spelled-out VIEW on every
+          row. These were briefly set as bare accordion-style rows
+          (2026-09-15) and the owner was startled: a row that looks like it
+          unfolds must not pop a document viewer. The label and the VIEW
+          word are what say "this opens something". */}
       <div
-        data-clin-grid
-        className="mt-[12px] border border-black/[0.08] p-7 md:p-9"
+        data-clin-block
+        className="mt-16 border-t border-hairline pt-9 md:mt-24 md:pt-10"
       >
-        <p className="eyebrow-tag mb-5">Test Reports</p>
-        <h3 className="font-display type-h3 font-semibold text-ink">
-          시험성적서 원문
-        </h3>
-        <p className="mt-2 type-body text-mute">
-          세명대학교 화장품임상연구센터가 발행한 영문 성적서 전문을 페이지
-          단위로 확인하실 수 있습니다.
+        <p className="type-caption font-medium uppercase tracking-[0.08em] text-mute">
+          Original Test Reports
+        </p>
+        <p className="mt-4 max-w-xl type-sub text-ink">
+          시험 결과의 근거가 되는 원문 자료를 확인하세요
         </p>
 
-        <div className="mt-7 grid gap-[12px] md:grid-cols-2">
+        {/* Two outlined button cards side by side, as the live site had
+            them: a bordered block that fills black on hover is unmistakably
+            a button, where a hairline row reads as something that unfolds.
+            The owner was startled twice by the row form (2026-09-15). */}
+        <div className="mt-8 grid gap-3 md:grid-cols-2">
           {REPORTS.map((r) => (
             <button
               key={r.id}
               type="button"
               onClick={() => open(r.id)}
-              className="group flex items-center justify-between gap-5 border border-black/[0.12] px-6 py-5 text-left transition-colors duration-300 hover:border-ink hover:bg-ink"
+              className="group flex items-center justify-between gap-5 rounded-[4px] border border-ink/20 px-6 py-5 text-left transition-colors duration-300 hover:border-ink hover:bg-ink"
             >
               <span className="min-w-0">
-                <span className="block font-display type-body font-semibold text-ink transition-colors duration-300 group-hover:text-white">
+                <span className="block font-display type-body font-medium text-ink transition-colors duration-300 group-hover:text-white">
                   {r.title}
                 </span>
                 <span className="mt-1 block type-caption text-mute transition-colors duration-300 group-hover:text-white/60">
-                  {r.subtitle} · 영문 {r.pages}쪽
+                  {r.subtitle} · 영문 {r.pages}쪽 · 문서 보기
                 </span>
               </span>
               <ArrowRight
@@ -159,7 +168,7 @@ export default function TestReports() {
           ))}
         </div>
 
-        <p className="mt-7 type-caption text-mute">
+        <p className="mt-5 type-caption text-mute">
           ※ 원료 함량(%)은 영업비밀 보호를 위해 가림 처리했습니다. 시험기관 ·
           시험규격 · 측정값 등 시험의 근거가 되는 항목은 모두 원본 그대로입니다.
         </p>
