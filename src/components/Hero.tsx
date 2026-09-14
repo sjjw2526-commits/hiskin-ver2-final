@@ -30,6 +30,11 @@ const desaturate = {
  * swipe to set it off).
  */
 const LAND = { duration: 0.85, ease: "sine.inOut" };
+/* Corner radius of the two inline picture slots, in screen pixels — the
+   reference sets its inline photographs with about this much. The slot
+   images carry it as a class (rounded-[0.05em] ≈ 6px at 120px); the flying
+   copies are scaled elements, so they get it in layout pixels, see below. */
+const SLOT_RADIUS = 6;
 const RETURN = { duration: 0.38, ease: "sine.inOut" };
 const GESTURE_PX = 20;
 
@@ -161,7 +166,7 @@ export default function Hero() {
 
       const sizeSlot = () => {
         const r = Math.min(2.6, Math.max(1.4, window.innerWidth / seen()));
-        slot01.style.width = `${(1.02 * r).toFixed(3)}em`;
+        slot01.style.width = `${(0.9 * r).toFixed(3)}em`;
       };
 
       const coverBox = () => {
@@ -201,10 +206,13 @@ export default function Hero() {
       const shrink = () => {
         const c = coverBox();
         const l = landing();
+        const scale = l.width / c.width;
         return {
-          scale: l.width / c.width,
+          scale,
           x: l.left - c.left,
           y: l.top - c.top,
+          // Written in layout pixels so it reads as SLOT_RADIUS once scaled.
+          borderRadius: `${SLOT_RADIUS / scale}px`,
         };
       };
 
@@ -231,11 +239,14 @@ export default function Hero() {
 
         gsap.fromTo(
           fixed,
-          { x: 0, y: 0, scale: 1 },
+          { x: 0, y: 0, scale: 1, borderRadius: "0px" },
           {
             x: () => shrink().x,
             y: () => shrink().y,
             scale: () => shrink().scale,
+            // Corners round as it shrinks, so the landed copy (rounded) and
+            // the flight are congruent at the handover.
+            borderRadius: () => shrink().borderRadius,
             ease: "none",
             scrollTrigger: {
               trigger: runwayRef.current,
@@ -318,7 +329,13 @@ export default function Hero() {
           place();
           const c = coverBox();
           const r = slot01.getBoundingClientRect();
-          return { x: r.left - c.left, y: r.top - c.top, scale: r.width / c.width };
+          const scale = r.width / c.width;
+          return {
+            x: r.left - c.left,
+            y: r.top - c.top,
+            scale,
+            borderRadius: `${SLOT_RADIUS / scale}px`,
+          };
         };
 
         const showLanded = () => {
@@ -360,7 +377,7 @@ export default function Hero() {
                 phase = "waiting";
               },
             })
-            .to(fixed, { x: 0, y: 0, scale: 1, ...RETURN }, 0)
+            .to(fixed, { x: 0, y: 0, scale: 1, borderRadius: "0px", ...RETURN }, 0)
             .to(backdrop, { opacity: 1, duration: 0.3, ease: "sine.out" }, 0)
             .to(cue, { opacity: 1, duration: 0.3 }, RETURN.duration);
         };
@@ -368,7 +385,7 @@ export default function Hero() {
         const skip = () => {
           move?.kill();
           move = null;
-          gsap.set(fixed, { x: 0, y: 0, scale: 1 });
+          gsap.set(fixed, { x: 0, y: 0, scale: 1, borderRadius: "0px" });
           showLanded();
         };
 
@@ -550,6 +567,11 @@ export default function Hero() {
         fly.style.transform =
           `translate3d(${lerp(s.left, c.left, p)}px, ${lerp(s.top, c.top, p)}px, 0)` +
           ` scale(${w / baseW}, ${h / baseH})`;
+        // The inline slot has rounded corners and the column does not. The
+        // element is scaled, so the radius is written in layout pixels large
+        // enough to read as SLOT_RADIUS after the scale, and eased to zero
+        // by the time it lands.
+        fly.style.borderRadius = `${(SLOT_RADIUS * (1 - p)) / (w / baseW)}px`;
 
         // Landed. The two are exactly congruent at p === 1, so the swap is
         // invisible — and from here the column is an ordinary picture that
@@ -584,7 +606,9 @@ export default function Hero() {
     { scope: runwayRef }
   );
 
-  // Reveal the hero image once the preloader has folded into the nav logo
+  // Reveal the hero image. introDone is true from mount now that the
+  // preloader is gone (2026-09-15), so this runs on load; the flag is kept
+  // so a preloader could gate it again.
   useGSAP(
     () => {
       if (!introDone) return;
@@ -726,11 +750,16 @@ export default function Hero() {
               Bare
               <span
                 ref={slot01Ref}
-                className="relative mx-[0.14em] inline-block h-[1.02em] w-[1.81em] align-baseline"
+                // 0.9em tall and hung 0.08em below the baseline: the photo
+                // now spans from just above the capitals to just under them,
+                // the way the reference sets its inline picture, instead of
+                // standing 0.3em proud of the line. Width is set at runtime
+                // from the window ratio (sizeSlot), off the same 0.9.
+                className="relative mx-[0.14em] inline-block h-[0.9em] w-[1.6em] align-[-0.08em]"
               >
                 <span
                   ref={img01Ref}
-                  className="absolute inset-0 block overflow-hidden opacity-0"
+                  className="absolute inset-0 block overflow-hidden rounded-[0.05em] opacity-0"
                 >
                   <PlaceholderImage
                     name="img-01"
@@ -748,7 +777,7 @@ export default function Hero() {
               {/* Holds the place img-09 flies out of, at both sizes. */}
               <span
                 ref={slot09Ref}
-                className="mx-[0.14em] inline-block h-[0.82em] w-[0.62em] align-baseline"
+                className="mx-[0.14em] inline-block h-[0.9em] w-[0.68em] align-[-0.08em]"
                 aria-hidden
               />
               Foundation
@@ -756,7 +785,7 @@ export default function Hero() {
           </h1>
 
           <span className="eyebrow-tag mt-10">Foundation-Free Daily Suncream</span>
-          <p className="mt-5 max-w-2xl type-lead font-medium text-ink">
+          <p className="mt-5 max-w-3xl type-hero-sub font-medium text-ink">
             파데 없이 완벽한 아침, 단 10초로 완성하는 데일리 파데 프리 솔루션
           </p>
         </div>

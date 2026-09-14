@@ -1,6 +1,5 @@
 import { IntroProvider } from "@/components/IntroContext";
 import SmoothScroll from "@/components/SmoothScroll";
-import Preloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Statement from "@/components/Statement";
@@ -19,7 +18,6 @@ export default function Home() {
   return (
     <IntroProvider>
       <SmoothScroll>
-        <Preloader />
         <Navbar />
         <main>
           <Hero />
