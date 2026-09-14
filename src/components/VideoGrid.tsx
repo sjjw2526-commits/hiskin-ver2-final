@@ -76,7 +76,9 @@ const COPIES = 3;
  * ground were both tried here; the owner kept white.
  */
 const T = {
-  section: "bg-paper text-ink",
+  // Blush, not paper: the reviews are the warmest part of the page and the
+  // ground says so, echoing the partnership form at the end.
+  section: "bg-blush text-ink",
   media: "bg-[#ecebe8]",
   label: "text-mute",
   title: "text-ink",
@@ -419,20 +421,24 @@ export default function VideoGrid() {
       ref={sectionRef}
       className={`overflow-hidden py-20 md:py-36 ${T.section}`}
     >
-      {/* Plain, centred copy: the films make the case, the heading only
-          introduces them. */}
-      <div className="mb-12 px-6 text-center md:mb-20 md:px-[80px]">
+      {/* Left-set like every other section head: the films make the case,
+          the heading only introduces them. English title, Korean support
+          line — the one pattern every section now follows. */}
+      <div className="mb-12 px-6 md:mb-20 md:px-[80px]">
         <div data-video-head>
           <p className="eyebrow-tag">Real Review</p>
         </div>
         <h2
           data-video-head
-          className="mt-5 font-display type-h2 font-semibold"
+          className="mt-5 font-display type-h2 font-medium text-ink"
         >
-          직접 써본 사람들이
+          The Difference
           <br />
-          먼저 알아본 차이
+          Real Users Noticed First.
         </h2>
+        <p data-video-head className="mt-6 type-sub text-mute">
+          직접 써본 사람들이 먼저 알아본 차이
+        </p>
       </div>
 
       {/* Film rail — drifts right to left, loops without end, full bleed.
