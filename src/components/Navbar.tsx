@@ -37,7 +37,7 @@ export default function Navbar() {
           <a
             href="#top"
             id="nav-logo"
-            className={`font-display type-logo font-bold transition-opacity duration-300 ${
+            className={`font-display type-logo font-semibold transition-opacity duration-300 ${
               introDone ? "opacity-100" : "opacity-0"
             }`}
             aria-label="HISKIN — back to top"
@@ -90,7 +90,7 @@ export default function Navbar() {
         }`}
       >
         <div className="flex h-[78px] items-center justify-between px-6">
-          <span className="font-display type-logo font-bold">
+          <span className="font-display type-logo font-semibold">
             HISKIN
           </span>
           <button aria-label="Close menu" onClick={() => setMenuOpen(false)}>
@@ -116,7 +116,7 @@ export default function Navbar() {
           <a
             href="#inquiry"
             onClick={() => setMenuOpen(false)}
-            className="mt-10 flex items-center justify-center gap-2 bg-ink px-6 py-4 text-center type-body-sm font-medium text-white"
+            className="mt-10 flex items-center justify-center gap-2 rounded-[4px] bg-ink px-6 py-4 text-center type-body-sm font-medium text-white"
           >
             B2B Inquiry <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
           </a>

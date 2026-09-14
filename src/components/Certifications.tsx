@@ -148,7 +148,9 @@ export default function Certifications() {
     <section
       id="certifications"
       ref={sectionRef}
-      className="bg-[#f8f7f4] py-16 md:py-36"
+      // Same grey as the clinical section above; the inset hairline is the
+      // only seam between the two.
+      className="bg-paper-alt py-16 shadow-[inset_0_1px_0_rgba(17,17,17,0.12)] md:py-36"
     >
       <div className="px-6 md:px-[80px]">
         <div className="max-w-4xl">
@@ -157,7 +159,7 @@ export default function Certifications() {
           </p>
           <h2
             data-cert-head
-            className="type-h2 font-display font-semibold text-ink"
+            className="type-h2 font-display font-medium text-ink"
           >
             Internationally Certified Manufacturing
             <br className="hidden md:block" />

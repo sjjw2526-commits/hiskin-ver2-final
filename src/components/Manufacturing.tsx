@@ -127,8 +127,7 @@ export default function Manufacturing() {
           </p>
           <h2
             data-mfg-head
-            className="font-display type-h2 font-semibold text-ink"
-            style={{ letterSpacing: "-0.005em", wordSpacing: "0.08em" }}
+            className="font-display type-h2 font-medium text-ink"
           >
             From Formula
             <br />
