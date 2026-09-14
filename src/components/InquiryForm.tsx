@@ -208,7 +208,7 @@ export default function InquiryForm() {
     <section
       id="inquiry"
       ref={sectionRef}
-      className="bg-[#fbf4f6] px-6 py-16 md:px-[80px] md:py-36"
+      className="bg-blush px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="grid gap-14 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-24">
         {/* Left: headline */}
@@ -238,20 +238,19 @@ export default function InquiryForm() {
             />
           </p>
           <p data-form-head className="mt-4 type-sub text-mute">
-            <Lines
-              lines={[
-                "유통 · 도매 · 클리닉 등 다양한 파트너십을 통해",
-                "HISKIN의 가능성을 더 넓은 시장으로 이어가고자 합니다",
-              ]}
-            />
+            유통 · 도매 · 클리닉 등 다양한 파트너십을 통해 HISKIN의 가능성을
+            더 넓은 시장으로 이어가고자 합니다
           </p>
+          {/* One line at every width, as the owner asked. At 14px the
+              sentence is 23.4em wide, more than a 360px phone column holds, so
+              the size is capped at 4.2% of the column (cqi, from the
+              @container above): 14px wherever it fits, a touch smaller where
+              it would not, and never wider than the column. */}
           <p
             data-form-head
-            className="mt-10 max-w-sm border-t border-hairline pt-6 type-body-sm text-mute"
+            className="mt-10 border-t border-hairline pt-6 type-body-sm whitespace-nowrap text-mute text-[length:min(0.875rem,4.2cqi)]!"
           >
-            <Lines
-              lines={["문의 내용을 남겨주시면", "영업일 기준 2일 이내 회신드립니다"]}
-            />
+            문의 내용을 남겨주시면 영업일 기준 2일 이내 회신드립니다
           </p>
         </div>
 
@@ -267,7 +266,7 @@ export default function InquiryForm() {
                 type="button"
                 aria-pressed={tab === t.id}
                 onClick={() => setTab(t.id)}
-                className={`border px-4 py-[11px] type-body-sm font-medium transition-colors duration-300 ${
+                className={`rounded-[4px] border px-4 py-[11px] type-body-sm font-medium transition-colors duration-300 ${
                   tab === t.id
                     ? "border-ink bg-ink text-white"
                     : "border-ink/20 bg-transparent text-ink/60 hover:border-ink/45 hover:text-ink"
@@ -419,14 +418,24 @@ export default function InquiryForm() {
                 <span className="type-body-sm text-mute">
                   I agree to the collection and use of personal information.
                   <br />
-                  개인정보 수집 및 이용에 동의합니다.
+                  개인정보 수집 및 이용에 동의합니다.{" "}
+                  {/* The policy itself, on its own page (added 2026-09-15).
+                      Opens in a new tab so a half-filled form is not lost. */}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener"
+                    className="font-medium text-rose underline underline-offset-4 transition-opacity hover:opacity-70"
+                  >
+                    Privacy Policy
+                  </a>
                 </span>
               </label>
 
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="group flex w-full shrink-0 items-center justify-center gap-2.5 bg-ink px-9 py-3.5 type-body-sm font-semibold uppercase tracking-[0.08em] text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:w-auto sm:min-w-[240px]"
+                className="group flex w-full shrink-0 items-center justify-center gap-2.5 rounded-[4px] bg-ink px-9 py-3.5 type-body-sm font-semibold uppercase tracking-[0.08em] text-white transition-opacity duration-300 hover:opacity-85 disabled:opacity-70 sm:w-auto sm:min-w-[240px]"
               >
                 {status === "loading" ? (
                   <>
@@ -481,7 +490,7 @@ export default function InquiryForm() {
             </p>
             <button
               onClick={() => setStatus("idle")}
-              className="mt-8 w-full bg-ink py-3.5 type-body-sm font-medium text-white transition-opacity hover:opacity-85"
+              className="mt-8 w-full rounded-[4px] bg-ink py-3.5 type-body-sm font-medium text-white transition-opacity hover:opacity-85"
             >
               Done
             </button>
