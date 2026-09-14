@@ -3,10 +3,18 @@
 @theme inline {
   /* HISKIN Design System — pef-style rework */
   --color-paper: #ffffff;
-  --color-paper-alt: #f5f5f3;
+  /* One warm grey for every tinted section — the product photo (img-24)
+     is colour-matched to exactly this value, so it must not drift. */
+  --color-paper-alt: #f6f5f3;
+  /* The one pink ground: the review rail and the partnership form. */
+  --color-blush: #fbf4f6;
   --color-ink: #111111;
   --color-navy: #111111; /* dark sections are near-black now */
-  --color-mute: #767676;
+  /* Support text: Korean sub lines, labels, captions. #767676 read a step
+     too faint beside the titles — the reference sets the same lines at
+     #575758 — so it sits at 70% ink now (owner, 2026-09-14). One token,
+     page-wide. */
+  --color-mute: #585858;
   /* Taken from hiskin.nemosvietnam.com, which runs the brand's own pink.
      It ships two, and needs to: a pink light enough to read as 연핑크 is far
      too pale to carry 14px type on white (#ffcccc scores 1.4:1 there), and a
@@ -23,18 +31,36 @@
 
      The previous value, #be8e76, was named rose but read as tan; the product
      is a pink tone-up, and the accent now matches the cream in the bottle. */
-  --color-rose: #c0728f;
-  --color-rose-soft: #ffcccc;
+  /* 2026-09-14: the owner chose a saturated pink over the dusty rose above.
+     The rose had been desaturated to survive at 12-14px and ended up reading
+     as faded beside the reference site, whose accent is a full-chroma label
+     yellow. This is the tone-up cream pink at full chroma; the soft variant
+     is its tint for the black sections. Contrast on white is 4.2:1 - fine
+     for the 12px labels it sets, not for body copy. */
+  --color-rose: #e0457b;
+  --color-rose-soft: #ffb3c9;
   --color-hairline: rgba(17, 17, 17, 0.14);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  --font-display: var(--font-jakarta), var(--font-inter),
-    var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+  /* One Latin face for headings and body alike. Plus Jakarta Sans was the
+     heading face until 2026-09-14; its rounder geometry at semibold read as
+     "friendly app" next to the reference the owner measures against, which
+     sets everything in Inter. Korean falls through to Pretendard. */
+  --font-display: var(--font-inter), var(--font-pretendard), ui-sans-serif,
+    system-ui, sans-serif;
 }
 
 html {
   scroll-behavior: initial;
+  /* The root size grows with the window above a laptop: 16px up to 1440,
+     18px at 1920. Every rem-based size on the page - the type scale, the
+     Tailwind spacing, the hairline gaps - scales with it, which is what the
+     reference site does with its vw units. Without this the 12-15px labels
+     and body lines sat fixed while the headlines grew, and on a 1920 monitor
+     the small type read a third smaller than the reference. Phones and
+     laptops are untouched. */
+  font-size: clamp(16px, 10px + 0.4167vw, 18px);
 }
 
 body {
@@ -93,10 +119,6 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* Hide scrollbar while preloader is active */
-html.is-loading {
-  overflow: hidden;
-}
 
 /* ─────────────────────────────────────────────────────────────
    Type scale
@@ -121,8 +143,13 @@ html.is-loading {
    "Zero [image] Foundation" stays on one line on a narrow phone —
    the line wraps around an inline image slot and must not break. */
 .type-display {
-  font-size: clamp(1.9rem, 9.6vw, 7.5rem); /* 30 → 120px, weight 600 */
-  line-height: 1.02;
+  /* The ceiling is in px on purpose: the root size grows on large monitors
+     and this line is already the largest thing on the site. */
+  font-size: clamp(1.9rem, 9.6vw, 120px); /* 30 → 120px, weight 600 */
+  /* 1.12, up from 1.02: the two lines sat glyph-to-glyph, and against the
+     reference (1.15) the owner read it as cramped. The inline image slots
+     are sized in em off the font, not the line, so they are untouched. */
+  line-height: 1.12;
   letter-spacing: -0.03em;
 }
 /* Large section opener */
@@ -133,9 +160,13 @@ html.is-loading {
 }
 /* Every section title. One value, no exceptions. */
 .type-h2 {
-  font-size: clamp(1.6rem, 3.2vw, 2.75rem); /* 26 → 44px, weight 600 */
-  line-height: 1.14;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.6rem, 3.2vw, 2.75rem); /* 26 → 44px, weight 500 */
+  line-height: 1.12;
+  /* Tighter than before: at 44px Inter needs -0.03em to set as a title
+     rather than as enlarged body text. Weight came down from 600 to 500 at
+     the same time — with every title semibold, nothing on the page was
+     lighter than anything else. */
+  letter-spacing: -0.03em;
 }
 /* The lead line of a block that sits inside a section — the SPF figure on
    the product dossier, the Korean headline in an open science-accordion
@@ -158,15 +189,21 @@ html.is-loading {
 }
 /* Declarative lead: dark, tighter, heavier — a statement under a title. */
 .type-lead {
-  font-size: clamp(1.1875rem, 1.6vw, 1.375rem); /* 19 → 22px, weight 500 */
-  line-height: 1.35;
-  letter-spacing: -0.02em;
+  /* Was 19 → 22px. Korean leads at that size sat level with the English
+     titles above them and the two fought; a lead is a statement under a
+     title, one clear step down. */
+  font-size: clamp(1rem, 1.2vw, 1.0625rem); /* 16 → 17px, weight 500 */
+  line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 /* Explanatory lead: muted and airy. A different job from .type-lead,
    which is why both survive rather than being merged. */
 .type-sub {
-  font-size: clamp(1.0625rem, 1.4vw, 1.1875rem); /* 17 → 19px, weight 400 */
-  line-height: 1.6;
+  /* Was 17 → 19px. The supporting Korean line under every title is now one
+     size, small and grey, so the title alone carries the section. 15px
+     rather than the reference site's 13.5: a Korean buyer still reads it. */
+  font-size: 0.9375rem; /* 15px, weight 400 */
+  line-height: 1.7;
 }
 .type-body {
   font-size: clamp(0.9375rem, 1.15vw, 1rem); /* 15 → 16px, weight 400 */
@@ -183,6 +220,38 @@ html.is-loading {
   letter-spacing: 0.01em;
 }
 
+/* Centred statement titles — the product opener that follows the hero. The
+   reference sets these a step above its left-set section titles and at 600,
+   scaling with the viewport (45px at 1440, 60px at 1920); the plain section
+   titles stay at .type-h2/500. Only the product section uses it. */
+.type-statement {
+  font-size: clamp(2rem, 3.15vw, 3.75rem); /* 32 → 60px, weight 600 */
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+/* Its Korean support line: 15px on a laptop, 18px on a large monitor. */
+.type-statement-sub {
+  font-size: clamp(0.9375rem, 0.95vw, 1.125rem); /* 15 → 18px, weight 500 */
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+/* Closed accordion rows (science). The reference sets its rows at 24px on a
+   1920 screen, a clear step above body but well under the titles; ours sat
+   at type-lead (19px) and read as list items (owner, 2026-09-14). */
+.type-row {
+  font-size: clamp(1.125rem, 1.25vw, 1.5rem); /* 18 → 24px, weight 400 */
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+/* The Korean line under the hero headline. Fluid like the headline above
+   it (the reference sets its equivalent at about 1.35vw), so at 1920px it
+   reads at 26px and at a laptop at 19px — one step above every other
+   supporting line, because it is the one sentence the page opens on. */
+.type-hero-sub {
+  font-size: clamp(1.0625rem, 1.35vw, 1.625rem); /* 17 → 26px, weight 500 */
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
 /* ─────────────────────────────────────────────────────────────
    Single-use display type
    ─────────────────────────────────────────────────────────────
@@ -222,7 +291,7 @@ html.is-loading {
 }
 /* Navbar wordmark. Fixed, not fluid — it shares a fixed-height bar. */
 .type-logo {
-  font-size: 1.625rem; /* 26px, weight 700 */
+  font-size: 1.375rem; /* 22px, weight 600 */
   letter-spacing: 0.02em;
 }
 /* Form fields. Fixed at 16px and never smaller: iOS Safari zooms the page
@@ -238,7 +307,7 @@ html.is-loading {
    as the wordmark above: the bar does not change height, so its type should
    not scale with the viewport either. */
 .type-nav {
-  font-size: 1.0625rem; /* 17px, weight 500 */
+  font-size: 0.9375rem; /* 15px, weight 500 */
 }
 
 /* Horizontal rails carry their own affordances, so hide the native bar */
@@ -267,10 +336,12 @@ html.is-loading {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  font-size: clamp(0.75rem, 1vw, 0.875rem); /* 12 → 14px */
-  letter-spacing: 0.1em;
+  /* 12px medium, barely tracked: a label, not a headline. At 14px/600
+     with 0.1em it was the loudest small type on the page. */
+  font-size: clamp(0.75rem, 0.73vw, 0.875rem); /* 12 → 14px */
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-rose);
 }
 /* Philosophy is the one section on an ink ground, and the deep accent drops

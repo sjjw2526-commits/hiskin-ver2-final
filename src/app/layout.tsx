@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
 /**
- * Hangul. Inter and Plus Jakarta carry no Korean at all, so before this the
+ * Hangul. Inter carries no Korean at all, so before this the
  * Korean half of every line fell through to whatever the reader's machine
  * offered — Noto Sans KR here, Malgun Gothic on a machine without it, and
  * something else again on a Mac. Pretendard is set tighter and more evenly
@@ -29,12 +29,6 @@ const pretendard = localFont({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -79,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="is-loading">
+    <html lang="ko">
       <head>
         {/*
           A reload should replay the page from the top, not drop the reader
@@ -97,7 +91,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${pretendard.variable} ${jakarta.variable} antialiased`}>
+      <body className={`${inter.variable} ${pretendard.variable} antialiased`}>
         {children}
       </body>
     </html>
