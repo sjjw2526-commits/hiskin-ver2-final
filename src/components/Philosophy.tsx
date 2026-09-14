@@ -23,29 +23,31 @@ const LINES = [
  * straight vertical line no matter how long the label beside them runs.
  * Reordering these breaks the acrostic.
  */
-// A "\n" in a desc is a line break the owner asked for, kept on every screen.
+// Every desc is one line by the owner's call (the last one was two until
+// 2026-09-14); whitespace-pre-line on the span still honours a "\n" if one
+// is ever wanted back.
 const ROUTINE = [
-  { letter: "H", label: "HIGH STANDARD", desc: "당연한 것에도 더 높은 기준을" },
+  { letter: "H", label: "High Standard", desc: "당연한 것에도 더 높은 기준을" },
   {
     letter: "I",
-    label: "INGREDIENTS FIRST",
+    label: "Ingredients First",
     desc: "좋은 제품은 좋은 원료에서 시작되니까",
   },
   {
     letter: "S",
-    label: "SELECTED WITH CARE",
+    label: "Selected With Care",
     desc: "하나를 고를 때도 충분히 신중하게",
   },
-  { letter: "K", label: "KNOW-HOW", desc: "오랜 연구가 쌓여 만든 차이" },
+  { letter: "K", label: "Know-How", desc: "오랜 연구가 쌓여 만든 차이" },
   {
     letter: "I",
-    label: "INTEGRITY",
+    label: "Integrity",
     desc: "보이는 것보다 중요한 건 제품의 본질",
   },
   {
     letter: "N",
-    label: "NO COMPROMISE",
-    desc: "더 오래 걸리더라도,\n쉽게 타협하지 않는 것",
+    label: "No Compromise",
+    desc: "더 오래 걸리더라도 타협하지 않는 것",
   },
 ];
 
@@ -65,6 +67,11 @@ export default function Philosophy() {
 
   useGSAP(
     () => {
+      // Each line lights up in one step when it crosses the trigger line,
+      // the way the reference's philosophy lines do — a switch, not a dimmer.
+      // The old scrubbed fade read as a slow gradient (owner, 2026-09-14).
+      // toggleActions with "reverse" switches a line off again on the way
+      // back up, so the stepped read holds in both directions.
       const lines = gsap.utils.toArray<HTMLElement>("[data-phil-line]");
       lines.forEach((line) => {
         gsap.fromTo(
@@ -72,12 +79,12 @@ export default function Philosophy() {
           { opacity: 0.14 },
           {
             opacity: 1,
-            ease: "none",
+            duration: 0.3,
+            ease: "power1.out",
             scrollTrigger: {
               trigger: line,
-              start: "top 80%",
-              end: "top 50%",
-              scrub: true,
+              start: "top 62%",
+              toggleActions: "play none none reverse",
             },
           }
         );
@@ -174,16 +181,28 @@ export default function Philosophy() {
               <p
                 key={i}
                 data-phil-line
-                className="font-display type-h2 font-semibold text-white"
+                className="font-display type-h2 font-medium text-white"
               >
                 {line}
               </p>
             ))}
 
+            {/* The Korean line sits under the English, one line, all of it
+                at the same weight (owner, 2026-09-14) — it used to be two
+                lines at the head of the right column, only the second one
+                white. data-phil-line so it lights up as the fifth step. */}
+            <p
+              data-phil-line
+              className="mt-8 type-sub font-medium text-white md:mt-10"
+            >
+              좋은 원료를 고르는 순간부터 완성되는 순간까지, HISKIN은 피부에
+              닿는 모든 것에 타협하지 않습니다
+            </p>
+
             <a
               data-phil-cta
               href="#inquiry"
-              className="group mt-12 inline-flex w-fit items-center gap-3 border border-white/25 px-7 py-4 type-body-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
+              className="group mt-12 inline-flex w-fit items-center gap-3 rounded-[4px] border border-white/25 px-7 py-4 type-body-sm font-medium text-white transition-colors hover:bg-white hover:text-ink"
             >
               Become a Partner
               <ArrowRight
@@ -198,28 +217,22 @@ export default function Philosophy() {
             data-phil-aside
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
-            <p className="type-sub text-white/60">
-              좋은 원료를 고르는 순간부터, 완성되는 순간까지
-            </p>
-            <p className="mt-3 type-sub font-medium text-white">
-              HISKIN은 피부에 닿는 모든 것에 타협하지 않습니다
-            </p>
-
-            <ul data-phil-list className="mt-10">
+            <ul data-phil-list>
               {ROUTINE.map((item, i) => (
                 <li
                   key={i}
                   data-phil-row
-                  className="flex gap-5 border-t border-white/12 py-5 last:border-b md:gap-7 md:py-6"
+                  className="flex gap-5 border-t border-white/12 py-5 first:border-t-0 first:pt-0 md:gap-7 md:py-6 md:first:pt-0"
                 >
-                  <span className="w-[1.05em] shrink-0 font-display type-h2 font-bold text-rose-soft">
+                  {/* The initials spell HISKIN down the column: pink and
+                      bold on purpose (owner, 2026-09-14) — they are the one
+                      place the acrostic is meant to be seen, not a quiet
+                      index. The only 700 on the page. */}
+                  <span className="w-[1.05em] shrink-0 font-display type-h3 font-bold text-rose-soft">
                     {item.letter}
                   </span>
                   <span className="min-w-0">
-                    <span
-                      className="block type-h3 font-semibold text-white"
-                      style={{ letterSpacing: "0.015em", wordSpacing: "0.08em" }}
-                    >
+                    <span className="block type-h3 font-medium text-white">
                       {item.label}
                     </span>
                     <span className="mt-1.5 block whitespace-pre-line type-sub text-white/55">
@@ -282,13 +295,10 @@ export default function Philosophy() {
               running at type-h1's -0.02em, which is tuned for lower-case
               display type and glues capitals together: MADEFOR. Capitals want
               the opposite. */}
-          <p
-            className="font-display type-h1 font-semibold uppercase text-white"
-            style={{ letterSpacing: "0.015em", wordSpacing: "0.14em" }}
-          >
-            Made For
+          <p className="font-display type-h1 font-medium text-white">
+            Made for
             <br />
-            Every Day
+            every day
           </p>
           {/* The SPF 50+ · PA++++ line that used to close this block was
               removed at the owner's request; the rating is left to the
@@ -299,7 +309,7 @@ export default function Philosophy() {
           <p className="mt-6 type-lead text-white/90 md:mt-7 md:whitespace-nowrap">
             보호하는 순간까지
             <br className="md:hidden" />{" "}
-            아름다워야 하니까
+            아름다울 수 있도록
           </p>
         </div>
       </div>
