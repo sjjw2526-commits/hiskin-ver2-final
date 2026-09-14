@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -9,94 +9,187 @@ import PlaceholderImage from "./PlaceholderImage";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Only what a buyer needs at a glance. Price, "free of" and anything clinical
+ * were taken out of this section on the owner's brief (2026-09-13); they
+ * belong to the Formula and Clinical sections. The product name moved up to
+ * the eyebrow, so the list is four short rows and a button, as the reference
+ * keeps its own.
+ */
 const SPECS = [
-  { label: "MSRP", value: "$32.00 USD" },
+  { label: "Protection", value: "SPF 50+ · PA++++" },
+  { label: "Finish", value: "Rosy Skin-Glow · Foundation-Free Finish" },
+  { label: "Texture", value: "Lightweight · Hydrating" },
   // Matches the printing on the tube, which is what the buyer receives. The
   // exact conversion is 2.0288, but a spec sheet that disagrees with the
   // package reads as an error in the room.
-  { label: "Volume", value: "60ml / 2.02 fl.oz." },
-  { label: "Protection", value: "SPF 50+ / PA++++ (Clinically Proven)" },
-  { label: "Finish", value: "Rosy Skin-Glow · Foundation-Free Fit" },
-  { label: "Texture", value: "Hydra-Light & Zero-Stickiness" },
-  { label: "Free of", value: "Mineral Oil · Talc · Stone Powder" },
-  { label: "Skin Type", value: "Dermatologist Tested · Safe for Sensitive Skin" },
+  { label: "Volume", value: "60 ml / 2.02 fl. oz." },
 ];
 
+/* Fades the photograph's rectangle out on all four sides. */
+const FEATHER =
+  "linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 9%, #000 91%, transparent)";
+
 /**
- * pef-style product detail: product image on the left,
- * hairline-divided spec list + CTA on the right.
+ * Editorial product detail, after project-pef.com's serum section: eyebrow and
+ * a large centred line of copy, open space, the product as an object on the
+ * page's centre line, and a narrow spec column tucked against its lower right
+ * that ends in the one call to action.
+ *
+ * The object is img-24: img-15 with its studio backdrop lifted from #f0ede8 to
+ * this section's #f6f5f3. Only near-neutral pixels were brightened, weighted
+ * by how close their chroma is to the backdrop's, so the shadows moved with
+ * it and the pink swatches and blue cap kept their colour. The photo's edges
+ * are then feathered away, so no frame shows.
  */
 export default function ProductDetail() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
-      gsap.from("[data-pd-img]", {
-        opacity: 0,
-        y: 60,
-        duration: 1.1,
-        ease: "power3.out",
-        scrollTrigger: { trigger: sectionRef.current, start: "top 70%" },
-      });
-      gsap.from("[data-pd-row]", {
-        opacity: 0,
-        y: 24,
-        duration: 0.8,
-        ease: "power3.out",
-        stagger: 0.08,
-        scrollTrigger: { trigger: "[data-pd-list]", start: "top 78%" },
-      });
+      // fromTo, not from: a ScrollTrigger refresh mid-tween re-applies a
+      // from-tween's start values and can strand an element at opacity 0.
+      gsap.fromTo(
+        "[data-pd-head]",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.1,
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+        },
+      );
+      gsap.fromTo(
+        "[data-pd-img]",
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: { trigger: "[data-pd-img]", start: "top 80%" },
+        },
+      );
+      gsap.fromTo(
+        "[data-pd-row]",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.08,
+          scrollTrigger: { trigger: "[data-pd-list]", start: "top 85%" },
+        },
+      );
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
-    <section
-      id="product"
-      ref={sectionRef}
-      className="bg-paper"
-    >
-      {/* items-stretch + the row list soaking up the leftover height is what
-          pins the spec sheet to the photo: eyebrow at the photo's top edge,
-          CTA at its bottom edge, rows sharing the space between. */}
-      <div className="grid items-center gap-14 px-6 py-16 md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] md:items-stretch md:gap-24 md:px-[80px] md:py-36">
-        <div data-pd-img>
-          <PlaceholderImage
-            name="img-15"
-            alt="핑크 제형 위에 놓인 HISKIN 데일리 선크림 튜브"
-            aspect="aspect-[4/3]"
-            className="w-full"
-            label="IMG 15 · 4:3"
-          />
+    <section id="product" ref={sectionRef} className="bg-[#f6f5f3]">
+      <div className="px-6 pb-20 pt-20 md:px-[80px] md:pb-28 md:pt-32">
+        <div data-pd-head className="text-center">
+          <p className="eyebrow-tag">HISKIN — Daily Suncream Protect</p>
         </div>
+        <h2
+          data-pd-head
+          className="mt-5 text-center font-display type-h2 font-semibold text-ink"
+          // type-h2's -0.015em is tuned for short section titles; across a
+          // two-line sentence it closed the word gaps up ("protectionmeets").
+          style={{ letterSpacing: "-0.005em", wordSpacing: "0.08em" }}
+        >
+          {/* Phone breaks are placed by hand: left to wrap, each half dropped
+              its last word ("beauty,", "glow.") onto a line of its own. */}
+          Where protection
+          <br className="md:hidden" /> meets beauty,
+          <br />
+          your skin finds
+          <br className="md:hidden" /> its natural glow.
+        </h2>
 
-        <div data-pd-list className="flex flex-col">
-          <p className="eyebrow-tag mb-8">Daily Suncream Protect</p>
-          <div className="flex flex-1 flex-col">
-            {SPECS.map((spec) => (
-              <div
-                key={spec.label}
-                data-pd-row
-                className="flex flex-1 flex-col justify-center border-b border-hairline py-5 first:border-t"
-              >
-                <p className="type-sub text-mute">{spec.label}</p>
-                <p className="mt-1.5 type-h3 font-medium text-ink">
-                  {spec.value}
-                </p>
-              </div>
-            ))}
-          </div>
-          <a
-            data-pd-row
-            href="#inquiry"
-            className="group mt-8 flex w-full items-center justify-center gap-2 bg-ink px-8 py-4 type-body font-medium text-white transition-opacity hover:opacity-85 md:py-5"
+        {/* xl+: the object and the spec column are centred as one group
+            between two equal flexible tracks. With the object alone on the
+            centre line (the reference's arrangement) the group's visual centre
+            sat ~140px right of the headline's at 1440px — the reference's
+            bottle is narrow, this tube-and-swatches object is ~480px wide — and
+            the section read as leaning right. The spec column is pulled in
+            over the photo's empty feathered margin and dropped to the object's
+            foot. Below xl everything stacks: at 1024px there is no room for
+            the column beside the object.
+            w-full matters: as a grid item with auto margins the wrapper
+            shrinks to its content, and the photo inside is sized by percentage,
+            so without it the object collapsed to 0px wide. */}
+        <div className="mt-14 md:mt-20 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,660px)_250px_minmax(0,1fr)] xl:items-end">
+          <div
+            data-pd-img
+            className="mx-auto w-full max-w-[640px] xl:col-start-2 xl:max-w-none"
           >
-            Submit B2B Inquiry
-            <ArrowRight
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-              strokeWidth={1.8}
-            />
-          </a>
+            <div
+              style={{
+                maskImage: FEATHER,
+                WebkitMaskImage: FEATHER,
+                maskComposite: "intersect",
+                WebkitMaskComposite: "source-in",
+              }}
+            >
+              <PlaceholderImage
+                name="img-24"
+                alt="핑크 제형 위에 놓인 HISKIN 데일리 선크림 튜브"
+                aspect="aspect-[4/3]"
+                className="w-full"
+                // The swatches fill only the middle ~65% of the frame, so the
+                // object read small. At 1.12 their tips still end inside the
+                // unfeathered 9–91% band.
+                imgClassName="scale-[1.12]"
+                label="IMG 24 · 4:3"
+              />
+            </div>
+          </div>
+
+          <div
+            data-pd-list
+            className="mx-auto mt-10 max-w-[420px] xl:col-start-3 xl:-ml-16 xl:mb-12 xl:mt-0 xl:w-[250px] xl:max-w-none"
+          >
+            <dl>
+              {SPECS.map((spec) => (
+                <div
+                  key={spec.label}
+                  data-pd-row
+                  className="border-b border-hairline py-3.5"
+                >
+                  <dt className="type-body-sm text-mute">{spec.label}</dt>
+                  {/* Each "·" part is kept whole, so a narrow column breaks
+                      between parts — never inside "Foundation-Free Finish". */}
+                  <dd className="mt-0.5 type-body-sm font-medium text-ink">
+                    {spec.value.split(" · ").map((part, i, all) => (
+                      <Fragment key={part}>
+                        <span className="whitespace-nowrap">
+                          {part}
+                          {i < all.length - 1 && " ·"}
+                        </span>
+                        {i < all.length - 1 && " "}
+                      </Fragment>
+                    ))}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <a
+              data-pd-row
+              href="#inquiry"
+              className="group mt-6 flex w-full items-center justify-center gap-2 bg-ink px-6 py-3.5 type-body-sm font-semibold text-white transition-opacity hover:opacity-85"
+            >
+              파트너십 문의하기
+              <ArrowRight
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                strokeWidth={1.8}
+              />
+            </a>
+          </div>
         </div>
       </div>
     </section>

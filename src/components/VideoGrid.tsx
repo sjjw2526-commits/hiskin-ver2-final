@@ -76,6 +76,20 @@ const REVIEWS: Review[] = [
   },
 ];
 
+/**
+ * Section colours. On 2026-09-13 a warm ivory (#f3eee8) and Philosophy's ink
+ * ground were both tried here; the owner kept white.
+ */
+const T = {
+  section: "bg-paper text-ink",
+  media: "bg-[#ecebe8]",
+  handle: "text-ink",
+  caption: "text-mute",
+  track: "bg-hairline",
+  fill: "bg-ink",
+  arrow: "text-mute hover:text-ink",
+};
+
 function VideoCard({
   review,
   index,
@@ -129,58 +143,65 @@ function VideoCard({
         if (suppressClick()) return;
         onOpen();
       }}
-      className="group relative aspect-[9/16] w-[75%] shrink-0 snap-start overflow-hidden bg-gradient-to-b from-[#ececea] to-[#dcdcd8] text-left sm:w-[38%] lg:w-[26.5%]"
+      // lg: three cards to a view across the centred 1000px rail — two gaps of
+      // 32px between them.
+      className="group w-[72%] shrink-0 snap-start text-left sm:w-[40%] lg:w-[calc((100%-64px)/3)]"
       aria-label={`Play review video: ${review.caption}`}
     >
-      {hasVideo ? (
-        <video
-          ref={videoRef}
-          src={review.src}
-          poster={review.poster}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          onError={() => setHasVideo(false)}
-          // Not onPlay: that fires on the request, before there is anything to
-          // look at. onPlaying fires once frames are actually running, so the
-          // still is only pulled away when the video is ready to replace it.
-          onPlaying={() => setShowStill(false)}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-      ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink/30">
-          <Play className="h-8 w-8" strokeWidth={1.2} />
-          <span className="eyebrow !tracking-[0.2em]">
-            VIDEO {String(index + 1).padStart(2, "0")} · 9:16
-          </span>
-        </div>
-      )}
+      <div className={`relative aspect-[9/16] overflow-hidden ${T.media}`}>
+        {hasVideo ? (
+          <video
+            ref={videoRef}
+            src={review.src}
+            poster={review.poster}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onError={() => setHasVideo(false)}
+            // Not onPlay: that fires on the request, before there is anything to
+            // look at. onPlaying fires once frames are actually running, so the
+            // still is only pulled away when the video is ready to replace it.
+            onPlaying={() => setShowStill(false)}
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-40">
+            <Play className="h-8 w-8" strokeWidth={1.2} />
+            <span className="eyebrow !tracking-[0.2em]">
+              VIDEO {String(index + 1).padStart(2, "0")} · 9:16
+            </span>
+          </div>
+        )}
 
-      {/* Sits over the video and carries the same hover scale, so the swap in
-          either direction changes nothing but which layer is on top. No fade:
-          letting go of a card should put the still back at once. */}
-      {hasVideo && review.poster && showStill ? (
-        <img
-          src={review.poster}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-      ) : null}
+        {/* Sits over the video and carries the same hover scale, so the swap in
+            either direction changes nothing but which layer is on top. No fade:
+            letting go of a card should put the still back at once. */}
+        {hasVideo && review.poster && showStill ? (
+          <img
+            src={review.poster}
+            alt=""
+            aria-hidden
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          />
+        ) : null}
 
-      {/* Gradient + meta */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-5 pt-16">
-        <p className="type-body-sm font-semibold text-white">{review.handle}</p>
-        <p className="mt-1 type-caption text-white/70">
-          {review.caption}
-        </p>
+        {/* A thin play mark, always there so a still reads as a film. It fills
+            on hover instead of popping in as a white badge with a shadow. The
+            faint dark fill keeps the ring visible on bright stills (review-02
+            is shot against a white wall). */}
+        <span className="pointer-events-none absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/80 bg-black/20 text-white transition-colors duration-300 group-hover:bg-white group-hover:text-ink">
+          <Play className="ml-0.5 h-3.5 w-3.5" strokeWidth={1.5} />
+        </span>
       </div>
 
-      {/* Play badge */}
-      <div className="pointer-events-none absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/85 opacity-0 shadow-lg backdrop-blur transition-all duration-300 group-hover:opacity-100">
-        <Play className="ml-0.5 h-4 w-4 fill-ink text-ink" />
-      </div>
+      {/* Credit under the film, not over it: most of these clips already carry
+          their own captions, and a second layer of white type on a dark
+          gradient stacked two voices on one frame. */}
+      <p className={`mt-4 type-body-sm font-medium ${T.handle}`}>
+        {review.handle}
+      </p>
+      <p className={`mt-0.5 type-caption ${T.caption}`}>{review.caption}</p>
     </button>
   );
 }
@@ -219,7 +240,8 @@ export default function VideoGrid() {
     const rail = railRef.current;
     if (!rail) return;
     const card = rail.querySelector<HTMLElement>("[data-video-card]");
-    const by = (card?.offsetWidth ?? rail.clientWidth * 0.3) + 12;
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+    const by = (card?.offsetWidth ?? rail.clientWidth * 0.3) + gap;
     const max = rail.scrollWidth - rail.clientWidth;
     const to = Math.min(max, Math.max(0, rail.scrollLeft + by * dir));
     gsap.to(rail, {
@@ -307,49 +329,34 @@ export default function VideoGrid() {
     <section
       id="reviews"
       ref={sectionRef}
-      className="overflow-hidden py-16 md:py-36"
+      className={`overflow-hidden py-20 md:py-36 ${T.section}`}
     >
-      <div className="px-6 md:px-[80px]">
-        <div className="mb-8 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p data-video-head className="eyebrow-tag mb-5">
-              K-Beauty Social Proof
-            </p>
-            <h2
-              data-video-head
-              className="font-display type-h2 font-semibold"
-            >
-              Proven in Korea. Loved by Thousands.
-            </h2>
-          </div>
-
-          <div data-video-head className="flex items-center gap-3">
-            <span className="mr-2 type-caption text-mute">
-              {REVIEWS.length} reviews
-            </span>
-            <button
-              onClick={() => step(-1)}
-              disabled={atStart}
-              aria-label="Previous reviews"
-              className="flex h-11 w-11 items-center justify-center border border-hairline transition-colors hover:bg-ink hover:text-white disabled:pointer-events-none disabled:opacity-30"
-            >
-              <ArrowLeft className="h-4 w-4" strokeWidth={1.6} />
-            </button>
-            <button
-              onClick={() => step(1)}
-              disabled={atEnd}
-              aria-label="More reviews"
-              className="flex h-11 w-11 items-center justify-center border border-hairline transition-colors hover:bg-ink hover:text-white disabled:pointer-events-none disabled:opacity-30"
-            >
-              <ArrowRight className="h-4 w-4" strokeWidth={1.6} />
-            </button>
-          </div>
+      {/* Centred like the product section above it, so the two read as one
+          editorial run rather than a shop carousel with its counter and boxed
+          arrows. */}
+      <div className="mb-12 px-6 text-center md:mb-20 md:px-[80px]">
+        <div data-video-head>
+          <p className="eyebrow-tag">K-Beauty Social Proof</p>
         </div>
+        <h2
+          data-video-head
+          className="mt-5 font-display type-h2 font-semibold"
+          style={{ letterSpacing: "-0.005em", wordSpacing: "0.08em" }}
+        >
+          {/* One break on a phone, between the two sentences: left to wrap,
+              "Thousands." was stranded on a line of its own. */}
+          Proven in Korea.
+          <br className="md:hidden" /> Loved by Thousands.
+        </h2>
       </div>
 
       {/* Rail — drag, arrows, snap. It only overflows horizontally, so the
           wheel is deliberately left to the page: locking it here would trap a
-          vertical scroll on a strip that fills most of the viewport. */}
+          vertical scroll on a strip that fills most of the viewport.
+          Inset by margin rather than padding: padding would leave the
+          scrollport itself spanning the full window, so cards bled past the
+          margin. Proximity, not mandatory: mandatory has no snap point at the
+          far end, so the last review could never be reached. */}
       <div
         ref={railRef}
         onScroll={readRail}
@@ -357,12 +364,7 @@ export default function VideoGrid() {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
-        // Inset by margin rather than padding: padding would leave the
-        // scrollport itself spanning the full window, so cards bled past the
-        // right margin every other section keeps.
-        // Proximity, not mandatory: mandatory has no snap point at the far end,
-        // so it kept bouncing back and the last review could never be reached.
-        className="no-scrollbar flex cursor-grab snap-x snap-proximity gap-[12px] overflow-x-auto mx-6 pb-2 active:cursor-grabbing md:mx-[80px]"
+        className="no-scrollbar mx-6 flex cursor-grab snap-x snap-proximity gap-4 overflow-x-auto pb-2 active:cursor-grabbing md:mx-[80px] lg:mx-auto lg:max-w-[1000px] lg:gap-8"
       >
         {REVIEWS.map((review, i) => (
           <VideoCard
@@ -375,16 +377,34 @@ export default function VideoGrid() {
         ))}
       </div>
 
-      {/* Progress line */}
-      <div className="mt-8 px-6 md:px-[80px]">
-        <div className="h-px w-full bg-hairline">
+      {/* Progress line with the arrows at its end, under the rail */}
+      <div className="mx-6 mt-10 flex items-center gap-6 md:mx-[80px] lg:mx-auto lg:max-w-[1000px]">
+        <div className={`h-px flex-1 ${T.track}`}>
           <div
-            className="h-px bg-ink transition-[width,transform] duration-150"
+            className={`h-px transition-[width,transform] duration-150 ${T.fill}`}
             style={{
               width: `${100 / REVIEWS.length}%`,
               transform: `translateX(${progress * (REVIEWS.length - 1) * 100}%)`,
             }}
           />
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => step(-1)}
+            disabled={atStart}
+            aria-label="Previous reviews"
+            className={`p-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${T.arrow}`}
+          >
+            <ArrowLeft className="h-5 w-5" strokeWidth={1.25} />
+          </button>
+          <button
+            onClick={() => step(1)}
+            disabled={atEnd}
+            aria-label="More reviews"
+            className={`p-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${T.arrow}`}
+          >
+            <ArrowRight className="h-5 w-5" strokeWidth={1.25} />
+          </button>
         </div>
       </div>
 

@@ -7,6 +7,31 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/** The fixed navbar's height; scroll targets land just below it. */
+export const HEADER_OFFSET = 78;
+
+// The running Lenis instance, when there is one (desktop, motion allowed).
+// Lenis owns the scroll position there, so components scroll through it and
+// stay on the same easing as every other scroll on the page.
+let active: Lenis | null = null;
+
+/**
+ * Smooth-scrolls until `el`'s top sits just below the navbar: through Lenis
+ * where it runs, native smooth scrolling on phones, and a plain jump when the
+ * reader prefers reduced motion.
+ */
+export function scrollToElement(el: HTMLElement, duration = 1) {
+  if (active) {
+    active.scrollTo(el, { offset: -HEADER_OFFSET, duration });
+    return;
+  }
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({
+    top: el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET,
+    behavior: reduced ? "auto" : "smooth",
+  });
+}
+
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   // Triggers are measured when they are created, before the images below them
   // have loaded. Every photo that arrives late changes the page height, and
@@ -52,10 +77,18 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     // off it either way.
     if (!window.matchMedia("(min-width: 768px)").matches) return;
 
+    // Tuned to project-pef.com's wheel feel, measured on 2026-09-13 with the
+    // same wheel input on both sites (one 100px notch, from the first frame
+    // that moves): the reference reaches 50% / 90% / 99% of the notch at
+    // ~156 / 453 / 671ms. That shape is a ~1s ease-out-quart; the previous
+    // 1.15s expo-out leapt off the mark (50% at ~108ms), and Lenis's default
+    // lerp 0.1 measured the same. Anchor links and the science accordion pass
+    // their own durations to scrollTo and keep this easing.
     const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1,
+      easing: (t) => 1 - Math.pow(1 - t, 4),
     });
+    active = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -76,13 +109,14 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       const el = document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      lenis.scrollTo(el as HTMLElement, { offset: -78, duration: 1.4 });
+      lenis.scrollTo(el as HTMLElement, { offset: -HEADER_OFFSET, duration: 1.4 });
     };
     document.addEventListener("click", onClick);
 
     return () => {
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(raf);
+      active = null;
       lenis.destroy();
     };
   }, []);

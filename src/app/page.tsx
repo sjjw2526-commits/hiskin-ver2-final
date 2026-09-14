@@ -25,13 +25,13 @@ export default function Home() {
           <Hero />
           <Statement />
           <Philosophy />
-          <VideoGrid />
           <ProductDetail />
+          <VideoGrid />
           <ScienceAccordion />
-          <ArchiveGallery />
           <Manufacturing />
           <ClinicalData />
           <Certifications />
+          <ArchiveGallery />
           <InquiryForm />
         </main>
         <Footer />

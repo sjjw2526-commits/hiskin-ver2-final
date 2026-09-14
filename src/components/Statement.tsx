@@ -54,32 +54,39 @@ const scrim = {
  * Order is not arbitrary: 01 is the face, 02 the tube, 03 the pink texture,
  * matching the photographs left to right.
  */
+// The Korean lines break where the owner broke them ("\n"), on every screen.
 const USP = [
   {
     num: "01",
-    problem: { en: "WHITE CAST", ko: "부담스러운 백탁은 그만" },
+    problem: {
+      en: "HEAVY BASE",
+      ko: "바쁜 아침, 무겁고 번거로운\n베이스 메이크업은 이제 그만",
+    },
     solution: {
-      en: "ROSY, NOT WHITE",
-      ko: "화사한 연핑크 톤업으로 맑고 빛나는 피부",
+      en: "LIGHTER IN ONE STEP",
+      ko: "선케어 하나로 가볍게\n핑크빛 톤업과 자연스러운 베이스까지",
     },
   },
   {
     num: "02",
     problem: {
-      en: "INCOMPLETE UV PROTECTION",
-      ko: "기미부터 노화까지, 자외선이 남기는 흔적",
+      en: "PARTIAL UV COVERAGE",
+      ko: "기미·잡티·노화를 부르는\nUVA와 UVB, 둘 다 막아야 하니까",
     },
     solution: {
-      en: "FULL SPECTRUM, COVERED",
-      ko: "유기 3종 + 무기 2종으로 UVA·UVB를 빈틈없이 차단",
+      en: "FULL UV COVERAGE",
+      ko: "유기 3종 + 무기 2종의 UV 필터로\nUVA·UVB를 빈틈없이 차단",
     },
   },
   {
     num: "03",
-    problem: { en: "HEAVY & STICKY", ko: "무겁고 끈적이는 사용감은 그만" },
+    problem: {
+      en: "HEAVY & STICKY",
+      ko: "머리카락 달라붙는 끈적임\n바를 때마다 불편한 눈시림",
+    },
     solution: {
-      en: "LIGHT ALL DAY",
-      ko: "가볍게 밀착되어 하루 종일 편안하게",
+      en: "LIGHT & COMFORTABLE",
+      ko: "끈적임 없이 산뜻하게\n매일 부담 없이 편안하게",
     },
   },
 ];
@@ -118,21 +125,33 @@ function Caption({ item }: { item: (typeof USP)[number] }) {
         cannot drift out of alignment the way an earlier offset-based attempt
         did: outside the window there is nothing to see, and inside it there
         is only ever one resting position. The padding sits on the wrapper,
-        not on the window, so the clip hugs the type. */}
+        not on the window, so the clip hugs the type.
+
+        Phone is the exception. There the next card already rises into
+        place, and a caption rolling up inside a card that has just risen
+        stacked two upward movements on every turn. So on a phone the problem
+        fades out and the answer surfaces a few pixels in its place, with
+        the English line in rose: the change from grey to rose is what
+        catches the eye there, in place of the roll. The Korean line stays
+        in ink, as rose at that size is too faint on the white scrim. */}
       <div className="relative px-6 pb-6 md:px-7 md:pb-7">
         <div className="grid overflow-hidden">
           <div data-usp-problem className="[grid-area:1/1]">
             <h3 className="font-display type-h3 font-semibold text-mute">
               {item.problem.en}
             </h3>
-            <p className="mt-2.5 type-sub text-ink/50">{item.problem.ko}</p>
+            <p className="mt-2.5 whitespace-pre-line type-sub text-ink/50">
+              {item.problem.ko}
+            </p>
           </div>
 
           <div data-usp-solution className="[grid-area:1/1]">
-            <h3 className="font-display type-h3 font-semibold text-ink">
+            <h3 className="font-display type-h3 font-semibold text-ink max-md:text-rose">
               {item.solution.en}
             </h3>
-            <p className="mt-2.5 type-sub text-ink">{item.solution.ko}</p>
+            <p className="mt-2.5 whitespace-pre-line type-sub text-ink">
+              {item.solution.ko}
+            </p>
           </div>
         </div>
       </div>
@@ -328,73 +347,147 @@ export default function Statement() {
       });
 
       // ══ Phone ═══════════════════════════════════════════════
-      // Stacked, so the three cards are never on screen together and there is
-      // no single moment worth holding. A pin here would also fight the
-      // address bar folding, which changes the viewport mid-gesture. Each
-      // card turns over on its own as it comes up instead.
+      // The desktop spread, one card wide. The three cards are stacked in a
+      // single grid cell and the stage pins, centred under the nav bar. The
+      // scroll then runs the desktop's sequence — the tube that has just
+      // flown in, then the face, then the texture — each card draining back
+      // to colour and rolling its caption over before the next card rises
+      // over it from below.
+      //
+      // The address bar folding is handled in Hero.tsx
+      // (ignoreMobileResize), so the pin is measured once and holds still.
+      //
+      // The stacking is written here rather than in the class list so that
+      // anyone who has asked for reduced motion (handled above, before this)
+      // keeps the plain vertical column instead of three cards piled up.
       mm.add("(max-width: 767.98px)", () => {
-        const cells = gsap.utils.toArray<HTMLElement>("[data-trio-cell]");
+        const cell09 = row.querySelector<HTMLElement>("[data-trio-cell-09]");
+        // DOM order, which is USP order: face, tube, texture.
+        const cells = [cell02Ref.current, cell09, cell10Ref.current];
+        if (cells.some((c) => !c)) return;
 
-        gsap.fromTo(
-          cells,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.12,
-            scrollTrigger: { trigger: row, start: "top 82%" },
+        // Clip to the card itself, not the row's padding box. The row keeps
+        // 12px of padding top and bottom, and overflow alone left a 12px
+        // sliver of the waiting card showing under the stage, and of the
+        // drifting card above it.
+        gsap.set(row, {
+          overflow: "hidden",
+          clipPath: "inset(12px 0px 12px 0px)",
+        });
+        gsap.set(cells, { gridArea: "1 / 1", opacity: 1 });
+        // Layered in the order they arrive, so each rising card covers the one
+        // before it: tube, then face, then texture. The tube starts in place;
+        // face and texture wait below the stage, clipped by the row.
+        gsap.set(cells, { zIndex: (i: number) => [2, 1, 3][i] });
+        gsap.set([cells[0], cells[2]], { yPercent: 100 });
+
+        const NAV = 78;
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: pin,
+            // Centred in the strip below the nav bar. Recorded on the row for
+            // Hero.tsx, which lands the tube just before this point.
+            start: () => {
+              const top = Math.max(
+                NAV,
+                Math.round(
+                  NAV + (window.innerHeight - NAV - row.offsetHeight) / 2,
+                ),
+              );
+              row.dataset.pinTop = String(top);
+              return `top ${top}px`;
+            },
+            // The timeline below runs 1.16 units. At 2.4 viewports per unit
+            // the colour and caption changes keep the pace they had; only the
+            // two rises, lengthened at the owner's request, take more scroll.
+            end: () => "+=" + window.innerHeight * 2.8,
+            pin: true,
+            pinSpacing: true,
+            scrub: true,
+            invalidateOnRefresh: true,
           },
-        );
+        });
 
-        cells.forEach((cell, i) => {
-          const photo = cell.querySelector<HTMLElement>("[data-trio-tint]");
-          gsap.fromTo(
+        // The answer waits in place, faded and 12px low, instead of a full
+        // line below the window. Set here so leaving the phone layout reverts
+        // it to the roll's starting position above.
+        gsap.set(solutions, { opacity: 0, y: 12, yPercent: 0 });
+
+        // Colour over 0.16. Inside it the problem fades out from +0.04 and
+        // the answer surfaces from +0.08, overlapping so the caption is
+        // never empty, and settling as the photograph reaches full colour.
+        const IMG = ["02", "09", "10"];
+        const reveal = (col: number, at: number) => {
+          const photo = Array.from(
+            document.querySelectorAll<HTMLElement>(
+              `[data-trio-tint="${IMG[col]}"]`,
+            ),
+          );
+          tl.fromTo(
             photo,
             { "--gs": 1 },
-            {
-              "--gs": 0,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 74%",
-                end: "top 44%",
-                scrub: true,
+            { "--gs": 0, ease: "none", duration: 0.16 },
+            at,
+          )
+            .fromTo(
+              problems[col],
+              { opacity: 1, y: 0, yPercent: 0 },
+              {
+                opacity: 0,
+                y: 0,
+                yPercent: 0,
+                ease: "power1.in",
+                duration: 0.07,
               },
-            },
-          );
-          gsap.fromTo(
-            problems[i],
-            { y: 0, yPercent: 0 },
-            {
-              y: 0,
-              yPercent: -100,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 66%",
-                end: "top 52%",
-                scrub: true,
+              at + 0.04,
+            )
+            .fromTo(
+              solutions[col],
+              { opacity: 0, y: 12, yPercent: 0 },
+              {
+                opacity: 1,
+                y: 0,
+                yPercent: 0,
+                ease: "power2.out",
+                duration: 0.1,
               },
-            },
-          );
-          gsap.fromTo(
-            solutions[i],
-            { y: 0, yPercent: 100 },
+              at + 0.08,
+            );
+        };
+
+        // A rise: the next card comes up from below and covers the one on
+        // screen, which drifts up a little underneath it for depth. The drift
+        // is small enough that the rising card always overlaps it, so no gap
+        // opens between the two. The outgoing tween must not render its start
+        // value when the timeline is built — the face card moves twice, and
+        // rendering its drift early would shift it before anything scrolled.
+        const rise = (from: number, to: number, at: number) => {
+          tl.fromTo(
+            cells[from],
+            { yPercent: 0 },
             {
-              y: 0,
-              yPercent: 0,
-              ease: "none",
-              scrollTrigger: {
-                trigger: cell,
-                start: "top 56%",
-                end: "top 40%",
-                scrub: true,
-              },
+              yPercent: -15,
+              ease: "power2.inOut",
+              duration: 0.2,
+              immediateRender: false,
             },
+            at,
+          ).fromTo(
+            cells[to],
+            { yPercent: 100 },
+            { yPercent: 0, ease: "power2.inOut", duration: 0.2 },
+            at,
           );
-        });
+        };
+
+        // Indices into USP: 1 is the tube, 0 the face, 2 the texture.
+        reveal(1, 0.02);
+        rise(1, 0, 0.26);
+        reveal(0, 0.48);
+        rise(0, 2, 0.72);
+        reveal(2, 0.94);
+        // A short beat on the last card before the page moves on.
+        tl.to({}, { duration: 0.04 }, 1.12);
       });
 
       return () => mm.revert();
@@ -461,8 +554,8 @@ export default function Statement() {
               steps aside. This is also what gives the column its hover back:
               a real picture inside the cell answers the cell's own group.
 
-              md:opacity-0 is the pre-hand-over state — Hero lifts it. Nothing
-              flies on a phone, so there the picture is simply visible. */}
+              opacity-0 is the pre-hand-over state — Hero lifts it. The phone
+              flies the tube too, so this holds at both sizes. */}
           <div
             data-trio-cell
             data-trio-cell-09
@@ -473,7 +566,7 @@ export default function Statement() {
               style={desaturate}
               className="h-full w-full"
             >
-              <div data-trio-still className="h-full w-full md:opacity-0">
+              <div data-trio-still className="h-full w-full opacity-0">
                 <PlaceholderImage
                   name="img-09"
                   alt="HISKIN skin texture close-up"

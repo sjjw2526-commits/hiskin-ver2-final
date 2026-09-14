@@ -9,11 +9,12 @@ import PlaceholderImage from "./PlaceholderImage";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Unpunctuated at the owner's request: each line stands on its own.
 const LINES = [
-  "Better Ingredients,",
-  "Higher Standards,",
-  "More Thought in Every Detail.",
-  "Made Without Compromise.",
+  "Better Ingredients",
+  "Higher Standards",
+  "More Thought in Every Detail",
+  "Made Without Compromise",
 ];
 
 /**
@@ -22,24 +23,29 @@ const LINES = [
  * straight vertical line no matter how long the label beside them runs.
  * Reordering these breaks the acrostic.
  */
+// A "\n" in a desc is a line break the owner asked for, kept on every screen.
 const ROUTINE = [
-  { letter: "H", label: "HIGH STANDARD", desc: "제품 하나에도 더 높은 기준을" },
+  { letter: "H", label: "HIGH STANDARD", desc: "당연한 것에도 더 높은 기준을" },
   {
     letter: "I",
     label: "INGREDIENTS FIRST",
-    desc: "좋은 제품의 시작은 좋은 원료에서",
+    desc: "좋은 제품은 좋은 원료에서 시작되니까",
   },
   {
     letter: "S",
     label: "SELECTED WITH CARE",
-    desc: "직접 찾고 선택해온 원료의 기준",
+    desc: "하나를 고를 때도 충분히 신중하게",
   },
-  { letter: "K", label: "KNOW-HOW", desc: "오랜 연구와 경험으로 쌓아온 노하우" },
-  { letter: "I", label: "INTEGRITY", desc: "보이는 것보다 제품의 본질에 충실하게" },
+  { letter: "K", label: "KNOW-HOW", desc: "오랜 연구가 쌓여 만든 차이" },
+  {
+    letter: "I",
+    label: "INTEGRITY",
+    desc: "보이는 것보다 중요한 건 제품의 본질",
+  },
   {
     letter: "N",
     label: "NO COMPROMISE",
-    desc: "더 오래 걸리더라도 쉽게 타협하지 않는 것",
+    desc: "더 오래 걸리더라도,\n쉽게 타협하지 않는 것",
   },
 ];
 
@@ -191,10 +197,10 @@ export default function Philosophy() {
             className="flex flex-col xl:col-span-5 xl:pt-2"
           >
             <p className="type-sub text-white/60">
-              좋은 제품을 만드는 데에는 고집이 필요합니다.
+              좋은 원료를 고르는 순간부터, 완성되는 순간까지
             </p>
             <p className="mt-3 type-sub font-medium text-white">
-              그 고집이 HISKIN의 기준이 됩니다.
+              HISKIN은 피부에 닿는 모든 것에 타협하지 않습니다
             </p>
 
             <ul data-phil-list className="mt-10">
@@ -214,7 +220,7 @@ export default function Philosophy() {
                     >
                       {item.label}
                     </span>
-                    <span className="mt-1.5 block type-sub text-white/55">
+                    <span className="mt-1.5 block whitespace-pre-line type-sub text-white/55">
                       {item.desc}
                     </span>
                   </span>
@@ -234,15 +240,23 @@ export default function Philosophy() {
             alt="황금빛 역광 아래 초록 보케를 배경으로 옆을 바라보는 여성의 옆얼굴"
             aspect=""
             className="h-full w-full"
+            // Phone keeps the centred crop on purpose. Panning it to 30% was
+            // tried to clear the caption and cut the model's nose off at the
+            // right edge; centred, the whole profile shows and the caption
+            // below still lands under her lips.
             label="IMG 03 · 16:9"
             tone="dark"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+        {/* Phone: the caption spans the foot of the frame instead of sitting in
+            a column on the right, where it crossed the model's lips. The foot
+            is the white vest and a bright shoulder, so the bottom wash runs
+            much deeper there, and the side wash below is dropped. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent max-md:bg-[linear-gradient(to_top,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.55)_30%,rgba(0,0,0,0.15)_55%,rgba(0,0,0,0)_70%)]" />
         {/* The caption sits on the right, over bokeh that is bright enough in
             places to swallow white type. This second wash darkens that side
             only, so the model's face keeps its light. */}
-        <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/15 to-transparent md:via-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/15 to-transparent max-md:hidden md:via-black/10" />
         <div
           data-phil-stat
           /* Left-aligned inside a fixed column, not right-aligned against
@@ -250,8 +264,12 @@ export default function Philosophy() {
               different x and the block read as three unrelated fragments;
               sharing a left edge makes them one. The width also forces the
               headline onto two lines, which keeps it off the model's face —
-              at full width it ran 703px and crossed her jaw. */
-          className="absolute bottom-14 right-6 w-[min(430px,74vw)] text-left md:bottom-20 md:right-[60px]"
+              at full width it ran 703px and crossed her jaw.
+              Phone: that column still landed on her lips, so there the block
+              stays low over the shoulder, well under her lips, and only as wide
+              as its longest line — pushed to the right edge, 24px in, clear of
+              her profile on the left (owner's call, 2026-09-13). */
+          className="absolute bottom-9 right-6 text-left md:bottom-20 md:right-[60px] md:w-[min(430px,74vw)]"
         >
           {/* type-h1, not the type-stat this block used to carry: that step
               runs to 120px, sized for a short figure like "SPF 50+", and
@@ -266,22 +284,20 @@ export default function Philosophy() {
             className="font-display type-h1 font-semibold uppercase text-white"
             style={{ letterSpacing: "0.015em", wordSpacing: "0.14em" }}
           >
-            Made For Every Day
-          </p>
-          <p className="mt-6 type-lead text-white/90 md:mt-7">
-            매일 사용하는 선케어일수록
+            Made For
             <br />
-            편안하고, 아름다워야 하니까
+            Every Day
           </p>
-          {/* The rating still has to appear here. This photograph is the only
-              full-screen moment the page gives it, and a buyer checks that
-              number before anything else — so the message leads and the spec
-              sits underneath rather than disappearing entirely. */}
-          {/* white/65 was too faint against the bright side of this frame —
-              the one line on the page a buyer actually goes looking for
-              should not be the hardest to read. */}
-          <p className="mt-8 type-body-sm font-semibold tracking-[0.12em] text-white/85 md:mt-10">
-            SPF 50+ · PA++++
+          {/* The SPF 50+ · PA++++ line that used to close this block was
+              removed at the owner's request; the rating is left to the
+              product sections. */}
+          {/* One line from md up (owner, 2026-09-13); two on a phone, where
+              the block is only as wide as "EVERY DAY". nowrap holds it: the
+              line runs about 360px against the column's 430. */}
+          <p className="mt-6 type-lead text-white/90 md:mt-7 md:whitespace-nowrap">
+            보호하는 순간까지
+            <br className="md:hidden" />{" "}
+            아름다워야 하니까
           </p>
         </div>
       </div>

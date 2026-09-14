@@ -39,7 +39,10 @@ export default function ArchiveGallery() {
   );
 
   return (
-    <section id="archive" ref={sectionRef} className="bg-paper-alt">
+    // White since 2026-09-14. The section moved to sit between Certifications
+    // (#f8f7f4) and the inquiry form, and on its old #f5f5f3 the two greys
+    // ran together into one block.
+    <section id="archive" ref={sectionRef} className="bg-paper">
       <div className="px-6 py-16 md:px-[80px] md:py-36">
         <p data-arc-head className="eyebrow-tag mb-5">
           HISKIN Archive
