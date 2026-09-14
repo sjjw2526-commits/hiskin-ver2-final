@@ -282,6 +282,11 @@ export default function InquiryForm() {
             method="POST"
             data-netlify="true"
             data-netlify-honeypot="bot-field"
+            // Netlify's reCAPTCHA 2: the build injects Google's widget into
+            // the data-netlify-recaptcha div below, no keys needed, and a
+            // post without a valid g-recaptcha-response is refused. Only on
+            // the deployed site — locally the placeholder stays empty.
+            data-netlify-recaptcha="true"
             onSubmit={handleSubmit}
             className="grid gap-x-10 gap-y-8 sm:grid-cols-2 md:gap-y-10"
           >
@@ -405,6 +410,10 @@ export default function InquiryForm() {
                 minimum width is the longer label's, so switching tabs does
                 not make the button jump. */}
             <div className="flex flex-col items-start gap-7 sm:col-span-2">
+              {/* Consent on the left, the "I'm not a robot" box on the
+                  right, as on the reference form (owner, 2026-09-15).
+                  Stacked on a phone. */}
+              <div className="flex w-full flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <label className="flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"
@@ -431,6 +440,9 @@ export default function InquiryForm() {
                   </a>
                 </span>
               </label>
+              {/* Google's widget lands here on the deployed site (304×78). */}
+              <div data-netlify-recaptcha="true" className="shrink-0" />
+              </div>
 
               <button
                 type="submit"
