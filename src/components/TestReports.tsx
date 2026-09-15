@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ArrowLeft, ArrowRight, X, ZoomIn } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, X, ZoomIn } from "lucide-react";
 
 /**
  * The two ISO test reports, published as page images rather than PDFs.
@@ -28,6 +28,9 @@ type Report = {
   /** English title, as printed on the cover */
   title: string;
   subtitle: string;
+  /** The two lines under the title in the list: standard, then institute. */
+  standard: string;
+  institute: string;
   pages: number;
   meta: { label: string; value: string }[];
 };
@@ -38,6 +41,8 @@ const REPORTS: Report[] = [
     id: "spf",
     title: "SPF Test Report",
     subtitle: "인체적용시험 · 자외선차단지수",
+    standard: "ISO 24444:2019 / AMD 1:2022",
+    institute: "Semyung University Cosmetics Clinical Research Center",
     pages: 11,
     meta: [
       { label: "Study No.", value: "SMC-260731-9077_EN" },
@@ -51,6 +56,8 @@ const REPORTS: Report[] = [
     id: "pa",
     title: "In Vitro PA Test Report",
     subtitle: "인체외시험 · UVA 차단지수",
+    standard: "ISO 24443:2021",
+    institute: "Semyung University Cosmetics Clinical Research Center",
     pages: 13,
     meta: [
       { label: "Study No.", value: "SMC-260731-9090_EN" },
@@ -118,60 +125,68 @@ export default function TestReports() {
 
   return (
     <>
-      {/* ── Trigger list ──────────────────────────────────────
-          Two hairline rows, the same row language as the ingredient
-          accordion: the numbers above make the claim, these are the
-          documents that back it. */}
-      {/* ── Trigger list ──────────────────────────────────────
-          Its own block, apart from the "Test Details" accordion row above
-          it, with a label, a line of copy and a spelled-out VIEW on every
-          row. These were briefly set as bare accordion-style rows
-          (2026-09-15) and the owner was startled: a row that looks like it
-          unfolds must not pop a document viewer. The label and the VIEW
-          word are what say "this opens something". */}
-      <div
-        data-clin-block
-        className="mt-16 border-t border-hairline pt-9 md:mt-24 md:pt-10"
-      >
+      {/* ── Document list ─────────────────────────────────────
+          Its own block after the Test Details accordion, with the same
+          small head (label, title, Korean line) and hairline rows. The rows
+          are the page's row language, but what they open is a document
+          viewer, not a fold — a bare row here startled the owner twice
+          (2026-09-15). The spelled-out "VIEW REPORT" with the outward
+          arrow is what says "this opens something else"; the earlier
+          outlined button cards said it too, but were the one button UI on
+          a page that otherwise speaks in space and hairlines. */}
+      <div data-clin-block className="mt-16 md:mt-24">
         <p className="type-caption font-medium uppercase tracking-[0.08em] text-mute">
+          Documentation
+        </p>
+        <h3 className="mt-4 font-display type-h2 font-medium text-ink">
           Original Test Reports
+        </h3>
+        <p className="mt-4 type-sub font-medium text-mute">
+          검증의 근거가 되는 시험 원문을
+          <br />
+          직접 확인할 수 있습니다
         </p>
-        <p className="mt-4 max-w-xl type-sub text-ink">
-          시험 결과의 근거가 되는 원문 자료를 확인하세요
-        </p>
+      </div>
 
-        {/* Two outlined button cards side by side, as the live site had
-            them: a bordered block that fills black on hover is unmistakably
-            a button, where a hairline row reads as something that unfolds.
-            The owner was startled twice by the row form (2026-09-15). */}
-        <div className="mt-8 grid gap-3 md:grid-cols-2">
-          {REPORTS.map((r) => (
-            <button
-              key={r.id}
-              type="button"
-              onClick={() => open(r.id)}
-              className="group flex items-center justify-between gap-5 rounded-[4px] border border-ink/20 px-6 py-5 text-left transition-colors duration-300 hover:border-ink hover:bg-ink"
-            >
-              <span className="min-w-0">
-                <span className="block font-display type-body font-medium text-ink transition-colors duration-300 group-hover:text-white">
-                  {r.title}
-                </span>
-                <span className="mt-1 block type-caption text-mute transition-colors duration-300 group-hover:text-white/60">
-                  {r.subtitle} · 영문 {r.pages}쪽 · 문서 보기
+      <div data-clin-block className="mt-8 md:mt-10">
+        {REPORTS.map((r) => (
+          <button
+            key={r.id}
+            type="button"
+            onClick={() => open(r.id)}
+            className="group flex w-full items-center justify-between gap-6 border-b border-hairline py-5 text-left first:border-t md:py-6"
+          >
+            <span className="min-w-0">
+              <span className="block font-display type-row font-normal text-ink">
+                {r.title}
+              </span>
+              <span className="mt-2 block type-body-sm text-mute">
+                <span className="block md:inline">{r.standard}</span>
+                <span className="hidden md:inline"> · </span>
+                <span className="block md:inline">
+                  {r.institute} · 영문 {r.pages}쪽
                 </span>
               </span>
-              <ArrowRight
-                className="h-5 w-5 shrink-0 text-mute transition-all duration-300 group-hover:translate-x-1 group-hover:text-white"
+            </span>
+            <span className="flex shrink-0 items-center gap-2 type-caption font-medium uppercase tracking-[0.08em] text-ink">
+              <span className="max-sm:hidden">View Report</span>
+              <ArrowUpRight
+                className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 strokeWidth={1.5}
               />
-            </button>
-          ))}
-        </div>
+            </span>
+          </button>
+        ))}
 
-        <p className="mt-5 type-caption text-mute">
-          ※ 원료 함량(%)은 영업비밀 보호를 위해 가림 처리했습니다. 시험기관 ·
-          시험규격 · 측정값 등 시험의 근거가 되는 항목은 모두 원본 그대로입니다.
-        </p>
+        <div className="mt-8 max-w-2xl">
+          <p className="type-caption font-medium uppercase tracking-[0.08em] text-mute">
+            Formula Disclosure
+          </p>
+          <p className="mt-2 type-caption text-mute">
+            원료 함량(%)은 영업비밀 보호를 위해 비공개 처리되며,
+            시험기관·시험규격·측정값은 원문 그대로 제공됩니다.
+          </p>
+        </div>
       </div>
 
       {/* ── Viewer ───────────────────────────────────────────── */}

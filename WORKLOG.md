@@ -3,11 +3,78 @@
 날짜순으로 무엇을 왜 그렇게 했는지 남깁니다.
 "왜"가 없으면 나중에 같은 실수를 되풀이하게 되므로, 판단 근거를 같이 적습니다.
 
-배포처: **https://hiskin.netlify.app**
-저장소: **https://github.com/sjjw2526-commits/hiskin-ver2-final** (Private)
+배포처: **https://www.hiskinlab.com** (= hiskin.netlify.app)
+저장소: **https://github.com/sjjw2526-commits/hiskin-ver2-final**
+— 2026-09-14 ChatGPT 감수를 위해 **Public** 으로 바꿔 둔 상태. 인증서 스캔에 사업자번호·
+특허번호·대표 생년월일이 들어 있으니 감수가 끝나면 다시 Private 으로.
 
-**`git push` 하면 Netlify가 알아서 배포합니다.** (master 브랜치 연결됨)
+**master 에 `git push` 하면 Netlify가 알아서 배포합니다.** 다른 브랜치는 배포되지 않습니다.
 급할 때 로컬에서 바로 올리려면 `npm run deploy` 도 그대로 씁니다.
+
+---
+
+## 2026-09-15 (집 PC, 오후) — 임상 하단 개편, 배포 전 상태로 브랜치에 저장
+
+**브랜치 `wip/clinical-editorial`** 에만 커밋했습니다. master 는 아직 이전 그대로(라이브도
+그대로). 회사 PC 에서 이어서 하려면:
+
+```bash
+git fetch && git checkout wip/clinical-editorial
+```
+
+끝나면 master 로 합쳐 push 하면 배포됩니다 (`git checkout master && git merge wip/clinical-editorial && git push`).
+
+### 1. 임상 하단 → 에디토리얼 아코디언 (`ClinicalData.tsx`, `TestReports.tsx`) — 적용됨
+
+ChatGPT 지적("Test Details 한 줄 행 + 서류 카드가 페이지 문법에서 혼자 버튼 UI") 을 받아
+사이언스 아코디언과 같은 문법으로 바꿨습니다.
+
+- 머리(제목 · 오른쪽 메타 · SPF 50+/PA++++ 등급 칸)는 그대로.
+- "Test Details" 한 줄 행 + 흰 시트 두 단 → 작은 머리(TEST DETAILS / Beyond the Rating /
+  표기 등급을 넘어, 실제 측정 결과를 확인하세요) + 행 3개
+  **01 SPF Performance · 02 UVA Performance · 03 Test Conditions**.
+  01·02 는 왼쪽 실측값·요약 두 줄·표, 오른쪽 그래프. 03 은 두 시험의 조건을 좌우 두 칸.
+- 행은 사이언스와 달리 열려도 제자리에 남고 화살표만 회전 — 데이터 패널 위에 제목을 한 번 더
+  두면 머리가 둘이 되기 때문.
+- 카운터·점·곡선 그리기는 **행을 여는 순간** 재생 (`useEffect` + `gsap.context`, 닫으면
+  revert). 스크롤 트리거였을 땐 접힌 패널이 높이 0 이라 미리 소진돼, 열면 끝난 그림만 보였음.
+- 서류: 테두리 카드 삭제 → DOCUMENTATION / Original Test Reports 머리 + 헤어라인 행 2개,
+  각 행 제목 + "규격 · 기관 · 영문 N쪽", 오른쪽 **VIEW REPORT ↗** (호버 시 화살표만 이동).
+  주인이 전에 "행처럼 생긴 게 문서 창을 띄우면 놀란다"고 두 번 지적 → VIEW REPORT 글자가
+  "문서가 열린다"를 말해 주는 장치. 뷰어 모달은 그대로.
+- 각주 → FORMULA DISCLOSURE 캡션 블록.
+- 검증: tsc 0, 콘솔 0, 1440/1280/390 가로 넘침 없음, 03 값 13개 데스크톱 전부 한 줄.
+
+### 2. 섹션 구분감 — 결정됐지만 **아직 코드에 안 넣음**
+
+주인 지적: "제조·연구 부분이 전부 회색이라 섹션 구분이 안 된다." 실측하니 원인은
+같은 색 연속 — 사이언스(흰)·제조(흰) / 임상(회)·인증(회).
+
+결정(전후 비교 캡처 `docs/design/clinical-band/preview_compare_*.png`):
+1. 제조 `bg-paper-alt`, 임상 `bg-paper`, 인증의 `shadow-[inset_0_1px_0_…]` 이음선 제거
+   → 사이언스 흰 → 제조 회 → 임상 흰 → 인증 회 → 아카이브 흰.
+2. 임상의 SPF 50+/PA++++ 등급 칸을 **화면 끝까지 닿는 밴드**로 빼고 뒤에 연핑크 제형 텍스처.
+   sum37 상세페이지에서 "제형 사진을 섹션 바탕으로" 아이디어만 가져옴 — 가운데 정렬·세리프
+   숫자·블롭은 쓰지 않음. 페이지의 핑크(제품 스와치·후기·문의 블러시)와 같은 계열이고,
+   철학 뒤 모델 사진 밴드와 짝이 되는 두 번째 사진 밴드.
+   - 텍스처: `docs/design/clinical-band/tex_a2.jpg` (힉스필드 gpt_image_2 생성, 밝기 1.03 ·
+     채도 0.75 로 낮춘 것. 평균색 253/239/239, 블러시 251/244/246 에 가깝게). 원본
+     `tex_a_2688.png`, 조정 전 `tex_a.jpg`, 탈락한 B `tex_b.jpg`.
+   - 적용 시 `public/images/` 로 옮겨 정식 파일명 부여(예: `img-26.jpg`), 모바일용 crop 검토.
+   - 미리보기에 쓴 CSS (그대로 클래스로 옮기면 됨):
+     ```css
+     [data-clin-rating]{margin:0 -80px;padding:0 80px;border-top:0;
+       background:url(…) center/cover}
+     [data-clin-rating]>div{padding-top:4.5rem;padding-bottom:4.5rem}
+     ```
+     즉 `-mx-[80px] px-[80px] border-t-0 bg-cover bg-center`, 칸 `py-[4.5rem]`; 모바일은
+     `-mx-6 px-6`.
+
+### 그 밖의 열린 결정
+- 제조 섹션 4열 비트 → 헤어라인 행 목록 (제안만)
+- 문의 제목 `type-h1` 76px + 검정 리드, Before/After h3 600, 제조·아카이브 한글 부제 없음
+- 로딩 최적화(AVIF·히어로 priority·폰트 서브셋) 보류
+- GitHub 저장소 Private 복귀 시점
 
 ---
 
