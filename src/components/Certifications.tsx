@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -226,7 +227,12 @@ export default function Certifications() {
       </div>
 
       {/* ── Lightbox ─────────────────────────────────────────── */}
-      {current && (
+      {/* Portalled into <body>, for the reason written out in
+          TestReports.tsx: a transformed ancestor silently turns `fixed`
+          into "fixed to that box". Nothing transforms this section today,
+          but the card reveal here is the same kind of tween that broke the
+          report viewer live, so both viewers are kept out of reach. */}
+      {current && createPortal(
         <div
           ref={modalRef}
           className="fixed inset-0 z-[95] flex items-center justify-center bg-ink/88 p-5 backdrop-blur-sm md:p-10"
@@ -324,7 +330,8 @@ export default function Certifications() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </section>
   );

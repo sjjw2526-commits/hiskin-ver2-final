@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { ArrowLeft, ArrowRight, X, ZoomIn } from "lucide-react";
 
@@ -175,7 +176,14 @@ export default function TestReports() {
       </div>
 
       {/* ── Viewer ───────────────────────────────────────────── */}
-      {report && (
+      {/* Portalled into <body> on purpose. A fixed element is laid out
+          against the nearest transformed ancestor instead of the window,
+          and the reveal tweens in this section leave a transform on the
+          blocks around it. Live, on a phone, that put the viewer ~10,000px
+          below the screen: a black wash with no sheet and no reachable
+          close button (owner, 2026-09-17). Out here no ancestor can move
+          it. */}
+      {report && createPortal(
         <div
           ref={modalRef}
           className="fixed inset-0 z-[95] flex items-center justify-center bg-ink/88 p-5 backdrop-blur-sm md:p-10"
@@ -291,7 +299,8 @@ export default function TestReports() {
               className="pointer-events-none absolute h-px w-px opacity-0"
             />
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
