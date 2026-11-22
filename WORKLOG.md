@@ -11,6 +11,37 @@
 
 ---
 
+## 2026-11-23 — 미셀라 클렌징 워터 추가 (브랜치 `feat/cleansing-water`, **미배포**)
+
+> **▶ 이어서 할 때:** `git fetch && git switch feat/cleansing-water` → `npm install` → `npm run dev`
+> → http://localhost:3000/cleansing-water . **master 에 합치거나 배포하지 않은 상태입니다.**
+
+**기준점.** 라이브(hiskinlab.com)는 master `3174261` 과 내용이 같습니다(라이브 HTML 과 빌드 결과를
+대조해 확인). `wip/clinical-editorial` 의 `b354f14`(임상 섹션 아코디언)는 라이브에 없고, 오너가
+"라이브가 기준"이라 해서 이 브랜치는 **master 에서 새로 땄습니다.** b354f14 는 그 브랜치에 그대로 남아 있습니다.
+
+**구조 결정.**
+- 메인은 선크림 원페이지 그대로. 클렌징 워터는 **별도 페이지 `/cleansing-water`** (제품별 URL·메타가 B2B 에 필요).
+- 메뉴: `Suncream · Cleansing Water · Philosophy · Quality · B2B Inquiry` — 제품 2개라 드롭다운 대신 직접 노출.
+  링크는 `siteNav.ts` 한 곳에서 페이지별로 관리(같은 페이지면 `#hash`, 다른 페이지면 `/#hash` — Lenis 는 `#`로 시작하는 링크만 부드럽게 스크롤).
+- 메인 Philosophy 뒤에 **Lineup**(Protect by Day. Cleanse by Night.) 카드 2장 추가.
+- 클렌징 페이지 = 오프너(선크림 ProductDetail 형식) → 성분 4칸 그리드 → 아카이브(세로 3장 엇갈림 + 스크롤 패럴랙스) → 문의.
+  공장 사진 중복이라 Manufacturing 은 빼고 메뉴 Quality 는 `/#manufacturing` 으로.
+- 문의 폼에 **관심 제품** 필드 추가(페이지별 기본값).
+
+**컬러.** `.theme-cleanse` 안에서만 액센트(`--color-rose`)를 라벨 초록 `#1e7d36` 으로 바꿔 끼웁니다.
+라벨 실측 #057d04 를 12px 라벨용으로 조정(흰 배경 5.2:1). 타입·잉크·여백은 공통.
+
+**카피 원칙.** 향료가 들어 있어 "무향" 금지. 시험성적서를 사이트에 안 올리므로 "저자극·순한" 금지 —
+그래서 박스 컷(`GENTLE CLEANSING` 인쇄)은 보류.
+
+**남은 일.**
+1. 🔴 성분 카드 사진 4장 `cw-02~05` (화장솜 / 물결 / 물속 녹차 잎 / 수분 방울) — 지금 회색 자리표시
+2. 🟡 오너 확인 후 master 병합 → 배포
+3. 🟡 클렌징 페이지 전용 OG 이미지(1200×630)
+
+---
+
 ## 2026-08-24 — 모바일 전면 손질
 
 390px 로 처음부터 끝까지 훑어보고(스크린샷 23컷) 어색한 곳을 전부 잡았습니다.

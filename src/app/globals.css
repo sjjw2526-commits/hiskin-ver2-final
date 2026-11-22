@@ -39,6 +39,17 @@
      for the 12px labels it sets, not for body copy. */
   --color-rose: #e0457b;
   --color-rose-soft: #ffb3c9;
+  /* Micellar Cleansing Water (2026-11-23). The second product's accent,
+     doing exactly the jobs the pink does for the suncream and no others:
+     the eyebrow square and label, and one pale ground. Taken from the
+     bottle's own label, as the pink was taken from the cream: the label
+     prints a full-chroma green (#057d04 sampled from the studio shot), pulled
+     a touch toward blue and down in saturation here so 12px labels read as
+     green rather than as a highlighter — 5.2:1 on white. The soft step is
+     for an ink ground, the mist for the one pale section. */
+  --color-leaf: #1e7d36;
+  --color-leaf-soft: #a8dcb4;
+  --color-mist: #f0f6f1;
   --color-hairline: rgba(17, 17, 17, 0.14);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
@@ -351,6 +362,16 @@ html.lenis body {
 }
 .bg-ink .eyebrow-tag::before {
   background: var(--color-rose-soft);
+}
+/* Product accent scope. Anything inside .theme-cleanse that reads the accent
+   through var() — the eyebrow tag, the form's pale ground and its links —
+   takes the cleansing water's green instead of the suncream's pink. Type,
+   ink, paper and every other rule stay exactly as they are; that is what
+   keeps the two products one brand. */
+.theme-cleanse {
+  --color-rose: var(--color-leaf);
+  --color-rose-soft: var(--color-leaf-soft);
+  --color-blush: var(--color-mist);
 }
 .eyebrow-tag::before {
   content: "";

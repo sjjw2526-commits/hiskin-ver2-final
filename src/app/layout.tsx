@@ -38,7 +38,9 @@ export const metadata: Metadata = {
   // are not counted as duplicate content. metadataBase also turns relative
   // Open Graph URLs into the absolute ones link previews require.
   metadataBase: new URL("https://www.hiskinlab.com"),
-  alternates: { canonical: "/" },
+  // Each page sets its own canonical; the home page's is in app/page.tsx.
+  // Set here, "/" would be inherited by /cleansing-water and tell search
+  // engines that page is a duplicate of the home page.
   title: "HISKIN — Daily Suncream Protect",
   description:
     "One Step. Zero Effort. SPF 50+ PA++++ 3-in-1 daily tone-up suncream. B2B inquiries for overseas distributors, wholesalers, and clinics.",
