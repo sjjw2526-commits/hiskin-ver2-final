@@ -4,16 +4,14 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useIntro } from "./IntroContext";
 import RollText from "./RollText";
+import { CURRENT_LABEL, LOGO_HREF, NAV_LINKS, type Page } from "./siteNav";
 
-const LINKS = [
-  { href: "#concept", label: "Concept" },
-  { href: "#philosophy", label: "Philosophy" },
-  { href: "#reviews", label: "Reviews" },
-  { href: "#science", label: "Science" },
-  { href: "#archive", label: "Archive" },
-];
-
-export default function Navbar() {
+export default function Navbar({ page = "home" }: { page?: Page }) {
+  const LINKS = NAV_LINKS.map((l) => ({
+    label: l.label,
+    href: l.href[page],
+    current: CURRENT_LABEL[page] === l.label,
+  }));
   const { introDone } = useIntro();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,7 +33,7 @@ export default function Navbar() {
         <nav className="flex h-[78px] items-center justify-between px-6 md:px-[80px]">
           {/* Nav logo — revealed once the giant hero logo has shrunk down */}
           <a
-            href="#top"
+            href={LOGO_HREF[page]}
             id="nav-logo"
             className={`font-display type-logo font-semibold transition-opacity duration-300 ${
               introDone ? "opacity-100" : "opacity-0"
@@ -54,6 +52,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
+                aria-current={link.current ? "page" : undefined}
                 className="group/roll type-nav font-medium text-ink"
               >
                 <RollText>{link.label}</RollText>
@@ -102,6 +101,7 @@ export default function Navbar() {
             <a
               key={link.href}
               href={link.href}
+              aria-current={link.current ? "page" : undefined}
               onClick={() => setMenuOpen(false)}
               className={`border-b border-hairline py-5 font-display type-h3 font-semibold transition-all duration-500 ${
                 menuOpen

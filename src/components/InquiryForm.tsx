@@ -42,6 +42,19 @@ type TabId = (typeof TABS)[number]["id"];
 
 const INTERESTS = ["클리닉 도입", "제품 구매", "협업", "기타"];
 
+/**
+ * Which product the inquiry is about. With two products a buyer's message
+ * otherwise arrives with no telling which one they mean. Each page preselects
+ * its own product; it is an ordinary field the reader can change.
+ */
+const PRODUCTS = [
+  { id: "suncream", label: "Daily Suncream Protect" },
+  { id: "cleansing", label: "Micellar Cleansing Water" },
+  { id: "both", label: "Both / 두 제품 모두" },
+] as const;
+
+type ProductId = (typeof PRODUCTS)[number]["id"];
+
 const COUNTRIES = [
   "United States",
   "Japan",
@@ -111,7 +124,11 @@ function Lines({ lines }: { lines: string[] }) {
  * light outline tabs, underline-style labeled inputs, consent checkbox and a
  * slim black submit button on the right.
  */
-export default function InquiryForm() {
+export default function InquiryForm({
+  product = "suncream",
+}: {
+  product?: ProductId;
+}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [tab, setTab] = useState<TabId>("distributor");
   const [agreed, setAgreed] = useState(false);
@@ -208,7 +225,9 @@ export default function InquiryForm() {
     <section
       id="inquiry"
       ref={sectionRef}
-      className="bg-blush px-6 py-16 md:px-[80px] md:py-36"
+      // Read through var() rather than bg-blush, which Tailwind bakes to a
+      // hex: inside .theme-cleanse the same ground turns pale green.
+      className="bg-(--color-blush) px-6 py-16 md:px-[80px] md:py-36"
     >
       <div className="grid gap-14 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-24">
         {/* Left: headline */}
@@ -343,6 +362,25 @@ export default function InquiryForm() {
                 ))}
               </select>
             </Field>
+            <div className="sm:col-span-2">
+              <Field label="Product / 관심 제품 *">
+                <select
+                  name="product"
+                  required
+                  defaultValue={
+                    PRODUCTS.find((p) => p.id === product)?.label ??
+                    PRODUCTS[0].label
+                  }
+                  className={`${fieldCls} appearance-none`}
+                >
+                  {PRODUCTS.map((p) => (
+                    <option key={p.id} value={p.label}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
             {/* Both stay in the markup on every tab — see handleSubmit. */}
             <div className="sm:col-span-2" hidden={isClinic}>
               <Field label={active.quantityLabel ?? TABS[0].quantityLabel}>
@@ -381,7 +419,7 @@ export default function InquiryForm() {
             {status === "error" && (
               <p
                 role="alert"
-                className="type-body-sm text-rose sm:col-span-2"
+                className="type-body-sm text-(--color-rose) sm:col-span-2"
               >
                 {failedLocally ? (
                   <>
@@ -434,7 +472,7 @@ export default function InquiryForm() {
                     href="/privacy"
                     target="_blank"
                     rel="noopener"
-                    className="font-medium text-rose underline underline-offset-4 transition-opacity hover:opacity-70"
+                    className="font-medium text-(--color-rose) underline underline-offset-4 transition-opacity hover:opacity-70"
                   >
                     Privacy Policy
                   </a>

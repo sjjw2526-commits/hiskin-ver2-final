@@ -2,13 +2,11 @@
 
 import { ArrowUp } from "lucide-react";
 import RollText from "./RollText";
+import { NAV_LINKS, type Page } from "./siteNav";
 
-// Same order as the page and the top nav: Philosophy now sits before Reviews.
-const MENU = [
-  { href: "#concept", label: "Concept" },
-  { href: "#philosophy", label: "Philosophy" },
-  { href: "#reviews", label: "Reviews" },
-  { href: "#science", label: "Science" },
+// The top nav's links, in its order, plus the inquiry it ends on.
+const menuFor = (page: Page) => [
+  ...NAV_LINKS.map((l) => ({ href: l.href[page], label: l.label })),
   { href: "#inquiry", label: "B2B Inquiry" },
 ];
 
@@ -42,7 +40,8 @@ const LEGAL = [
   { label: "통신판매업신고번호", value: COMPANY.mailOrderNo },
 ];
 
-export default function Footer() {
+export default function Footer({ page = "home" }: { page?: Page }) {
+  const MENU = menuFor(page);
   return (
     <footer className="bg-ink text-white">
       <div className="px-6 py-16 md:px-[80px] md:py-24">
