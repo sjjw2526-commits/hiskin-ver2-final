@@ -11,10 +11,15 @@
 
 ---
 
-## 2026-11-23 — 미셀라 클렌징 워터 추가 (브랜치 `feat/cleansing-water`, **미배포**)
+## 2026-11-23 — 미셀라 클렌징 워터 추가 (`feat/cleansing-water` → **2026-11-24 master 병합·배포**)
 
-> **▶ 이어서 할 때:** `git fetch && git switch feat/cleansing-water` → `npm install` → `npm run dev`
-> → http://localhost:3000/cleansing-water . **master 에 합치거나 배포하지 않은 상태입니다.**
+> 2026-11-24 오너 요청으로 master 에 합쳐 배포했습니다. 사진 출처·수정 필요 항목은
+> `docs/images.md` 의 cw-* 행 참고 — 특히 **cw-10 라벨 오타(REKOMEF / MOSTURIE)**,
+> cw-06 합성 원본(타 브랜드 연출) 권리, cw-09 과자 봉지 일본어 상표 문구.
+
+**11-24 변경.** 아카이브를 선크림과 같은 모자이크(큰 1 + 작은 2 + 가로 1)로, 사진 전부 실사로 교체.
+카피 오너 확정: 성분 제목 "Four Essentials, One Gentle Cleanse.", 아카이브 "Naturally Fresh, Simply Clean.".
+"순하게 / Gentle / 피부 진정에 도움" 은 오너 결정(시험성적서 근거) — 아래 카피 원칙의 "순한 금지"는 이걸로 대체.
 
 **기준점.** 라이브(hiskinlab.com)는 master `3174261` 과 내용이 같습니다(라이브 HTML 과 빌드 결과를
 대조해 확인). `wip/clinical-editorial` 의 `b354f14`(임상 섹션 아코디언)는 라이브에 없고, 오너가
@@ -36,8 +41,8 @@
 그래서 박스 컷(`GENTLE CLEANSING` 인쇄)은 보류.
 
 **남은 일.**
-1. 🔴 성분 카드 사진 4장 `cw-02~05` (화장솜 / 물결 / 물속 녹차 잎 / 수분 방울) — 지금 회색 자리표시
-2. 🟡 오너 확인 후 master 병합 → 배포
+1. 🔴 cw-10 라벨 오타 리터치본 받으면 교체
+2. 🟡 cw-06 / cw-09 / 바다·녹차3번·제형샷 사용 권리 확인
 3. 🟡 클렌징 페이지 전용 OG 이미지(1200×630)
 
 ---

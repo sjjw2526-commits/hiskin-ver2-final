@@ -105,10 +105,10 @@ export default function CleansingDetail() {
           data-cw-head
           className="mx-auto mt-7 max-w-2xl text-center type-statement-sub font-medium text-mute md:mt-9"
         >
-          {/* Broken by hand on a phone, as ProductDetail's line is: left to
-              wrap, "남깁니다" dropped onto a line of its own. */}
-          하루의 흔적은 맑게 닦아내고,
-          <br className="md:hidden" /> 피부의 촉촉함은 그대로 남깁니다
+          {/* Owner's copy, 2026-11-24. Broken by hand on a phone at the
+              comma, so each half stands as one line. */}
+          진한 메이크업은 흔적 없이,
+          <br className="md:hidden" /> 피부의 촉촉함은 그대로
         </p>
 
         {/* cw-01 is the studio bottle with its lavender-grey backdrop moved

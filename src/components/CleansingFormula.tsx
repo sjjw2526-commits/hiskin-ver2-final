@@ -21,10 +21,10 @@ const ITEMS = [
     num: "01",
     tag: "Cleansing",
     title: "Micellar Technology",
-    body: "메이크업과 노폐물을 부드럽고 깔끔하게 닦아내는 미셀라 클렌징 기술로, 화장솜에 적셔 가볍게 닦아내는 것만으로 하루의 흔적을 정돈합니다.",
+    body: "메이크업과 피부 노폐물을 부드럽게 감싸 깔끔하게 닦아내는 미셀라 클렌징 기술. 클렌징 후에도 피부를 산뜻하고 촉촉하게 마무리합니다.",
     inci: "Coco-Glucoside · Polyglyceryl-4 Caprate",
     img: "cw-02",
-    alt: "투명한 물이 스며든 화장솜 클로즈업",
+    alt: "햇빛이 일렁이는 맑은 초록 물결 위의 HISKIN 미셀라 클렌징 워터",
   },
   {
     num: "02",
@@ -32,23 +32,23 @@ const ITEMS = [
     title: "Sea Water",
     body: "해수를 함유한 워터 포뮬러로, 피부에 닿는 순간 청량하고 깨끗한 사용감을 선사합니다.",
     img: "cw-03",
-    alt: "빛이 투과하는 맑은 물결의 표면",
+    alt: "흰 모래 해변으로 밀려드는 투명한 에메랄드빛 파도",
   },
   {
     num: "03",
     tag: "Comfort",
     title: "Green Tea Extract",
-    body: "녹차추출물을 더해 클렌징 후 피부를 산뜻하고 편안하게 마무리합니다.",
+    body: "피부 진정에 도움을 주는 녹차추출물을 함유해 순하고 부드러운 클렌징을 선사하며, 세안 후에도 피부를 편안하게 가꾸어 줍니다.",
     img: "cw-04",
-    alt: "맑은 물속에 잠긴 녹차 잎 한 장",
+    alt: "투명한 물방울이 맺힌 초록 잎 클로즈업",
   },
   {
     num: "04",
     tag: "Moisture",
     title: "4% Glycerin",
-    body: "4% 글리세린을 함유해 세안 후에도 당김 없이 촉촉한 사용감을 남깁니다.",
+    body: "4% 글리세린을 함유한 보습 포뮬러. 클렌징 후에도 촉촉하고 편안한 사용감을 남깁니다.",
     img: "cw-05",
-    alt: "유리 위에 맺힌 투명한 수분 방울",
+    alt: "연둣빛 투명한 제형 위에 맺힌 거품과 기포",
   },
 ];
 
@@ -110,19 +110,27 @@ export default function CleansingFormula() {
           data-cf-head
           className="font-display type-statement font-semibold text-ink"
         >
-          FOUR,
+          Four Essentials,
           <br />
-          Quietly at Work in Every Drop.
+          One Gentle Cleanse.
         </h2>
+        {/* Owner's copy, 2026-11-24: a lead line, then a two-line
+            paragraph, set apart as they wrote it. "순하게" is the owner's
+            call — the skin test reports passed but are not on the site, so
+            it rests on them if a buyer asks. */}
         <p
           data-cf-head
           className="mt-7 max-w-3xl type-statement-sub font-medium text-mute md:mt-9"
         >
-          닦아내는 힘, 청량함, 편안함, 촉촉한 마무리까지
-          <br className="max-md:hidden" /> 네 가지 요소를 하나의 워터 포뮬러에
-          담아
-          <br className="max-md:hidden" /> 매일 부담 없이 사용하는 클렌징을
-          완성합니다
+          순하게 닦아내고, 촉촉하게 마무리하는 클렌징.
+        </p>
+        <p
+          data-cf-head
+          className="mt-4 max-w-3xl type-statement-sub font-medium text-mute"
+        >
+          녹차와 해수의 청량함부터 촉촉한 보습감까지,
+          <br className="max-md:hidden" /> 피부의 편안함을 생각한 네 가지 클렌징
+          솔루션.
         </p>
       </div>
 
